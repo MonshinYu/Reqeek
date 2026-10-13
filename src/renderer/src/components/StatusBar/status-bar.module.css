@@ -1,0 +1,28 @@
+.statusBar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  height: 28px;
+  flex: none;
+  padding: 0 16px;
+  font-size: var(--font-label);
+  color: var(--md-on-surface-variant);
+  border-top: 1px solid var(--md-outline-variant);
+  background: var(--md-surface-container-low);
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  margin-right: -8px;
+  border-radius: 50%;
+  background: var(--md-outline-variant);
+}
+
+.dotOn {
+  background: var(--md-success);
+}
+
+.spacer {
+  flex: 1;
+}

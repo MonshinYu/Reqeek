@@ -1,0 +1,44 @@
+/* Material 3 暗色主题的 color role 子集 + 形状 / 字号 / 动效刻度 */
+:root {
+  color-scheme: dark;
+
+  --md-primary: #b4c5ff;
+  --md-on-primary: #002a77;
+  --md-primary-container: #1b438f;
+  --md-on-primary-container: #dbe1ff;
+  --md-secondary-container: #3f4759;
+  --md-on-secondary-container: #dbe2f9;
+  --md-error: #ffb4ab;
+  --md-error-container: #93000a;
+  --md-on-error-container: #ffdad6;
+  --md-success: #7fdc9c;
+  --md-warning: #f2c26b;
+
+  --md-surface: #1b1b1f;
+  --md-surface-container-low: #1f1f24;
+  --md-surface-container: #232328;
+  --md-surface-container-high: #2d2d33;
+  --md-on-surface: #e4e2e9;
+  --md-on-surface-variant: #c5c6d0;
+  --md-outline: #8f909a;
+  --md-outline-variant: #44464f;
+
+  --shape-xs: 4px;
+  --shape-sm: 8px;
+  --shape-md: 12px;
+  --shape-lg: 16px;
+  --shape-full: 999px;
+
+  --font-body: 13px;
+  --font-label: 12px;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  --state-hover: 0.08;
+  --state-focus: 0.1;
+  --state-pressed: 0.12;
+
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --duration-short: 150ms;
+
+  --row-height: 24px;
+}

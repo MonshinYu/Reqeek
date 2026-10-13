@@ -1,0 +1,55 @@
+.dialog {
+  margin: auto;
+  width: 520px;
+  max-width: calc(100vw - 48px);
+  padding: 24px;
+  border: none;
+  border-radius: var(--shape-lg);
+  background: var(--md-surface-container-high);
+  color: var(--md-on-surface);
+  user-select: text;
+}
+
+.dialog::backdrop {
+  background: rgb(0 0 0 / 0.5);
+}
+
+.dialog h2 {
+  margin-bottom: 16px;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.info {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr);
+  gap: 8px 12px;
+  margin-bottom: 16px;
+}
+
+.info dt {
+  color: var(--md-on-surface-variant);
+}
+
+.info dd {
+  word-break: break-all;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.ok {
+  color: var(--md-success);
+}
+
+.warn {
+  color: var(--md-warning);
+}
+
+.error {
+  color: var(--md-error);
+}

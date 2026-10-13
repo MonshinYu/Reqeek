@@ -1,0 +1,224 @@
+/* Chrome Network 风格的请求表：24px 行高、隔行底色、选中蓝色高亮 */
+.table {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  --cols: minmax(0, 1fr) 80px 90px 80px 80px 220px;
+}
+
+.compact {
+  --cols: minmax(0, 1fr);
+}
+
+.head,
+.row {
+  display: grid;
+  grid-template-columns: var(--cols);
+  align-items: center;
+  column-gap: 0;
+}
+
+.head {
+  height: 26px;
+  flex: none;
+  background: var(--md-surface-container);
+  border-bottom: 1px solid var(--md-outline-variant);
+}
+
+.th {
+  height: 100%;
+  padding: 0 8px;
+  border: none;
+  border-right: 1px solid var(--md-outline-variant);
+  background: transparent;
+  text-align: left;
+  font-size: var(--font-label);
+  color: var(--md-on-surface-variant);
+  cursor: pointer;
+}
+
+.th:disabled {
+  cursor: default;
+}
+
+.th:hover:not(:disabled) {
+  background: rgb(228 226 233 / var(--state-hover));
+}
+
+.toolbar {
+  flex: none;
+  display: flex;
+  gap: 4px;
+  padding: 4px 8px;
+  border-bottom: 1px solid var(--md-outline-variant);
+}
+
+.toolbarButton {
+  padding: 2px 8px;
+  border: 1px solid var(--md-outline-variant);
+  border-radius: 4px;
+  background: transparent;
+  font-size: var(--font-label);
+  color: var(--md-on-surface-variant);
+  cursor: pointer;
+}
+
+.toolbarButton:hover {
+  background: rgb(228 226 233 / var(--state-hover));
+}
+
+.scroll {
+  flex: 1;
+  overflow-x: hidden;
+  overflow-y: auto;
+  position: relative;
+  outline: none;
+}
+
+.row {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: var(--row-height);
+  cursor: default;
+}
+
+.odd {
+  background: rgb(228 226 233 / 0.03);
+}
+
+.row > span {
+  padding: 0 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.row:hover {
+  background: rgb(228 226 233 / var(--state-hover));
+}
+
+.row[aria-selected='true'] {
+  background: var(--md-primary-container);
+  color: var(--md-on-primary-container);
+}
+
+.name {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+
+/* flex 容器里 text-overflow 不生效，需要让每个子项自己截断 */
+.name > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+/* 图标固定宽度，文件名优先占空间，host 在空间不够时先被截断 */
+.name > span:first-child {
+  flex: none;
+}
+
+.name > span:nth-child(2) {
+  flex: 0 1 auto;
+}
+
+.name > .sub {
+  flex: 1 1 0;
+}
+
+/* 子请求行的名称缩进 */
+.child .name {
+  padding-left: 24px;
+}
+
+.sub {
+  color: var(--md-outline);
+  font-size: var(--font-label);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.waterfall {
+  position: relative;
+  height: 100%;
+}
+
+.bar {
+  position: absolute;
+  top: 8px;
+  height: 8px;
+  min-width: 2px;
+  border-radius: 2px;
+  background: var(--md-primary);
+}
+
+/* 域名分组头 */
+.group {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: var(--row-height);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 8px;
+  background: var(--md-surface-container-high);
+  border-bottom: 1px solid var(--md-outline-variant);
+  cursor: pointer;
+  font-weight: 500;
+  color: var(--md-on-surface);
+}
+
+.group:hover {
+  background: var(--md-surface-container-highest);
+}
+
+/* 域名过长时截断，箭头和计数保持完整 */
+.group > strong {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.count {
+  flex: none;
+  white-space: nowrap;
+  color: var(--md-on-surface-variant);
+  font-size: var(--font-label);
+  font-weight: normal;
+}
+
+.arrow {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: var(--md-on-surface-variant);
+  transition: transform 0.15s ease;
+}
+
+.arrowExpanded {
+  transform: rotate(90deg);
+}
+
+.ok {
+  color: var(--md-success);
+}
+
+.redirect {
+  color: var(--md-warning);
+}
+
+.error {
+  color: var(--md-error);
+}

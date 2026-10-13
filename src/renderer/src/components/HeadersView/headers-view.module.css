@@ -1,0 +1,46 @@
+.section {
+  border-bottom: 1px solid var(--md-outline-variant);
+  padding: 4px 12px;
+}
+
+.section > summary {
+  padding: 4px 0;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+}
+
+.count {
+  font-weight: 400;
+  color: var(--md-outline);
+  user-select: none;
+}
+
+.empty {
+  padding: 12px;
+  color: var(--md-on-surface-variant);
+}
+
+/* 键值对：名称不换行，值可折行。TimingView、BodyPanel 通过 composes 复用 */
+.list {
+  padding: 2px 0 6px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: minmax(120px, 34%) minmax(0, 1fr);
+  gap: 8px;
+  padding: 1px 0;
+  font-family: var(--font-mono);
+  font-size: var(--font-label);
+}
+
+.row dt {
+  color: var(--md-on-surface-variant);
+  font-weight: 600;
+  word-break: break-all;
+}
+
+.row dd {
+  word-break: break-all;
+}

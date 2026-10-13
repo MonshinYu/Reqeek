@@ -1,0 +1,49 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 12px;
+}
+
+.copy {
+  align-self: flex-start;
+}
+
+.note {
+  color: var(--md-warning);
+  font-size: var(--font-label);
+}
+
+.img {
+  max-width: 100%;
+  object-fit: contain;
+  background: var(--md-surface-container);
+}
+
+/* HTML 预览：浅色底，模拟浏览器里页面的默认外观，避免暗色主题下文字看不清 */
+.frame {
+  width: 100%;
+  min-height: 360px;
+  border: 1px solid var(--md-outline-variant);
+  background: #fff;
+}
+
+.code {
+  composes: code from '../ClampText/clamp-text.module.css';
+}
+
+.list {
+  composes: list from '../HeadersView/headers-view.module.css';
+}
+
+.row {
+  composes: row from '../HeadersView/headers-view.module.css';
+}
+
+.empty {
+  composes: empty from '../HeadersView/headers-view.module.css';
+}
+
+.nullValue {
+  color: var(--md-outline);
+}

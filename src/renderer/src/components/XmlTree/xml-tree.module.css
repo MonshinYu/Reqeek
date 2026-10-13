@@ -1,0 +1,62 @@
+/* XML 复用 JSON 树的折叠结构，这里只补标签着色 */
+.root {
+  composes: root from '../JsonTree/json-tree.module.css';
+}
+
+.toggle {
+  composes: toggle from '../JsonTree/json-tree.module.css';
+}
+
+.arrow {
+  composes: arrow from '../JsonTree/json-tree.module.css';
+}
+
+.summary {
+  composes: summary from '../JsonTree/json-tree.module.css';
+}
+
+.children {
+  composes: children from '../JsonTree/json-tree.module.css';
+}
+
+.more {
+  composes: more from '../JsonTree/json-tree.module.css';
+}
+
+.note {
+  composes: note from '../BodyPanel/body-panel.module.css';
+}
+
+.code {
+  composes: code from '../ClampText/clamp-text.module.css';
+}
+
+.punct {
+  color: var(--md-outline);
+}
+
+.tag {
+  color: var(--md-primary);
+}
+
+.attr {
+  color: var(--md-warning);
+}
+
+.value {
+  color: var(--md-success);
+}
+
+.text {
+  padding-left: 14px;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.leaf {
+  padding-left: 14px;
+}
+
+.close {
+  padding-left: 14px;
+}

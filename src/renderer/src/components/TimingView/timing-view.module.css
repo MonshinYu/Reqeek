@@ -1,0 +1,39 @@
+.meta {
+  padding: 8px 12px;
+  color: var(--md-on-surface-variant);
+}
+
+.list {
+  composes: list from '../HeadersView/headers-view.module.css';
+}
+
+.row {
+  composes: row from '../HeadersView/headers-view.module.css';
+}
+
+.timingRow dd {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bar {
+  flex: 1;
+  height: 8px;
+  border-radius: 2px;
+  background: var(--md-surface-container-high);
+  overflow: hidden;
+}
+
+.fill {
+  display: block;
+  height: 100%;
+}
+
+.wait {
+  background: var(--md-warning);
+}
+
+.download {
+  background: var(--md-primary);
+}

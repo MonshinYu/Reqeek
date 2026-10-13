@@ -1,0 +1,40 @@
+.button {
+  height: 32px;
+  padding: 0 16px;
+  border: 1px solid var(--md-outline-variant);
+  border-radius: var(--shape-full);
+  background: transparent;
+  cursor: pointer;
+  user-select: none;
+  transition: background var(--duration-short) var(--ease-standard);
+}
+
+.small {
+  height: 26px;
+  padding: 0 12px;
+  font-size: var(--font-label);
+}
+
+.button:hover:not(:disabled) {
+  background: rgb(228 226 233 / var(--state-hover));
+}
+
+.button:active:not(:disabled) {
+  background: rgb(228 226 233 / var(--state-pressed));
+}
+
+.button:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+.filled {
+  background: var(--md-primary);
+  color: var(--md-on-primary);
+  border-color: transparent;
+}
+
+.filled:hover:not(:disabled) {
+  background: var(--md-primary);
+  filter: brightness(1.1);
+}

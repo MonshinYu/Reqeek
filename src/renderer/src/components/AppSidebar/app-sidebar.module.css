@@ -1,0 +1,49 @@
+.sidebar {
+  width: 190px;
+  min-width: 140px;
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 4px;
+  overflow-y: auto;
+  border-right: 1px solid var(--md-outline-variant);
+  background: var(--md-surface-container-low);
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  height: 28px;
+  padding: 0 10px;
+  border: none;
+  border-radius: var(--shape-xs);
+  background: transparent;
+  color: var(--md-on-surface-variant);
+  text-align: left;
+  cursor: pointer;
+}
+
+.item:hover {
+  background: rgb(228 226 233 / var(--state-hover));
+}
+
+.item[aria-pressed='true'] {
+  background: var(--md-secondary-container);
+  color: var(--md-on-secondary-container);
+}
+
+.name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.count {
+  flex: none;
+  font-size: var(--font-label);
+  color: var(--md-outline);
+}

@@ -1,0 +1,69 @@
+.gate {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 32px;
+  text-align: center;
+}
+
+.gate h1 {
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.lead,
+.hint {
+  max-width: 520px;
+  color: var(--md-on-surface-variant);
+}
+
+.steps {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 460px;
+  max-width: 100%;
+  text-align: left;
+}
+
+.steps li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 14px;
+  border: 1px solid var(--md-outline-variant);
+  border-radius: var(--shape-md);
+  color: var(--md-on-surface-variant);
+}
+
+.steps li[data-done='true'] {
+  border-color: var(--md-success);
+}
+
+.steps strong {
+  color: var(--md-on-surface);
+}
+
+.warn {
+  max-width: 520px;
+  color: var(--md-warning);
+}
+
+.error {
+  max-width: 520px;
+  color: var(--md-error);
+  user-select: text;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}

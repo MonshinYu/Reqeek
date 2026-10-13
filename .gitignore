@@ -1,0 +1,14 @@
+node_modules
+dist
+out
+.DS_Store
+.idea
+*.log*
+*.tsbuildinfo
+
+# 环境变量
+.env
+.env.*
+
+# 原生模块编译产物
+build/Release
