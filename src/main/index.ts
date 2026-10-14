@@ -4,6 +4,7 @@ import {electronApp, is, optimizer} from '@electron-toolkit/utils';
 import icon from '../../resources/icon.png?asset';
 import {configureProxy} from './proxy';
 import {setupAppMenu} from './menu';
+import {hasTray, setupTray} from './tray';
 import {recoverStaleSystemProxyOnStartup, registerProxy, registerTraffic, shutdownProxy} from './ipc';
 
 const BACKGROUND_COLOR = '#1b1b1f';
@@ -11,6 +12,10 @@ const BACKGROUND_COLOR = '#1b1b1f';
 const TITLE_BAR_HEIGHT = 44;
 
 let mainWindow: BrowserWindow | null = null;
+
+// 用户是否真的要退出。有托盘时，点关闭按钮只是把窗口藏起来，抓包继续在后台跑；
+// 只有走托盘「退出」、Cmd+Q 等路径（before-quit）才会置为 true 并放行关闭
+let isQuitting = false;
 
 const isAppUrl = (url: string): boolean => {
   const devUrl = process.env['ELECTRON_RENDERER_URL'];
@@ -72,6 +77,11 @@ const createWindow = (): BrowserWindow => {
   if (process.platform !== 'darwin') window.setMenuBarVisibility(false);
 
   window.once('ready-to-show', () => showWindow(window));
+  window.on('close', (event) => {
+    if (isQuitting || !hasTray()) return;
+    event.preventDefault();
+    window.hide();
+  });
   window.on('closed', () => {
     if (mainWindow === window) mainWindow = null;
   });
@@ -94,11 +104,18 @@ if (!hasSingleInstanceLock) {
   app.quit();
 }
 
-app.on('second-instance', () => {
-  if (!mainWindow || mainWindow.isDestroyed()) return;
+/** 把主窗口带到前台：窗口被藏进托盘、最小化或已被销毁时都能唤起 */
+const revealMainWindow = (): void => {
+  if (!mainWindow || mainWindow.isDestroyed()) {
+    mainWindow = createWindow();
+    return;
+  }
   if (mainWindow.isMinimized()) mainWindow.restore();
+  mainWindow.show();
   mainWindow.focus();
-});
+};
+
+app.on('second-instance', revealMainWindow);
 
 app.whenReady().then(() => {
   if (!hasSingleInstanceLock) return;
@@ -121,9 +138,8 @@ app.whenReady().then(() => {
 
   mainWindow = createWindow();
 
-  app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) mainWindow = createWindow();
-  });
+  // 窗口可能只是被藏进托盘（未销毁），所以不能只在「没有窗口」时才处理
+  app.on('activate', revealMainWindow);
 
   // 代理核心要拿到 userData 目录才能把快照落盘，而核心本身不 import electron，
   // 所以路径由这里注入。必须在任何代理操作之前完成。
@@ -132,6 +148,18 @@ app.whenReady().then(() => {
   registerTraffic();
   registerProxy();
   setupAppMenu();
+  setupTray({
+    showWindow: revealMainWindow,
+    isWindowActive: () =>
+      !!mainWindow &&
+      !mainWindow.isDestroyed() &&
+      mainWindow.isVisible() &&
+      !mainWindow.isMinimized() &&
+      mainWindow.isFocused(),
+    hideWindow: () => {
+      if (mainWindow && !mainWindow.isDestroyed()) mainWindow.hide();
+    }
+  });
 
   // 异步做，不挡窗口显示
   void recoverStaleSystemProxyOnStartup();
@@ -141,6 +169,7 @@ app.whenReady().then(() => {
 // 用户下次上网就是断的，而且不知道去哪改回来
 let proxyShutdown = false;
 app.on('before-quit', (event) => {
+  isQuitting = true;
   if (proxyShutdown || !hasSingleInstanceLock) return;
   proxyShutdown = true;
   event.preventDefault();
@@ -148,7 +177,8 @@ app.on('before-quit', (event) => {
 });
 
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
+  // 有托盘时应用留在后台等待唤起；没有托盘（创建失败）就沿用原行为，否则用户再也找不到它
+  if (process.platform !== 'darwin' && !hasTray()) {
     app.quit();
   }
 });

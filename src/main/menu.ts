@@ -6,13 +6,22 @@ import type {MenuAction} from '@shared/types';
 const MENU_CHANNEL = 'menu:action';
 const isMac = process.platform === 'darwin';
 
-const sendAction = (action: MenuAction): void => {
+/**
+ * 把动作交给渲染进程执行。
+ * @param action
+ * @param reveal 是否同时把窗口带到前台；托盘里的后台操作（如停止抓包、清空）传 false，窗口保持隐藏
+ */
+export const sendMenuAction = (action: MenuAction, reveal = true): void => {
   const target = BrowserWindow.getFocusedWindow() ?? BrowserWindow.getAllWindows()[0];
   if (!target || target.isDestroyed()) return;
-  if (target.isMinimized()) target.restore();
-  target.show();
+  if (reveal) {
+    if (target.isMinimized()) target.restore();
+    target.show();
+  }
   target.webContents.send(MENU_CHANNEL, action);
 };
+
+const sendAction = (action: MenuAction): void => sendMenuAction(action);
 
 const buildTemplate = (running: boolean): MenuItemConstructorOptions[] => {
   const appMenu: MenuItemConstructorOptions = {
