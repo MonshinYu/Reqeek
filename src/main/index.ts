@@ -42,15 +42,13 @@ const createWindow = (): BrowserWindow => {
       ? {
           trafficLightPosition: {
             x: 18,
-            // 红绿灯按钮高约 14px，在 44px 的 titlebar 里垂直居中
             y: 15
           }
         }
       : {
-          // macOS 的 Dock / 应用图标来自打包出的 .icns，不需要在窗口上指定
           icon,
           titleBarOverlay: {
-            color: BACKGROUND_COLOR,
+            color: '#00000000',
             symbolColor: '#ffffff',
             height: TITLE_BAR_HEIGHT
           }
