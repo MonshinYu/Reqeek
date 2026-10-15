@@ -1,4 +1,5 @@
 import React from 'react';
+import {useTranslation} from 'react-i18next';
 import styles from './filter-bar.module.css';
 import {type FilterState, TYPE_FILTERS} from '@/lib/filter';
 
@@ -10,11 +11,12 @@ interface FilterBarProps {
 /** Chrome Network 风格的过滤栏：资源类型标签 + 若干开关（关键字输入在 titlebar） */
 export const FilterBar = (props: FilterBarProps): React.ReactElement => {
   const { filter, onChange } = props;
+  const { t } = useTranslation();
 
   const patch = (next: Partial<FilterState>): void => onChange({ ...filter, ...next });
 
   return (
-    <div className={styles.root} role="group" aria-label="过滤">
+    <div className={styles.root} role="group" aria-label={t('filter.group')}>
       {TYPE_FILTERS.map((item) => (
         <button
           key={item.key}
@@ -33,7 +35,7 @@ export const FilterBar = (props: FilterBarProps): React.ReactElement => {
           checked={filter.invert}
           onChange={(event) => patch({ invert: event.target.checked })}
         />
-        反选搜索
+        {t('filter.invertSearch')}
       </label>
       <label className={styles.check}>
         <input
@@ -41,7 +43,7 @@ export const FilterBar = (props: FilterBarProps): React.ReactElement => {
           checked={filter.errorsOnly}
           onChange={(event) => patch({ errorsOnly: event.target.checked })}
         />
-        仅错误
+        {t('filter.errorsOnly')}
       </label>
       <label className={styles.check}>
         <input
@@ -49,7 +51,7 @@ export const FilterBar = (props: FilterBarProps): React.ReactElement => {
           checked={filter.hideTunnels}
           onChange={(event) => patch({ hideTunnels: event.target.checked })}
         />
-        隐藏隧道
+        {t('filter.hideTunnels')}
       </label>
     </div>
   );

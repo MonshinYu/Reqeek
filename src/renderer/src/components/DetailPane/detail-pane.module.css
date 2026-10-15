@@ -31,7 +31,7 @@
 }
 
 .close:hover {
-  background: rgb(228 226 233 / var(--state-hover));
+  background: rgb(var(--md-state-layer) / var(--state-hover));
 }
 
 .tab {
@@ -45,7 +45,7 @@
 }
 
 .tab:hover {
-  background: rgb(228 226 233 / var(--state-hover));
+  background: rgb(var(--md-state-layer) / var(--state-hover));
 }
 
 .tab[aria-selected='true'] {

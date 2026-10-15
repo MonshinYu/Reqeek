@@ -1,0 +1,213 @@
+{
+  "app": {
+    "name": "Reqeek"
+  },
+  "titleBar": {
+    "toolbar": "操作栏",
+    "startCapture": "开始抓包",
+    "stopCapture": "停止抓包",
+    "caRequired": "请先安装并信任根证书",
+    "clear": "清空",
+    "clearRecords": "清空记录",
+    "searchPlaceholder": "搜索：主机 / 路径 / 方法 / 状态码",
+    "searchRequests": "搜索请求",
+    "ca": "CA 证书"
+  },
+  "filter": {
+    "group": "过滤",
+    "invertSearch": "反选搜索",
+    "errorsOnly": "仅错误",
+    "hideTunnels": "隐藏隧道"
+  },
+  "sidebar": {
+    "byApp": "按应用筛选",
+    "allApps": "全部应用",
+    "unknownApp": "未知来源"
+  },
+  "table": {
+    "requests": "请求列表",
+    "name": "名称",
+    "status": "状态",
+    "type": "类型",
+    "size": "大小",
+    "time": "时间",
+    "waterfall": "瀑布图",
+    "expandAll": "展开全部",
+    "collapseAll": "折叠全部",
+    "groupCount_other": "{{count}} 个请求"
+  },
+  "detail": {
+    "title": "请求详情",
+    "close": "关闭详情",
+    "noRequestBody": "此请求没有请求体",
+    "noPreviewBody": "没有可预览的响应体",
+    "noResponseBody": "没有响应体",
+    "bodyNotCaptured": "此类记录不采集响应体"
+  },
+  "status": {
+    "idle": "未在抓包",
+    "requestCount_other": "{{count}} 个请求",
+    "shownOfTotal": "{{shown}} / {{total}} 个请求",
+    "transferred": "已传输 {{size}}",
+    "finished": "完成 {{time}}",
+    "httpsOn": "HTTPS 解密：已启用",
+    "httpsOff": "HTTPS 解密：不可用"
+  },
+  "empty": {
+    "noRequests": "还没有抓到请求",
+    "noRequestsHint": "点击左上角的录制按钮，再用浏览器访问任意网站",
+    "noMatch": "没有符合条件的请求",
+    "noMatchHint": "调整过滤或搜索条件"
+  },
+  "ca": {
+    "gateTitle": "先安装 {{name}} 根证书",
+    "gateLead": "抓取 HTTPS 内容需要在本机信任 {{name}} 的根证书。证书和私钥只保存在这台电脑上。",
+    "step": {
+      "generate": "1. 生成证书",
+      "install": "2. 安装并信任",
+      "verify": "3. 验证"
+    },
+    "stepState": {
+      "trusted": "已安装并受信任",
+      "installed": "已在证书库中，但还没有被信任",
+      "notInstalled": "尚未安装",
+      "unsupported": "当前系统不支持自动安装"
+    },
+    "generating": "正在生成…",
+    "waitingGenerate": "等待证书生成",
+    "autoEnter": "安装完成后会自动进入主界面",
+    "installedWarning": "证书已导入但没有被信任。请打开「钥匙串访问」，找到 {{name}}，把信任设置为「始终信任」，然后点击「重新检测」。",
+    "hint": {
+      "darwin": "点击后系统会弹出钥匙串授权，输入登录密码或使用 Touch ID 即可。",
+      "win32": "点击后系统会弹出证书安装确认框，选择「是」。",
+      "linux": "请先导出证书，按你的发行版方式加入系统信任库，再点击「重新检测」。"
+    },
+    "dialogTitle": "CA 根证书",
+    "trust": {
+      "trusted": "已安装并受信任，HTTPS 解密可用",
+      "installed": "已在证书库中，但未被信任。请在钥匙串中把它设为「始终信任」",
+      "notInstalled": "尚未安装到系统信任库",
+      "unsupported": "当前平台不支持自动安装，请导出证书后手动安装"
+    },
+    "field": {
+      "name": "名称",
+      "fingerprint": "指纹 (SHA-256)",
+      "expires": "有效期至",
+      "status": "状态"
+    },
+    "reading": "正在读取证书信息…",
+    "actions": {
+      "install": "安装并信任",
+      "uninstall": "从系统移除",
+      "reveal": "在文件夹中显示证书",
+      "revealShort": "在文件夹中显示",
+      "recheck": "重新检测",
+      "close": "关闭",
+      "busy": "处理中…"
+    }
+  },
+  "body": {
+    "noParams": "没有参数",
+    "emptyValue": "（空）",
+    "truncated": "仅保留前 {{kept}}，原始共 {{total}}",
+    "htmlPreview": "HTML 预览",
+    "imagePreview": "响应图片预览",
+    "copied": "已复制",
+    "copy": "复制",
+    "copyPrettyJson": "复制格式化后的 JSON"
+  },
+  "headers": {
+    "detailEvicted": "详情已被清理（超出内存预算）",
+    "noHeadersCaptured": "此类记录不采集请求头（隧道或升级连接）"
+  },
+  "timing": {
+    "startedAt": "开始于 {{time}}",
+    "ttfb": "等待服务器响应 (TTFB)",
+    "download": "内容下载",
+    "total": "总计",
+    "transferred": "传输"
+  },
+  "tree": {
+    "showMore_other": "显示更多（还有 {{count}} 项）",
+    "invalidXml": "不是合法的 XML，已按纯文本显示"
+  },
+  "clamp": {
+    "expand_other": "展开（共 {{count}} 字符）",
+    "showAll_other": "显示全部（还有 {{count}} 字符）"
+  },
+  "common": {
+    "loading": "加载中…",
+    "none": "无",
+    "collapse": "收起",
+    "semicolon": "；"
+  },
+  "menu": {
+    "about": "关于 {{name}}",
+    "services": "服务",
+    "hide": "隐藏 {{name}}",
+    "hideOthers": "隐藏其他",
+    "unhide": "全部显示",
+    "quit": "退出 {{name}}",
+    "capture": "抓包",
+    "startCapture": "开始抓包",
+    "stopCapture": "停止抓包",
+    "clear": "清空记录",
+    "focusSearch": "搜索请求",
+    "ca": "CA 证书…",
+    "settings": "设置…",
+    "edit": "编辑",
+    "undo": "撤销",
+    "redo": "重做",
+    "cut": "剪切",
+    "copy": "复制",
+    "paste": "粘贴",
+    "selectAll": "全选",
+    "view": "视图",
+    "forceReload": "强制重新加载",
+    "toggleDevTools": "开发者工具",
+    "resetZoom": "实际大小",
+    "zoomIn": "放大",
+    "zoomOut": "缩小",
+    "toggleFullScreen": "切换全屏",
+    "window": "窗口",
+    "help": "帮助",
+    "revealCa": "在文件夹中显示 CA 证书",
+    "openDataDir": "打开数据目录"
+  },
+  "tray": {
+    "show": "显示 {{name}}",
+    "capturing": "{{name}} · 抓包中（端口 {{port}}）",
+    "idle": "{{name}} · 未抓包",
+    "quit": "退出 {{name}}"
+  },
+  "settings": {
+    "title": "设置",
+    "general": "通用",
+    "about": "关于",
+    "language": "语言",
+    "theme": "主题",
+    "themeOptions": {
+      "auto": "跟随系统",
+      "light": "浅色",
+      "dark": "深色"
+    },
+    "port": "端口号",
+    "version": "版本",
+    "update": {
+      "title": "更新",
+      "check": "检查更新",
+      "checking": "检查中…",
+      "upToDate": "已是最新版本",
+      "available": "发现新版本 {{version}}",
+      "failed": "检查失败，请稍后重试"
+    },
+    "reset": "恢复默认",
+    "resetConfirm": "恢复默认设置？",
+    "close": "关闭"
+  },
+  "languages": {
+    "en": "English",
+    "zh": "简体中文",
+    "ja": "日本語"
+  }
+}

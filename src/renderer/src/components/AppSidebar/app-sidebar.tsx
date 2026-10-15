@@ -1,5 +1,6 @@
 import React from 'react';
-import type {AppGroup} from '@/lib/filter';
+import {useTranslation} from 'react-i18next';
+import {type AppGroup, UNKNOWN_APP} from '@/lib/filter';
 import styles from './app-sidebar.module.css';
 
 interface AppSidebarProps {
@@ -13,16 +14,21 @@ interface AppSidebarProps {
 /** 左侧应用列表：按发起请求的应用分组，点击即按应用筛选，再点一次取消 */
 export const AppSidebar = (props: AppSidebarProps): React.ReactElement => {
   const { groups, total, selected, onSelect } = props;
+  const { t } = useTranslation();
+
+  /** 反查不到来源的分组在内部用的是哨兵名，显示时才换成文案 */
+  const labelOf = (name: string): string =>
+    name === UNKNOWN_APP ? t('sidebar.unknownApp') : name;
 
   return (
-    <nav className={styles.sidebar} aria-label="按应用筛选">
+    <nav className={styles.sidebar} aria-label={t('sidebar.byApp')}>
       <button
         type="button"
         className={styles.item}
         aria-pressed={selected === null}
         onClick={() => onSelect(null)}
       >
-        <span className={styles.name}>全部应用</span>
+        <span className={styles.name}>{t('sidebar.allApps')}</span>
         <span className={styles.count}>{total}</span>
       </button>
       {groups.map((group) => (
@@ -31,10 +37,10 @@ export const AppSidebar = (props: AppSidebarProps): React.ReactElement => {
           type="button"
           className={styles.item}
           aria-pressed={selected === group.name}
-          title={group.name}
+          title={labelOf(group.name)}
           onClick={() => onSelect(selected === group.name ? null : group.name)}
         >
-          <span className={styles.name}>{group.name}</span>
+          <span className={styles.name}>{labelOf(group.name)}</span>
           <span className={styles.count}>{group.count}</span>
         </button>
       ))}

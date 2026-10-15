@@ -81,7 +81,7 @@
 }
 
 .iconButton:hover:not(:disabled) {
-  background: rgb(228 226 233 / var(--state-hover));
+  background: rgb(var(--md-state-layer) / var(--state-hover));
 }
 
 .iconButton:disabled {

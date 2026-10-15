@@ -1,4 +1,5 @@
 import React, {useMemo, useState} from 'react';
+import {useTranslation} from 'react-i18next';
 import styles from './xml-tree.module.css';
 
 const PAGE_SIZE = 200;
@@ -51,6 +52,7 @@ const CloseTag = (props: { element: Element }): React.ReactElement => {
 
 const XmlNode = (props: { element: Element; depth: number }): React.ReactElement => {
   const { element, depth } = props;
+  const { t } = useTranslation();
 
   const [open, setOpen] = useState(depth < 2);
   const [shown, setShown] = useState(PAGE_SIZE);
@@ -115,7 +117,7 @@ const XmlNode = (props: { element: Element; depth: number }): React.ReactElement
                 className={styles.more}
                 onClick={() => setShown(shown + PAGE_SIZE)}
               >
-                显示更多（还有 {children.length - shown} 项）
+                {t('tree.showMore', {count: children.length - shown})}
               </button>
             )}
           </div>
@@ -131,12 +133,13 @@ const XmlNode = (props: { element: Element; depth: number }): React.ReactElement
 /** XML 的可折叠树；不是合法 XML 时显示原文并说明 */
 export const XmlTree = (props: { raw: string }): React.ReactElement => {
   const { raw } = props;
+  const { t } = useTranslation();
 
   const doc = useMemo(() => parseXml(raw), [raw]);
   if (!doc?.documentElement) {
     return (
       <>
-        <p className={styles.note}>不是合法的 XML，已按纯文本显示</p>
+        <p className={styles.note}>{t('tree.invalidXml')}</p>
         <pre className={styles.code}>{raw}</pre>
       </>
     );

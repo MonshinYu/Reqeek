@@ -1,0 +1,218 @@
+{
+  "app": {
+    "name": "Reqeek"
+  },
+  "titleBar": {
+    "toolbar": "Toolbar",
+    "startCapture": "Start recording",
+    "stopCapture": "Stop recording",
+    "caRequired": "Install and trust the root certificate first",
+    "clear": "Clear",
+    "clearRecords": "Clear records",
+    "searchPlaceholder": "Search host / path / method / status",
+    "searchRequests": "Search requests",
+    "ca": "CA Certificate"
+  },
+  "filter": {
+    "group": "Filters",
+    "invertSearch": "Invert search",
+    "errorsOnly": "Errors only",
+    "hideTunnels": "Hide tunnels"
+  },
+  "sidebar": {
+    "byApp": "Filter by app",
+    "allApps": "All apps",
+    "unknownApp": "Unknown"
+  },
+  "table": {
+    "requests": "Request list",
+    "name": "Name",
+    "status": "Status",
+    "type": "Type",
+    "size": "Size",
+    "time": "Time",
+    "waterfall": "Waterfall",
+    "expandAll": "Expand all",
+    "collapseAll": "Collapse all",
+    "groupCount_one": "{{count}} request",
+    "groupCount_other": "{{count}} requests"
+  },
+  "detail": {
+    "title": "Request details",
+    "close": "Close details",
+    "noRequestBody": "This request has no body",
+    "noPreviewBody": "No response body to preview",
+    "noResponseBody": "No response body",
+    "bodyNotCaptured": "Bodies are not captured for this kind of record"
+  },
+  "status": {
+    "idle": "Not recording",
+    "requestCount_one": "{{count}} request",
+    "requestCount_other": "{{count}} requests",
+    "shownOfTotal": "{{shown}} / {{total}} requests",
+    "transferred": "Transferred {{size}}",
+    "finished": "Finished in {{time}}",
+    "httpsOn": "HTTPS decryption: on",
+    "httpsOff": "HTTPS decryption: off"
+  },
+  "empty": {
+    "noRequests": "No requests captured yet",
+    "noRequestsHint": "Click the record button, then browse any website",
+    "noMatch": "No requests match the filter",
+    "noMatchHint": "Adjust the filters or search terms"
+  },
+  "ca": {
+    "gateTitle": "Install the {{name}} root certificate",
+    "gateLead": "Capturing HTTPS content requires trusting the {{name}} root certificate on this machine. The certificate and its private key never leave this computer.",
+    "step": {
+      "generate": "1. Generate certificate",
+      "install": "2. Install and trust",
+      "verify": "3. Verify"
+    },
+    "stepState": {
+      "trusted": "Installed and trusted",
+      "installed": "In the keychain, but not trusted yet",
+      "notInstalled": "Not installed",
+      "unsupported": "This system does not support automatic installation"
+    },
+    "generating": "Generating…",
+    "waitingGenerate": "Waiting for the certificate",
+    "autoEnter": "The main window opens automatically once this is done",
+    "installedWarning": "The certificate was imported but is not trusted. Open Keychain Access, find {{name}}, set its trust to \"Always Trust\", then click Recheck.",
+    "hint": {
+      "darwin": "The system will ask for keychain authorization — enter your login password or use Touch ID.",
+      "win32": "The system will show a certificate installation prompt — choose \"Yes\".",
+      "linux": "Export the certificate first, add it to your distribution's trust store, then click Recheck."
+    },
+    "dialogTitle": "CA root certificate",
+    "trust": {
+      "trusted": "Installed and trusted — HTTPS decryption is available",
+      "installed": "In the keychain but not trusted. Set it to \"Always Trust\" in Keychain Access",
+      "notInstalled": "Not installed in the system trust store",
+      "unsupported": "Automatic installation is not supported on this platform — export the certificate and install it manually"
+    },
+    "field": {
+      "name": "Name",
+      "fingerprint": "Fingerprint (SHA-256)",
+      "expires": "Valid until",
+      "status": "Status"
+    },
+    "reading": "Reading certificate information…",
+    "actions": {
+      "install": "Install and trust",
+      "uninstall": "Remove from system",
+      "reveal": "Show certificate in folder",
+      "revealShort": "Show in folder",
+      "recheck": "Recheck",
+      "close": "Close",
+      "busy": "Working…"
+    }
+  },
+  "body": {
+    "noParams": "No parameters",
+    "emptyValue": "(empty)",
+    "truncated": "Showing the first {{kept}} of {{total}}",
+    "htmlPreview": "HTML preview",
+    "imagePreview": "Response image preview",
+    "copied": "Copied",
+    "copy": "Copy",
+    "copyPrettyJson": "Copy formatted JSON"
+  },
+  "headers": {
+    "detailEvicted": "Details were evicted (memory budget exceeded)",
+    "noHeadersCaptured": "Headers are not captured for this kind of record (tunnel or upgraded connection)"
+  },
+  "timing": {
+    "startedAt": "Started at {{time}}",
+    "ttfb": "Waiting for server response (TTFB)",
+    "download": "Content download",
+    "total": "Total",
+    "transferred": "Transferred"
+  },
+  "tree": {
+    "showMore_one": "Show more ({{count}} remaining)",
+    "showMore_other": "Show more ({{count}} remaining)",
+    "invalidXml": "Not valid XML — showing the plain text instead"
+  },
+  "clamp": {
+    "expand_one": "Expand ({{count}} character)",
+    "expand_other": "Expand ({{count}} characters)",
+    "showAll_one": "Show all ({{count}} character left)",
+    "showAll_other": "Show all ({{count}} characters left)"
+  },
+  "common": {
+    "loading": "Loading…",
+    "none": "None",
+    "collapse": "Collapse",
+    "semicolon": "; "
+  },
+  "menu": {
+    "about": "About {{name}}",
+    "services": "Services",
+    "hide": "Hide {{name}}",
+    "hideOthers": "Hide Others",
+    "unhide": "Show All",
+    "quit": "Quit {{name}}",
+    "capture": "Capture",
+    "startCapture": "Start recording",
+    "stopCapture": "Stop recording",
+    "clear": "Clear records",
+    "focusSearch": "Search requests",
+    "ca": "CA Certificate…",
+    "settings": "Settings…",
+    "edit": "Edit",
+    "undo": "Undo",
+    "redo": "Redo",
+    "cut": "Cut",
+    "copy": "Copy",
+    "paste": "Paste",
+    "selectAll": "Select All",
+    "view": "View",
+    "forceReload": "Force Reload",
+    "toggleDevTools": "Developer Tools",
+    "resetZoom": "Actual Size",
+    "zoomIn": "Zoom In",
+    "zoomOut": "Zoom Out",
+    "toggleFullScreen": "Toggle Full Screen",
+    "window": "Window",
+    "help": "Help",
+    "revealCa": "Show CA Certificate in Folder",
+    "openDataDir": "Open Data Directory"
+  },
+  "tray": {
+    "show": "Show {{name}}",
+    "capturing": "{{name}} · Recording (port {{port}})",
+    "idle": "{{name}} · Not recording",
+    "quit": "Quit {{name}}"
+  },
+  "settings": {
+    "title": "Settings",
+    "general": "General",
+    "about": "About",
+    "language": "Language",
+    "theme": "Theme",
+    "themeOptions": {
+      "auto": "System",
+      "light": "Light",
+      "dark": "Dark"
+    },
+    "port": "Port",
+    "version": "Version",
+    "update": {
+      "title": "Updates",
+      "check": "Check for Updates",
+      "checking": "Checking…",
+      "upToDate": "Up to date",
+      "available": "Version {{version}} is available",
+      "failed": "Check failed, try again later"
+    },
+    "reset": "Reset to Defaults",
+    "resetConfirm": "Reset all settings to defaults?",
+    "close": "Close"
+  },
+  "languages": {
+    "en": "English",
+    "zh": "简体中文",
+    "ja": "日本語"
+  }
+}

@@ -55,16 +55,33 @@ const emit = (event: ProxyEvent): void => {
   for (const listener of listeners) listener(event);
 };
 
-const emitStatus = (status: ProxyStatus): void => emit({ type: 'status', status });
+/**
+ * 最近一次广播出去的状态。
+ *
+ * 查询接口返回它而不是现算：错误只存在于发生的那一瞬间，等渲染进程刷新时再算已经算不出来了，
+ * 用户会只看到「未在抓包」而不知道刚才失败过。
+ */
+let lastStatus: ProxyStatus = { running: false, port: null, error: null };
+
+const emitStatus = (status: ProxyStatus): void => {
+  lastStatus = status;
+  emit({ type: 'status', status });
+};
 
 export const isRunning = (): boolean => current !== null;
 
-/** 当前代理状态快照：渲染进程刷新或晚于代理启动时用来对齐 */
-export const getProxyStatus = (): ProxyStatus => ({
-  running: current !== null,
-  port: current?.port ?? null,
-  error: null
-});
+/** 状态快照：渲染进程刷新或晚于代理启动时用来对齐。含最近一次的错误 */
+export const getProxyStatus = (): ProxyStatus => lastStatus;
+
+/**
+ * 从 IPC 层上报一次失败。
+ *
+ * 必须走这里而不是直接往窗口 broadcast：状态要落到 lastStatus 上，才经得起渲染进程刷新。
+ * 调用它的都是「代理已经被停下」的场合（启动失败、换端口失败），所以状态就是未运行 + 这条错误。
+ */
+export const reportProxyFailure = (message: string): void => {
+  emitStatus({ running: false, port: null, error: message });
+};
 
 // ------------------------------------------------------------------ CA 管理
 

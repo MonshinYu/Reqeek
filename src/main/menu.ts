@@ -1,6 +1,7 @@
 import {app, BrowserWindow, Menu, type MenuItemConstructorOptions, shell} from 'electron';
 import {is} from '@electron-toolkit/utils';
 import {getCaStatus, getProxyStatus, onProxyEvent} from './proxy';
+import {t} from './i18n';
 import type {MenuAction} from '@shared/types';
 
 const MENU_CHANNEL = 'menu:action';
@@ -24,98 +25,105 @@ export const sendMenuAction = (action: MenuAction, reveal = true): void => {
 const sendAction = (action: MenuAction): void => sendMenuAction(action);
 
 const buildTemplate = (running: boolean): MenuItemConstructorOptions[] => {
+  const appName = app.name;
+
   const appMenu: MenuItemConstructorOptions = {
     label: app.name,
     submenu: [
-      { role: 'about', label: `关于 ${app.name}` },
+      { role: 'about', label: t('menu.about', { name: appName }) },
       { type: 'separator' },
-      { role: 'services', label: '服务' },
+      { role: 'services', label: t('menu.services') },
       { type: 'separator' },
-      { role: 'hide', label: `隐藏 ${app.name}` },
-      { role: 'hideOthers', label: '隐藏其他' },
-      { role: 'unhide', label: '全部显示' },
+      { role: 'hide', label: t('menu.hide', { name: appName }) },
+      { role: 'hideOthers', label: t('menu.hideOthers') },
+      { role: 'unhide', label: t('menu.unhide') },
       { type: 'separator' },
-      { role: 'quit', label: `退出 ${app.name}` }
+      { role: 'quit', label: t('menu.quit', { name: appName }) }
     ]
   };
 
   const captureMenu: MenuItemConstructorOptions = {
-    label: '抓包',
+    label: t('menu.capture'),
     submenu: [
       {
-        label: running ? '停止抓包' : '开始抓包',
+        label: running ? t('menu.stopCapture') : t('menu.startCapture'),
         accelerator: 'CmdOrCtrl+R',
         click: () => sendAction('toggle-capture')
       },
       {
-        label: '清空记录',
+        label: t('menu.clear'),
         accelerator: 'CmdOrCtrl+K',
         click: () => sendAction('clear')
       },
       { type: 'separator' },
       {
-        label: '搜索请求',
+        label: t('menu.focusSearch'),
         accelerator: 'CmdOrCtrl+F',
         click: () => sendAction('focus-search')
       },
       { type: 'separator' },
       {
-        label: 'CA 证书…',
+        label: t('menu.ca'),
         click: () => sendAction('open-ca')
+      },
+      {
+        label: t('menu.settings'),
+        accelerator: 'CmdOrCtrl+,',
+        click: () => sendAction('open-settings')
       }
     ]
   };
 
   const editMenu: MenuItemConstructorOptions = {
-    label: '编辑',
+    label: t('menu.edit'),
     submenu: [
-      { role: 'undo', label: '撤销' },
-      { role: 'redo', label: '重做' },
+      { role: 'undo', label: t('menu.undo') },
+      { role: 'redo', label: t('menu.redo') },
       { type: 'separator' },
-      { role: 'cut', label: '剪切' },
-      { role: 'copy', label: '复制' },
-      { role: 'paste', label: '粘贴' },
-      { role: 'selectAll', label: '全选' }
+      { role: 'cut', label: t('menu.cut') },
+      { role: 'copy', label: t('menu.copy') },
+      { role: 'paste', label: t('menu.paste') },
+      { role: 'selectAll', label: t('menu.selectAll') }
     ]
   };
 
   const viewMenu: MenuItemConstructorOptions = {
-    label: '视图',
+    label: t('menu.view'),
     submenu: [
       // 开发期工具只在 dev 暴露；Cmd+R 已被「开始 / 停止抓包」占用，所以重载用 Shift+Cmd+R
       ...(is.dev
         ? ([
-            { role: 'forceReload', label: '强制重新加载' },
-            { role: 'toggleDevTools', label: '开发者工具' },
+            { role: 'forceReload', label: t('menu.forceReload') },
+            { role: 'toggleDevTools', label: t('menu.toggleDevTools') },
             { type: 'separator' }
           ] as MenuItemConstructorOptions[])
         : []),
-      { role: 'resetZoom', label: '实际大小' },
-      { role: 'zoomIn', label: '放大' },
-      { role: 'zoomOut', label: '缩小' },
+      { role: 'resetZoom', label: t('menu.resetZoom') },
+      { role: 'zoomIn', label: t('menu.zoomIn') },
+      { role: 'zoomOut', label: t('menu.zoomOut') },
       { type: 'separator' },
-      { role: 'togglefullscreen', label: '切换全屏' }
+      { role: 'togglefullscreen', label: t('menu.toggleFullScreen') }
     ]
   };
 
   const windowMenu: MenuItemConstructorOptions = {
-    label: '窗口',
+    label: t('menu.window'),
     role: 'windowMenu'
   };
 
   const helpMenu: MenuItemConstructorOptions = {
-    label: '帮助',
+    label: t('menu.help'),
     role: 'help',
     submenu: [
       // macOS 的「关于」已在应用菜单里，其他平台放到帮助菜单
       ...(isMac
         ? []
         : ([
-            { role: 'about', label: `关于 ${app.name}` },
+            { role: 'about', label: t('menu.about', { name: appName }) },
             { type: 'separator' }
           ] as MenuItemConstructorOptions[])),
       {
-        label: '在文件夹中显示 CA 证书',
+        label: t('menu.revealCa'),
         click: () => {
           void getCaStatus()
             .then((status) => shell.showItemInFolder(status.certPath))
@@ -125,7 +133,7 @@ const buildTemplate = (running: boolean): MenuItemConstructorOptions[] => {
         }
       },
       {
-        label: '打开数据目录',
+        label: t('menu.openDataDir'),
         click: () => {
           void shell.openPath(app.getPath('userData'));
         }
@@ -136,21 +144,29 @@ const buildTemplate = (running: boolean): MenuItemConstructorOptions[] => {
   return [...(isMac ? [appMenu] : []), captureMenu, editMenu, viewMenu, windowMenu, helpMenu];
 };
 
-const applyMenu = (running: boolean): void => {
-  Menu.setApplicationMenu(Menu.buildFromTemplate(buildTemplate(running)));
+/** 「开始 / 停止抓包」的文案跟着状态走，所以这个值是模块级的，重建时要复用 */
+let currentRunning = false;
+
+const applyMenu = (): void => {
+  Menu.setApplicationMenu(Menu.buildFromTemplate(buildTemplate(currentRunning)));
 };
+
+/**
+ * 语言变了要重建菜单：label 在构建时就定死成字符串了，不会自己跟着 i18n 走。
+ */
+export const refreshAppMenu = (): void => applyMenu();
 
 /**
  * 安装应用菜单，并在代理启停时重建，让「开始 / 停止抓包」的文案跟着状态走。
  * 必须在 app ready 之后调用。
  */
 export const setupAppMenu = (): void => {
-  let running = getProxyStatus().running;
-  applyMenu(running);
+  currentRunning = getProxyStatus().running;
+  applyMenu();
 
   onProxyEvent((event) => {
-    if (event.type !== 'status' || event.status.running === running) return;
-    running = event.status.running;
-    applyMenu(running);
+    if (event.type !== 'status' || event.status.running === currentRunning) return;
+    currentRunning = event.status.running;
+    applyMenu();
   });
 };

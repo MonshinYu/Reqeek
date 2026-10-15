@@ -1,5 +1,17 @@
 import {contextBridge, ipcRenderer} from 'electron';
-import type {CaResult, CaStatus, Flow, FlowDetail, MenuAction, ProxyEvent, ProxyStatus} from '@shared/types';
+import type {AppSettings, CaResult, CaStatus, Flow, FlowDetail, MenuAction, ProxyEvent, ProxyStatus, UpdateCheckResult} from '@shared/types';
+
+/**
+ * 主进程创建窗口时通过 additionalArguments 塞进来的语言。
+ *
+ * 同步可读是这里唯一的重点：i18n 的初始化在模块加载时就跑完了，等不了 IPC，
+ * 拿不到的话首帧会先按系统语言渲染一遍再跳。
+ */
+const initialLanguage = ((): string | null => {
+  const prefix = '--reqeek-language=';
+  const hit = process.argv.find((arg) => arg.startsWith(prefix));
+  return hit ? hit.slice(prefix.length) : null;
+})();
 
 /** 订阅主进程推送的通道，返回取消订阅函数 */
 const subscribe = <T>(channel: string, callback: (payload: T) => void): (() => void) => {
@@ -42,7 +54,22 @@ const api = {
 
   /** 订阅代理事件，返回取消订阅的函数（React 的 useEffect 直接 return 它即可） */
   onProxyEvent: (callback: (event: ProxyEvent) => void): (() => void) =>
-    subscribe('proxy-event', callback)
+    subscribe('proxy-event', callback),
+
+  getSettings: (): Promise<AppSettings> => ipcRenderer.invoke('settings:get'),
+  /** 返回落盘后的设置：非法字段（越界端口）会被主进程纠正，界面要用返回值回填而不是乐观状态 */
+  saveSettings: (settings: AppSettings): Promise<AppSettings> =>
+    ipcRenderer.invoke('settings:save', settings),
+  resetSettings: (): Promise<AppSettings> => ipcRenderer.invoke('settings:reset'),
+  getAppVersion: (): Promise<string> => ipcRenderer.invoke('app:version'),
+  checkForUpdates: (): Promise<UpdateCheckResult> => ipcRenderer.invoke('update:check'),
+  openSettings: (): void => ipcRenderer.send('settings:open'),
+
+  /** 启动时注入的语言（同步值），i18n 初始化用它避免首帧闪错语言 */
+  initialLanguage,
+  /** 订阅语言变化：设置窗口改完由主进程广播，返回取消订阅函数 */
+  onLanguageChanged: (callback: (language: string) => void): (() => void) =>
+    subscribe('language:changed', callback)
 };
 
 export type Api = typeof api;

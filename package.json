@@ -28,6 +28,8 @@
   "dependencies": {
     "@electron-toolkit/utils": "^4.0.0",
     "@peculiar/x509": "^2.1.0",
+    "i18next": "^26.4.4",
+    "react-i18next": "^17.0.16",
     "reflect-metadata": "^0.2.2"
   },
   "devDependencies": {

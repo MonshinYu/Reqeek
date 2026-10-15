@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import {useTranslation} from 'react-i18next';
 import styles from './ca-gate.module.css';
 import {Button} from '@/components/Button';
 import type {CaResult, CaStatus} from '@shared/types';
@@ -9,17 +10,18 @@ interface CaGateProps {
   onChange: (ca: CaStatus) => void;
 }
 
-const STEP_STATE: Record<CaStatus['trust'], string> = {
-  trusted: '已安装并受信任',
-  installed: '已在证书库中，但还没有被信任',
-  'not-installed': '尚未安装',
-  unsupported: '当前系统不支持自动安装'
+/* 这两张表存 key 而不是文案：模块级常量只在加载时求值一次，存文案就会停在启动时的语言上 */
+const STEP_STATE_KEY: Record<CaStatus['trust'], string> = {
+  trusted: 'ca.stepState.trusted',
+  installed: 'ca.stepState.installed',
+  'not-installed': 'ca.stepState.notInstalled',
+  unsupported: 'ca.stepState.unsupported'
 };
 
-const INSTALL_HINT: Record<string, string> = {
-  darwin: '点击后系统会弹出钥匙串授权，输入登录密码或使用 Touch ID 即可。',
-  win32: '点击后系统会弹出证书安装确认框，选择「是」。',
-  linux: '请先导出证书，按你的发行版方式加入系统信任库，再点击「重新检测」。'
+const INSTALL_HINT_KEY: Record<string, string> = {
+  darwin: 'ca.hint.darwin',
+  win32: 'ca.hint.win32',
+  linux: 'ca.hint.linux'
 };
 
 /**
@@ -28,6 +30,7 @@ const INSTALL_HINT: Record<string, string> = {
  */
 export const CaGate = (props: CaGateProps): React.ReactElement => {
   const { ca, platform, onChange } = props;
+  const { t } = useTranslation();
 
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -45,36 +48,35 @@ export const CaGate = (props: CaGateProps): React.ReactElement => {
   };
 
   const canAutoInstall = ca !== null && ca.trust !== 'unsupported';
+  // 产品名走语言包而不是散在各处硬编码，改名时只动一处
+  const appName = t('app.name');
 
   return (
     <main className={styles.gate}>
-      <h1>先安装 Reqeek 根证书</h1>
-      <p className={styles.lead}>
-        抓取 HTTPS 内容需要在本机信任 Reqeek 的根证书。证书和私钥只保存在这台电脑上。
-      </p>
+      <h1>{t('ca.gateTitle', { name: appName })}</h1>
+      <p className={styles.lead}>{t('ca.gateLead', { name: appName })}</p>
 
       <ol className={styles.steps}>
         <li data-done={ca !== null}>
-          <strong>1. 生成证书</strong>
-          <span>{ca ? ca.commonName : '正在生成…'}</span>
+          <strong>{t('ca.step.generate')}</strong>
+          <span>{ca ? ca.commonName : t('ca.generating')}</span>
         </li>
         <li data-done={ca?.trust === 'trusted'}>
-          <strong>2. 安装并信任</strong>
-          <span>{ca ? STEP_STATE[ca.trust] : '等待证书生成'}</span>
+          <strong>{t('ca.step.install')}</strong>
+          <span>{ca ? t(STEP_STATE_KEY[ca.trust]) : t('ca.waitingGenerate')}</span>
         </li>
         <li data-done={ca?.trust === 'trusted'}>
-          <strong>3. 验证</strong>
-          <span>安装完成后会自动进入主界面</span>
+          <strong>{t('ca.step.verify')}</strong>
+          <span>{t('ca.autoEnter')}</span>
         </li>
       </ol>
 
       {ca?.trust === 'installed' && (
-        <p className={styles.warn}>
-          证书已导入但没有被信任。请打开「钥匙串访问」，找到 {ca.commonName}
-          ，把信任设置为「始终信任」， 然后点击「重新检测」。
-        </p>
+        <p className={styles.warn}>{t('ca.installedWarning', { name: ca.commonName })}</p>
       )}
-      <p className={styles.hint}>{INSTALL_HINT[platform] ?? INSTALL_HINT.linux}</p>
+      <p className={styles.hint}>
+        {t(INSTALL_HINT_KEY[platform] ?? INSTALL_HINT_KEY.linux)}
+      </p>
       {error && (
         <p role="alert" className={styles.error}>
           {error}
@@ -88,14 +90,14 @@ export const CaGate = (props: CaGateProps): React.ReactElement => {
             disabled={busy}
             onClick={() => void run(() => window.api.installCa())}
           >
-            {busy ? '处理中…' : '安装并信任'}
+            {busy ? t('ca.actions.busy') : t('ca.actions.install')}
           </Button>
         )}
         <Button disabled={busy} onClick={() => void run(() => window.api.getCaStatus())}>
-          重新检测
+          {t('ca.actions.recheck')}
         </Button>
         <Button disabled={busy} onClick={() => void run(() => window.api.revealCa())}>
-          在文件夹中显示证书
+          {t('ca.actions.reveal')}
         </Button>
       </div>
     </main>

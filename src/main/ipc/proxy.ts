@@ -5,15 +5,14 @@ import {
   installCa,
   onProxyEvent,
   recoverStaleSystemProxy,
+  reportProxyFailure,
   startProxy,
   stopProxy,
   uninstallCa
 } from '@main/proxy';
 import type {CaResult, Flow, ProxyEvent} from '@shared/types';
+import {getSettings} from '../settings';
 import {pushFlow} from './traffic';
-
-/** 代理监听端口。改这一处，UI 和系统代理都会跟着走 */
-export const PROXY_PORT = 8989;
 
 const toMessage = (error: unknown): string =>
   error instanceof Error ? error.message : String(error);
@@ -91,10 +90,10 @@ export const registerProxy = (): void => {
   // 前端用 send 触发，成败通过 proxy-event 回推 —— startProxy 是异步的，
   // 用 handle 会逼着前端再等一轮，而按钮状态本来就要靠推送来维护
   ipcMain.on('start-server', () => {
-    startProxy(PROXY_PORT).catch((error: unknown) => {
+    startProxy(getSettings().proxy.port).catch((error: unknown) => {
       const message = toMessage(error);
       console.error(`[Reqeek] 启动代理失败：${message}`);
-      broadcast({ type: 'status', status: { running: false, port: null, error: message } });
+      reportProxyFailure(message);
     });
   });
 
@@ -102,9 +101,30 @@ export const registerProxy = (): void => {
     stopProxy().catch((error: unknown) => {
       const message = toMessage(error);
       console.error(`[Reqeek] 停止代理失败：${message}`);
-      broadcast({ type: 'status', status: { running: false, port: null, error: message } });
+      reportProxyFailure(message);
     });
   });
+};
+
+/**
+ * 把运行中的代理挪到新端口上重启。
+ *
+ * 代理没在跑就什么都不做 —— 新端口会在下次启动时自然生效，没必要为一个待生效的值空转一次。
+ * 代价说清楚：重启会先撤系统代理再设新的，这中间有个短暂的空窗，所以只在端口真的变了时才调。
+ */
+export const restartProxyOnPort = async (port: number): Promise<void> => {
+  if (!getProxyStatus().running) return;
+
+  await stopProxy();
+
+  try {
+    await startProxy(port);
+  } catch (error) {
+    // 界面靠 proxy-event 维护录制状态：这里失败了必须推一条，否则按钮会一直停在「录制中」
+    const message = toMessage(error);
+    console.error(`[Reqeek] 切换代理端口到 ${port} 失败：${message}`);
+    reportProxyFailure(message);
+  }
 };
 
 /**

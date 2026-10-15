@@ -1,15 +1,19 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import styles from './app.module.css';
+import {useTranslation} from 'react-i18next';
+import styles from './home.module.css';
 import type {CaStatus, ProxyEvent, ProxyStatus} from '@shared/types';
 import {AppSidebar, CaDialog, CaGate, DetailPane, FilterBar, FlowTable, StatusBar, TitleBar} from '@/components';
 import {type FilterState, groupByApp, INITIAL_FILTER, matchesFilter} from '@/lib/filter';
 import {DEFAULT_SORT, sortFlows, type SortKey, type SortState} from '@/lib/sort';
 import {expandAll, groupByDomain, toggleGroup} from '@/lib/group';
 import {clearTraffic, useFlows} from '@/store/traffic';
+import '@/lib/i18n';
 
 const IDLE_STATUS: ProxyStatus = { running: false, port: null, error: null };
 
-export const App = (): React.ReactElement => {
+/** 主界面：标题栏 + 过滤栏 + 应用侧栏 + 抓包列表 + 详情面板 */
+export const Home = (): React.ReactElement => {
+  const {t} = useTranslation();
   const flows = useFlows();
   const [status, setStatus] = useState<ProxyStatus>(IDLE_STATUS);
   const [ca, setCa] = useState<CaStatus | null>(null);
@@ -112,12 +116,15 @@ export const App = (): React.ReactElement => {
         case 'open-ca':
           handleOpenCa();
           return;
+        case 'open-settings':
+          window.api.openSettings();
+          return;
       }
     });
   }, [gated, status.running, handleClear, handleOpenCa]);
 
   return (
-    <div className={styles.app}>
+    <div className={styles.home}>
       <TitleBar
         status={status}
         gated={gated}
@@ -144,11 +151,11 @@ export const App = (): React.ReactElement => {
             <div className={styles.list}>
               {visible.length === 0 ? (
                 <div className={styles.empty}>
-                  <strong>{flows.length === 0 ? '还没有抓到请求' : '没有符合条件的请求'}</strong>
+                  <strong>
+                    {flows.length === 0 ? t('empty.noRequests') : t('empty.noMatch')}
+                  </strong>
                   <span>
-                    {flows.length === 0
-                      ? '点击左上角的录制按钮，再用浏览器访问任意网站'
-                      : '调整过滤或搜索条件'}
+                    {flows.length === 0 ? t('empty.noRequestsHint') : t('empty.noMatchHint')}
                   </span>
                 </div>
               ) : (

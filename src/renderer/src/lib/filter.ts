@@ -6,8 +6,14 @@ export type ResourceType =
 
 export type FilterKey = 'all' | Exclude<ResourceType, 'tunnel'>;
 
+/**
+ * 资源类型标签。
+ *
+ * 刻意不翻译：这是与 Chrome DevTools 对齐的术语，中文版 Chrome 里也是这排英文，
+ * 翻成中文反而让用户对不上自己在浏览器里看到的过滤栏。
+ */
 export const TYPE_FILTERS: { key: FilterKey; label: string }[] = [
-  { key: 'all', label: '全部' },
+  { key: 'all', label: 'All' },
   { key: 'fetch', label: 'Fetch/XHR' },
   { key: 'doc', label: 'Doc' },
   { key: 'css', label: 'CSS' },
@@ -53,8 +59,13 @@ export const INITIAL_FILTER: FilterState = {
   app: null
 };
 
-/** 反查不到来源的请求归到这个名字下，侧栏里也能点选 */
-export const UNKNOWN_APP = '未知来源';
+/**
+ * 反查不到来源的请求在内部都归到这个哨兵名。
+ *
+ * 它只是个 Map 键，不直接显示 —— 侧栏渲染时要换成 t('sidebar.unknownApp')，
+ * 所以这里用中性的英文，免得英文界面下漏翻一处就露出中文。
+ */
+export const UNKNOWN_APP = 'unknown';
 
 export const appNameOf = (flow: Flow): string => flow.app?.name ?? UNKNOWN_APP;
 

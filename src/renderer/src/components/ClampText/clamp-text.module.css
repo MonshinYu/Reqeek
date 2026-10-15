@@ -19,7 +19,7 @@
 
 .toggle:hover,
 .more:hover {
-  background: rgb(228 226 233 / var(--state-hover));
+  background: rgb(var(--md-state-layer) / var(--state-hover));
 }
 
 .code {

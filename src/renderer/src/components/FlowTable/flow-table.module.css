@@ -43,7 +43,7 @@
 }
 
 .th:hover:not(:disabled) {
-  background: rgb(228 226 233 / var(--state-hover));
+  background: rgb(var(--md-state-layer) / var(--state-hover));
 }
 
 .toolbar {
@@ -65,7 +65,7 @@
 }
 
 .toolbarButton:hover {
-  background: rgb(228 226 233 / var(--state-hover));
+  background: rgb(var(--md-state-layer) / var(--state-hover));
 }
 
 .scroll {
@@ -85,7 +85,7 @@
 }
 
 .odd {
-  background: rgb(228 226 233 / 0.03);
+  background: rgb(var(--md-state-layer) / 0.03);
 }
 
 .row > span {
@@ -96,7 +96,7 @@
 }
 
 .row:hover {
-  background: rgb(228 226 233 / var(--state-hover));
+  background: rgb(var(--md-state-layer) / var(--state-hover));
 }
 
 .row[aria-selected='true'] {

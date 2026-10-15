@@ -1,4 +1,5 @@
 import React from 'react';
+import {useTranslation} from 'react-i18next';
 import styles from './headers-view.module.css';
 import type {Flow, FlowDetail, HeaderList} from '@shared/types';
 import {flowFullUrl, statusText} from '@/lib/format';
@@ -6,6 +7,7 @@ import {ClampText} from '@/components/ClampText';
 
 const HeaderSection = (props: { title: string; headers: HeaderList }): React.ReactElement => {
   const { title, headers } = props;
+  const { t } = useTranslation();
 
   return (
     <details className={styles.section} open>
@@ -13,7 +15,7 @@ const HeaderSection = (props: { title: string; headers: HeaderList }): React.Rea
         {title} <span className={styles.count}>({headers.length})</span>
       </summary>
       {headers.length === 0 ? (
-        <p className={styles.empty}>无</p>
+        <p className={styles.empty}>{t('common.none')}</p>
       ) : (
         <dl className={styles.list}>
           {headers.map(([key, value], index) => (
@@ -37,7 +39,9 @@ interface HeadersViewProps {
 
 export const HeadersView = (props: HeadersViewProps): React.ReactElement => {
   const { flow, detail } = props;
+  const { t } = useTranslation();
 
+  // 这几行的标签与 Chrome DevTools 的 Headers 面板逐字对齐，中文版 Chrome 里也是英文，故不翻译
   const general: [string, string][] = [
     ['Request URL', flowFullUrl(flow)],
     ['Request Method', flow.method],
@@ -68,9 +72,7 @@ export const HeadersView = (props: HeadersViewProps): React.ReactElement => {
         </>
       ) : (
         <p className={styles.empty}>
-          {flow.hasDetail
-            ? '详情已被清理（超出内存预算）'
-            : '此类记录不采集请求头（隧道或升级连接）'}
+          {t(flow.hasDetail ? 'headers.detailEvicted' : 'headers.noHeadersCaptured')}
         </p>
       )}
     </div>

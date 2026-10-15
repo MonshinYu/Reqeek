@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import {useTranslation} from 'react-i18next';
 import styles from './json-tree.module.css';
 import {ClampText} from '@/components/ClampText';
 
@@ -48,6 +49,7 @@ interface JsonNodeProps {
 
 const JsonNode = (props: JsonNodeProps): React.ReactElement => {
   const { name, value, depth } = props;
+  const { t } = useTranslation();
 
   // 与 Chrome 一致：根节点展开一层，其余默认折叠
   const [open, setOpen] = useState(depth === 0);
@@ -98,7 +100,7 @@ const JsonNode = (props: JsonNodeProps): React.ReactElement => {
               className={styles.more}
               onClick={() => setShown(shown + PAGE_SIZE)}
             >
-              显示更多（还有 {total - shown} 项）
+              {t('tree.showMore', {count: total - shown})}
             </button>
           )}
         </div>

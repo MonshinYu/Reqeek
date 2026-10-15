@@ -1,4 +1,5 @@
 import React from 'react';
+import {useTranslation} from 'react-i18next';
 import styles from './title-bar.module.css';
 import {Button} from '@/components/Button';
 import type {ProxyStatus} from '@shared/types';
@@ -22,15 +23,16 @@ interface TitleBarProps {
  */
 export const TitleBar = (props: TitleBarProps): React.ReactElement => {
   const { status, gated, keyword, onKeyword, onClear, onOpenCa, searchRef } = props;
+  const { t } = useTranslation();
 
   return (
-    <div className={styles.titleBar} role="toolbar" aria-label="操作栏">
+    <div className={styles.titleBar} role="toolbar" aria-label={t('titleBar.toolbar')}>
       {status.running ? (
         <button
           type="button"
           className={`${styles.iconButton} ${styles.stop}`}
-          title="停止抓包"
-          aria-label="停止抓包"
+          title={t('titleBar.stopCapture')}
+          aria-label={t('titleBar.stopCapture')}
           onClick={() => window.api.stopServer()}
         >
           <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
@@ -41,8 +43,8 @@ export const TitleBar = (props: TitleBarProps): React.ReactElement => {
         <button
           type="button"
           className={`${styles.iconButton} ${styles.record}`}
-          title={gated ? '请先安装并信任根证书' : '开始抓包'}
-          aria-label="开始抓包"
+          title={gated ? t('titleBar.caRequired') : t('titleBar.startCapture')}
+          aria-label={t('titleBar.startCapture')}
           disabled={gated}
           onClick={() => window.api.startServer()}
         >
@@ -54,8 +56,8 @@ export const TitleBar = (props: TitleBarProps): React.ReactElement => {
       <button
         type="button"
         className={styles.iconButton}
-        title="清空"
-        aria-label="清空记录"
+        title={t('titleBar.clear')}
+        aria-label={t('titleBar.clearRecords')}
         disabled={gated}
         onClick={onClear}
       >
@@ -68,8 +70,8 @@ export const TitleBar = (props: TitleBarProps): React.ReactElement => {
         ref={searchRef}
         className={styles.search}
         type="search"
-        placeholder="搜索：主机 / 路径 / 方法 / 状态码"
-        aria-label="搜索请求"
+        placeholder={t('titleBar.searchPlaceholder')}
+        aria-label={t('titleBar.searchRequests')}
         disabled={gated}
         value={keyword}
         onChange={(event) => onKeyword(event.target.value)}
@@ -81,7 +83,7 @@ export const TitleBar = (props: TitleBarProps): React.ReactElement => {
         </span>
       )}
       <Button size="small" onClick={onOpenCa}>
-        CA 证书
+        {t('titleBar.ca')}
       </Button>
     </div>
   );

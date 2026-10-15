@@ -1,4 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
+import {useTranslation} from 'react-i18next';
 import styles from './flow-table.module.css';
 import type {FlowGroup} from '@/lib/group';
 import {
@@ -37,13 +38,14 @@ interface FlowTableProps {
   onCollapseAll: () => void;
 }
 
-const COLUMNS: { key: SortKey | 'waterfall'; label: string; sortable: boolean }[] = [
-  { key: 'name', label: '名称', sortable: true },
-  { key: 'status', label: '状态', sortable: true },
-  { key: 'type', label: '类型', sortable: true },
-  { key: 'size', label: '大小', sortable: true },
-  { key: 'duration', label: '时间', sortable: true },
-  { key: 'waterfall', label: '瀑布图', sortable: false }
+/** 列名存 key 而不是文案：模块级常量只在加载时求值一次，存文案就永远停在启动时的语言上 */
+const COLUMNS: { key: SortKey | 'waterfall'; labelKey: string; sortable: boolean }[] = [
+  { key: 'name', labelKey: 'table.name', sortable: true },
+  { key: 'status', labelKey: 'table.status', sortable: true },
+  { key: 'type', labelKey: 'table.type', sortable: true },
+  { key: 'size', labelKey: 'table.size', sortable: true },
+  { key: 'duration', labelKey: 'table.time', sortable: true },
+  { key: 'waterfall', labelKey: 'table.waterfall', sortable: false }
 ];
 
 /**
@@ -62,6 +64,7 @@ export const FlowTable = (props: FlowTableProps): React.ReactElement => {
     onExpandAll,
     onCollapseAll
   } = props;
+  const { t } = useTranslation();
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const stickToBottom = useRef(true);
@@ -147,7 +150,7 @@ export const FlowTable = (props: FlowTableProps): React.ReactElement => {
     <div
       className={compact ? `${styles.table} ${styles.compact}` : styles.table}
       role="grid"
-      aria-label="请求列表"
+      aria-label={t('table.requests')}
       aria-rowcount={rows.length}
     >
       <div className={styles.head} role="row">
@@ -163,7 +166,7 @@ export const FlowTable = (props: FlowTableProps): React.ReactElement => {
               aria-sort={active ? (sort.dir === 'asc' ? 'ascending' : 'descending') : 'none'}
               onClick={() => column.sortable && onSort(column.key as SortKey)}
             >
-              {column.label}
+              {t(column.labelKey)}
               {active && <span aria-hidden="true">{sort.dir === 'asc' ? ' ▲' : ' ▼'}</span>}
             </button>
           );
@@ -172,10 +175,10 @@ export const FlowTable = (props: FlowTableProps): React.ReactElement => {
 
       <div className={styles.toolbar}>
         <button type="button" className={styles.toolbarButton} onClick={onExpandAll}>
-          展开全部
+          {t('table.expandAll')}
         </button>
         <button type="button" className={styles.toolbarButton} onClick={onCollapseAll}>
-          折叠全部
+          {t('table.collapseAll')}
         </button>
       </div>
 
@@ -207,7 +210,9 @@ export const FlowTable = (props: FlowTableProps): React.ReactElement => {
                     ▶
                   </span>
                   <strong>{row.domain}</strong>
-                  <span className={styles.count}>{row.count} 个请求</span>
+                  <span className={styles.count}>
+                    {t('table.groupCount', { count: row.count })}
+                  </span>
                 </div>
               );
             }

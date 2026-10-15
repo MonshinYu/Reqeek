@@ -1,6 +1,7 @@
 import {app, Menu, nativeImage, Tray} from 'electron';
 import icon from '../../resources/icon.png?asset';
 import {getProxyStatus, onProxyEvent} from './proxy';
+import {t} from './i18n';
 import {sendMenuAction} from './menu';
 import type {ProxyStatus} from '@shared/types';
 
@@ -17,8 +18,14 @@ export interface TrayController {
 
 let tray: Tray | null = null;
 
+/** setupTray 里那个重建函数。语言变了要重来一遍，但那时已经出了闭包 */
+let rebuild: (() => void) | null = null;
+
 /** 托盘是否可用。创建失败（例如 Linux 没有 AppIndicator）时为 false，此时关闭窗口必须真的退出，否则应用无法再被唤起 */
 export const hasTray = (): boolean => tray !== null && !tray.isDestroyed();
+
+/** 语言变化后重建托盘菜单与提示文字；没创建托盘时什么都不做 */
+export const refreshTray = (): void => rebuild?.();
 
 const createTrayIcon = (): Electron.NativeImage => {
   // 源图是 512px，直接交给系统缩放会很糊，所以先按平台常用的托盘尺寸缩好
@@ -27,23 +34,25 @@ const createTrayIcon = (): Electron.NativeImage => {
 };
 
 const describe = (status: ProxyStatus): string =>
-  status.running ? `${app.name} · 抓包中（端口 ${status.port ?? '—'}）` : `${app.name} · 未抓包`;
+  status.running
+    ? t('tray.capturing', { name: app.name, port: String(status.port ?? '—') })
+    : t('tray.idle', { name: app.name });
 
 const buildMenu = (status: ProxyStatus, controller: TrayController): Menu =>
   Menu.buildFromTemplate([
-    { label: `显示 ${app.name}`, click: () => controller.showWindow() },
+    { label: t('tray.show', { name: app.name }), click: () => controller.showWindow() },
     { type: 'separator' },
     {
-      label: status.running ? '停止抓包' : '开始抓包',
+      label: status.running ? t('menu.stopCapture') : t('menu.startCapture'),
       // 开始抓包可能被 CA 门禁拦住，门禁界面在渲染进程里，所以开始时要把窗口带出来让用户看到；
       // 停止不需要，直接在后台完成
       click: () => sendMenuAction('toggle-capture', !status.running)
     },
-    { label: '清空记录', click: () => sendMenuAction('clear', false) },
+    { label: t('menu.clear'), click: () => sendMenuAction('clear', false) },
     { type: 'separator' },
-    { label: 'CA 证书…', click: () => sendMenuAction('open-ca', true) },
+    { label: t('menu.ca'), click: () => sendMenuAction('open-ca', true) },
     { type: 'separator' },
-    { label: `退出 ${app.name}`, click: () => app.quit() }
+    { label: t('tray.quit', { name: app.name }), click: () => app.quit() }
   ]);
 
 /**
@@ -64,12 +73,12 @@ export const setupTray = (controller: TrayController): void => {
   const current = tray;
   let status = getProxyStatus();
 
-  const refresh = (): void => {
+  rebuild = (): void => {
     if (current.isDestroyed()) return;
     current.setToolTip(describe(status));
     current.setContextMenu(buildMenu(status, controller));
   };
-  refresh();
+  rebuild();
 
   // macOS 点击托盘图标本来就会弹出菜单；Windows 习惯左键切换窗口、右键出菜单
   if (!isMac) {
@@ -82,12 +91,13 @@ export const setupTray = (controller: TrayController): void => {
   onProxyEvent((event) => {
     if (event.type !== 'status') return;
     status = event.status;
-    refresh();
+    rebuild?.();
   });
 
   // Windows 上不显式销毁，退出后图标会残留在托盘里直到鼠标划过
   app.on('will-quit', () => {
     if (!current.isDestroyed()) current.destroy();
     tray = null;
+    rebuild = null;
   });
 };

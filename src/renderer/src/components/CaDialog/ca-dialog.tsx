@@ -1,4 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
+import {useTranslation} from 'react-i18next';
 import styles from './ca-dialog.module.css';
 import {Button} from '@/components/Button';
 import type {CaResult, CaStatus} from '@shared/types';
@@ -9,17 +10,19 @@ interface CaDialogProps {
   onClose: () => void;
 }
 
-const TRUST_TEXT: Record<CaStatus['trust'], string> = {
-  trusted: '已安装并受信任，HTTPS 解密可用',
-  installed: '已在证书库中，但未被信任。请在钥匙串中把它设为「始终信任」',
-  'not-installed': '尚未安装到系统信任库',
-  unsupported: '当前平台不支持自动安装，请导出证书后手动安装'
+/* 存 key 而不是文案：模块级常量只在加载时求值一次，存文案就会停在启动时的语言上 */
+const TRUST_KEY: Record<CaStatus['trust'], string> = {
+  trusted: 'ca.trust.trusted',
+  installed: 'ca.trust.installed',
+  'not-installed': 'ca.trust.notInstalled',
+  unsupported: 'ca.trust.unsupported'
 };
 
 const formatDate = (timestamp: number): string => new Date(timestamp).toLocaleDateString();
 
 export const CaDialog = (props: CaDialogProps): React.ReactElement => {
   const { ca, onChange, onClose } = props;
+  const { t } = useTranslation();
 
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [busy, setBusy] = useState(false);
@@ -44,23 +47,23 @@ export const CaDialog = (props: CaDialogProps): React.ReactElement => {
 
   return (
     <dialog ref={dialogRef} className={styles.dialog} aria-labelledby="ca-title" onClose={onClose}>
-      <h2 id="ca-title">CA 根证书</h2>
+      <h2 id="ca-title">{t('ca.dialogTitle')}</h2>
 
       {ca ? (
         <dl className={styles.info}>
-          <dt>名称</dt>
+          <dt>{t('ca.field.name')}</dt>
           <dd>{ca.commonName}</dd>
-          <dt>指纹 (SHA-256)</dt>
+          <dt>{t('ca.field.fingerprint')}</dt>
           <dd>{ca.fingerprint256}</dd>
-          <dt>有效期至</dt>
+          <dt>{t('ca.field.expires')}</dt>
           <dd>{formatDate(ca.notAfter)}</dd>
-          <dt>状态</dt>
+          <dt>{t('ca.field.status')}</dt>
           <dd className={ca.trust === 'trusted' ? styles.ok : styles.warn}>
-            {TRUST_TEXT[ca.trust]}
+            {t(TRUST_KEY[ca.trust])}
           </dd>
         </dl>
       ) : (
-        <p>正在读取证书信息…</p>
+        <p>{t('ca.reading')}</p>
       )}
 
       {error && (
@@ -75,18 +78,18 @@ export const CaDialog = (props: CaDialogProps): React.ReactElement => {
           disabled={busy || !ca || ca.trust === 'trusted' || ca.trust === 'unsupported'}
           onClick={() => run(() => window.api.installCa())}
         >
-          {busy ? '处理中…' : '安装并信任'}
+          {busy ? t('ca.actions.busy') : t('ca.actions.install')}
         </Button>
         <Button
           disabled={busy || !ca || ca.trust === 'not-installed' || ca.trust === 'unsupported'}
           onClick={() => run(() => window.api.uninstallCa())}
         >
-          从系统移除
+          {t('ca.actions.uninstall')}
         </Button>
         <Button disabled={busy} onClick={() => run(() => window.api.revealCa())}>
-          在文件夹中显示
+          {t('ca.actions.revealShort')}
         </Button>
-        <Button onClick={() => dialogRef.current?.close()}>关闭</Button>
+        <Button onClick={() => dialogRef.current?.close()}>{t('ca.actions.close')}</Button>
       </div>
     </dialog>
   );

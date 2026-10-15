@@ -10,6 +10,7 @@
   user-select: text;
 }
 
+/* 遮罩固定用黑色：M3 的 scrim 两套主题都取黑，浅色下也不是"忘了改" */
 .dialog::backdrop {
   background: rgb(0 0 0 / 0.5);
 }

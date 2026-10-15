@@ -3,11 +3,14 @@ import {join} from 'path';
 import {electronApp, is, optimizer} from '@electron-toolkit/utils';
 import icon from '../../resources/icon.png?asset';
 import {configureProxy} from './proxy';
+import {configureSettings, getSettings} from './settings';
+import {languageArgs, setMainLanguage} from './i18n';
+import {applyTheme, titleBarSymbol, watchTheme, windowBackground} from './theme';
 import {setupAppMenu} from './menu';
 import {hasTray, setupTray} from './tray';
-import {recoverStaleSystemProxyOnStartup, registerProxy, registerTraffic, shutdownProxy} from './ipc';
+import {recoverStaleSystemProxyOnStartup, registerProxy, registerTraffic, registerSettings, shutdownProxy} from './ipc';
+import {setupSettingsIpc} from './settings-window';
 
-const BACKGROUND_COLOR = '#1b1b1f';
 // 必须与渲染进程 .titleBar 的高度（title-bar.module.css）一致，系统按钮才能垂直居中
 const TITLE_BAR_HEIGHT = 44;
 
@@ -42,7 +45,7 @@ const createWindow = (): BrowserWindow => {
     minHeight: 420,
     show: false,
     titleBarStyle: 'hidden',
-    backgroundColor: BACKGROUND_COLOR,
+    backgroundColor: windowBackground(),
     ...(process.platform === 'darwin'
       ? {
           trafficLightPosition: {
@@ -54,7 +57,7 @@ const createWindow = (): BrowserWindow => {
           icon,
           titleBarOverlay: {
             color: '#00000000',
-            symbolColor: '#ffffff',
+            symbolColor: titleBarSymbol(),
             height: TITLE_BAR_HEIGHT
           }
         }),
@@ -62,7 +65,9 @@ const createWindow = (): BrowserWindow => {
       preload: join(__dirname, '../preload/index.js'),
       contextIsolation: true,
       nodeIntegration: false,
-      sandbox: true
+      sandbox: true,
+      // 语言随启动参数同步交给 preload：渲染进程的 i18n 初始化等不了 IPC
+      additionalArguments: languageArgs()
     }
   });
 
@@ -87,9 +92,9 @@ const createWindow = (): BrowserWindow => {
   });
 
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-    window.loadURL(process.env['ELECTRON_RENDERER_URL']);
+    window.loadURL(`${process.env['ELECTRON_RENDERER_URL']}/home.html`);
   } else {
-    window.loadFile(join(__dirname, '../renderer/index.html'));
+    window.loadFile(join(__dirname, '../renderer/home.html'));
   }
 
   return window;
@@ -136,6 +141,14 @@ app.whenReady().then(() => {
     if (mainWindow) showWindow(mainWindow);
   });
 
+  // 这几件事都必须先于 createWindow：窗口底色是创建那一刻定下的，启动参数里的语言也是，
+  // 而设置路径不提前备好的话，这里读到的只是默认值
+  configureSettings();
+  const initialSettings = getSettings();
+  applyTheme(initialSettings.theme);
+  setMainLanguage(initialSettings.language);
+  watchTheme({ titleBarHeight: TITLE_BAR_HEIGHT });
+
   mainWindow = createWindow();
 
   // 窗口可能只是被藏进托盘（未销毁），所以不能只在「没有窗口」时才处理
@@ -147,6 +160,8 @@ app.whenReady().then(() => {
 
   registerTraffic();
   registerProxy();
+  registerSettings();
+  setupSettingsIpc();
   setupAppMenu();
   setupTray({
     showWindow: revealMainWindow,

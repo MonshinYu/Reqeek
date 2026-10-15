@@ -1,4 +1,5 @@
 import React, {useMemo, useState} from 'react';
+import {useTranslation} from 'react-i18next';
 import styles from './body-panel.module.css';
 import {Button} from '@/components/Button';
 import type {BodyData} from '@shared/types';
@@ -32,16 +33,17 @@ const rawTextOf = (view: BodyView): string | null => {
 
 const FormTable = (props: { pairs: [string, string][] }): React.ReactElement => {
   const { pairs } = props;
+  const { t } = useTranslation();
 
   return (
     <dl className={styles.list}>
-      {pairs.length === 0 && <p className={styles.empty}>没有参数</p>}
+      {pairs.length === 0 && <p className={styles.empty}>{t('body.noParams')}</p>}
       {pairs.map(([key, value], index) => (
         <div key={`${key}-${index}`} className={styles.row}>
           <dt>{key}:</dt>
           <dd>
             {value === '' ? (
-              <span className={styles.nullValue}>（空）</span>
+              <span className={styles.nullValue}>{t('body.emptyValue')}</span>
             ) : (
               <ClampText text={value} />
             )}
@@ -54,6 +56,7 @@ const FormTable = (props: { pairs: [string, string][] }): React.ReactElement => 
 
 export const BodyPanel = (props: BodyPanelProps): React.ReactElement => {
   const { body, mime, mode, emptyText } = props;
+  const { t } = useTranslation();
 
   const view = useMemo(() => describeBody(body, mime), [body, mime]);
   const [copied, setCopied] = useState(false);
@@ -62,7 +65,12 @@ export const BodyPanel = (props: BodyPanelProps): React.ReactElement => {
 
   const notes: string[] = [];
   if (body?.truncated) {
-    notes.push(`仅保留前 ${formatBytes(body.bytes.length)}，原始共 ${formatBytes(body.size)}`);
+    notes.push(
+      t('body.truncated', {
+        kept: formatBytes(body.bytes.length),
+        total: formatBytes(body.size)
+      })
+    );
   }
   if (body?.decodeError) notes.push(body.decodeError);
   // view.clipped 不再显示提示，因为用户默认看到的就是收起状态，点"显示全部"才展开
@@ -85,9 +93,16 @@ export const BodyPanel = (props: BodyPanelProps): React.ReactElement => {
       case 'html':
         // 空 sandbox：不执行脚本、不带同源权限，只做静态渲染，行为与 Chrome 的 Preview 一致。
         // 页面的 CSP 也会限制外链资源，所以带外部图片或样式的页面可能显示不全
-        return <iframe className={styles.frame} title="HTML 预览" sandbox="" srcDoc={view.raw} />;
+        return (
+          <iframe
+            className={styles.frame}
+            title={t('body.htmlPreview')}
+            sandbox=""
+            srcDoc={view.raw}
+          />
+        );
       case 'image':
-        return <img className={styles.img} src={view.dataUrl} alt="响应图片预览" />;
+        return <img className={styles.img} src={view.dataUrl} alt={t('body.imagePreview')} />;
       case 'binary':
         return <pre className={styles.code}>{view.hex}</pre>;
       default:
@@ -97,7 +112,7 @@ export const BodyPanel = (props: BodyPanelProps): React.ReactElement => {
 
   const renderRaw = (): React.ReactElement => {
     if (view.kind === 'image') {
-      return <img className={styles.img} src={view.dataUrl} alt="响应图片预览" />;
+      return <img className={styles.img} src={view.dataUrl} alt={t('body.imagePreview')} />;
     }
     if (view.kind === 'binary') return <pre className={styles.code}>{view.hex}</pre>;
     return <ClampBlock text={rawTextOf(view) ?? ''} />;
@@ -105,14 +120,14 @@ export const BodyPanel = (props: BodyPanelProps): React.ReactElement => {
 
   return (
     <div className={styles.root}>
-      {notes.length > 0 && <p className={styles.note}>{notes.join('；')}</p>}
+      {notes.length > 0 && <p className={styles.note}>{notes.join(t('common.semicolon'))}</p>}
       {copyText !== null && (
         <Button size="small" className={styles.copy} onClick={() => void copy(copyText)}>
           {copied
-            ? '已复制'
+            ? t('body.copied')
             : mode === 'preview' && view.kind === 'json'
-              ? '复制格式化后的 JSON'
-              : '复制'}
+              ? t('body.copyPrettyJson')
+              : t('body.copy')}
         </Button>
       )}
       {mode === 'preview' ? renderPreview() : renderRaw()}

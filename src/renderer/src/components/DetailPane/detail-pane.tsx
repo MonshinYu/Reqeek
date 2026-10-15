@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from 'react';
+import {useTranslation} from 'react-i18next';
 import styles from './detail-pane.module.css';
 import type {Flow, FlowDetail} from '@shared/types';
 import {mimeFromHeaders} from '@/lib/body';
@@ -29,6 +30,7 @@ interface Loaded {
 
 export const DetailPane = (props: DetailPaneProps): React.ReactElement => {
   const { flow, onClose } = props;
+  const { t } = useTranslation();
 
   const [tab, setTab] = useState<TabKey>('headers');
   const [loaded, setLoaded] = useState<Loaded | null>(null);
@@ -48,9 +50,14 @@ export const DetailPane = (props: DetailPaneProps): React.ReactElement => {
   const loading = loaded?.id !== flow.id;
 
   return (
-    <aside className={styles.root} aria-label="请求详情">
+    <aside className={styles.root} aria-label={t('detail.title')}>
       <div className={styles.tabs} role="tablist">
-        <button type="button" className={styles.close} aria-label="关闭详情" onClick={onClose}>
+        <button
+          type="button"
+          className={styles.close}
+          aria-label={t('detail.close')}
+          onClick={onClose}
+        >
           ×
         </button>
         {TABS.map((item) => (
@@ -68,7 +75,7 @@ export const DetailPane = (props: DetailPaneProps): React.ReactElement => {
       </div>
       <div className={styles.content} role="tabpanel">
         {loading && tab !== 'timing' ? (
-          <p className={styles.empty}>加载中…</p>
+          <p className={styles.empty}>{t('common.loading')}</p>
         ) : (
           <>
             {tab === 'headers' && <HeadersView flow={flow} detail={detail} />}
@@ -77,7 +84,7 @@ export const DetailPane = (props: DetailPaneProps): React.ReactElement => {
                 body={detail?.requestBody ?? null}
                 mime={detail ? mimeFromHeaders(detail.requestHeaders, 'content-type') : null}
                 mode="preview"
-                emptyText="此请求没有请求体"
+                emptyText={t('detail.noRequestBody')}
               />
             )}
             {tab === 'preview' && (
@@ -85,7 +92,7 @@ export const DetailPane = (props: DetailPaneProps): React.ReactElement => {
                 body={detail?.responseBody ?? null}
                 mime={flow.mimeType}
                 mode="preview"
-                emptyText={flow.hasDetail ? '没有可预览的响应体' : '此类记录不采集响应体'}
+                emptyText={t(flow.hasDetail ? 'detail.noPreviewBody' : 'detail.bodyNotCaptured')}
               />
             )}
             {tab === 'response' && (
@@ -93,7 +100,7 @@ export const DetailPane = (props: DetailPaneProps): React.ReactElement => {
                 body={detail?.responseBody ?? null}
                 mime={flow.mimeType}
                 mode="raw"
-                emptyText={flow.hasDetail ? '没有响应体' : '此类记录不采集响应体'}
+                emptyText={t(flow.hasDetail ? 'detail.noResponseBody' : 'detail.bodyNotCaptured')}
               />
             )}
             {tab === 'timing' && <TimingView flow={flow} />}

@@ -25,6 +25,14 @@ export default defineConfig({
         '@shared': resolve('src/shared')
       }
     },
-    plugins: [react()]
+    plugins: [react()],
+    build: {
+      rollupOptions: {
+        input: {
+          home: resolve(__dirname, 'src/renderer/home.html'),
+          settings: resolve(__dirname, 'src/renderer/settings.html')
+        }
+      }
+    }
   }
 });

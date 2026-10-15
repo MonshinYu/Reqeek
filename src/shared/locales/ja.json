@@ -1,0 +1,213 @@
+{
+  "app": {
+    "name": "Reqeek"
+  },
+  "titleBar": {
+    "toolbar": "ツールバー",
+    "startCapture": "キャプチャ開始",
+    "stopCapture": "キャプチャ停止",
+    "caRequired": "先にルート証明書をインストールして信頼してください",
+    "clear": "クリア",
+    "clearRecords": "記録をクリア",
+    "searchPlaceholder": "ホスト / パス / メソッド / ステータスを検索",
+    "searchRequests": "リクエストを検索",
+    "ca": "CA 証明書"
+  },
+  "filter": {
+    "group": "フィルタ",
+    "invertSearch": "検索を反転",
+    "errorsOnly": "エラーのみ",
+    "hideTunnels": "トンネルを隠す"
+  },
+  "sidebar": {
+    "byApp": "アプリで絞り込む",
+    "allApps": "すべてのアプリ",
+    "unknownApp": "不明"
+  },
+  "table": {
+    "requests": "リクエスト一覧",
+    "name": "名前",
+    "status": "ステータス",
+    "type": "タイプ",
+    "size": "サイズ",
+    "time": "時間",
+    "waterfall": "ウォーターフォール",
+    "expandAll": "すべて展開",
+    "collapseAll": "すべて折りたたむ",
+    "groupCount_other": "{{count}} 件のリクエスト"
+  },
+  "detail": {
+    "title": "リクエストの詳細",
+    "close": "詳細を閉じる",
+    "noRequestBody": "このリクエストにボディはありません",
+    "noPreviewBody": "プレビューできるレスポンスボディがありません",
+    "noResponseBody": "レスポンスボディがありません",
+    "bodyNotCaptured": "この種の記録ではボディを収集しません"
+  },
+  "status": {
+    "idle": "キャプチャ停止中",
+    "requestCount_other": "{{count}} 件のリクエスト",
+    "shownOfTotal": "{{shown}} / {{total}} 件のリクエスト",
+    "transferred": "転送済み {{size}}",
+    "finished": "完了 {{time}}",
+    "httpsOn": "HTTPS 復号：有効",
+    "httpsOff": "HTTPS 復号：無効"
+  },
+  "empty": {
+    "noRequests": "まだリクエストを取得していません",
+    "noRequestsHint": "左上の録画ボタンを押して、任意のウェブサイトを開いてください",
+    "noMatch": "条件に一致するリクエストがありません",
+    "noMatchHint": "フィルタまたは検索条件を調整してください"
+  },
+  "ca": {
+    "gateTitle": "{{name}} のルート証明書をインストール",
+    "gateLead": "HTTPS の内容を取得するには、この端末で {{name}} のルート証明書を信頼する必要があります。証明書と秘密鍵はこのコンピュータから出ません。",
+    "step": {
+      "generate": "1. 証明書を生成",
+      "install": "2. インストールして信頼",
+      "verify": "3. 確認"
+    },
+    "stepState": {
+      "trusted": "インストール済みで信頼されています",
+      "installed": "キーチェーンにはありますが、まだ信頼されていません",
+      "notInstalled": "未インストール",
+      "unsupported": "このシステムは自動インストールに対応していません"
+    },
+    "generating": "生成中…",
+    "waitingGenerate": "証明書の生成を待っています",
+    "autoEnter": "完了すると自動的にメイン画面に進みます",
+    "installedWarning": "証明書はインポートされましたが信頼されていません。「キーチェーンアクセス」で {{name}} を開き、信頼を「常に信頼」に設定してから「再確認」を押してください。",
+    "hint": {
+      "darwin": "キーチェーンの承認が求められます。ログインパスワードを入力するか Touch ID を使用してください。",
+      "win32": "証明書のインストール確認が表示されるので「はい」を選んでください。",
+      "linux": "先に証明書を書き出し、お使いのディストリビューションの方法で信頼ストアに追加してから「再確認」を押してください。"
+    },
+    "dialogTitle": "CA ルート証明書",
+    "trust": {
+      "trusted": "インストール済みで信頼されています。HTTPS 復号が利用できます",
+      "installed": "キーチェーンにはありますが信頼されていません。キーチェーンで「常に信頼」に設定してください",
+      "notInstalled": "システムの信頼ストアに未インストールです",
+      "unsupported": "このプラットフォームは自動インストールに対応していません。証明書を書き出して手動でインストールしてください"
+    },
+    "field": {
+      "name": "名前",
+      "fingerprint": "フィンガープリント (SHA-256)",
+      "expires": "有効期限",
+      "status": "状態"
+    },
+    "reading": "証明書の情報を読み込み中…",
+    "actions": {
+      "install": "インストールして信頼",
+      "uninstall": "システムから削除",
+      "reveal": "フォルダに証明書を表示",
+      "revealShort": "フォルダに表示",
+      "recheck": "再確認",
+      "close": "閉じる",
+      "busy": "処理中…"
+    }
+  },
+  "body": {
+    "noParams": "パラメータがありません",
+    "emptyValue": "（空）",
+    "truncated": "先頭 {{kept}} のみ表示（全体 {{total}}）",
+    "htmlPreview": "HTML プレビュー",
+    "imagePreview": "レスポンス画像のプレビュー",
+    "copied": "コピーしました",
+    "copy": "コピー",
+    "copyPrettyJson": "整形した JSON をコピー"
+  },
+  "headers": {
+    "detailEvicted": "詳細は破棄されました（メモリ上限を超過）",
+    "noHeadersCaptured": "この種の記録ではヘッダーを収集しません（トンネルまたは昇格した接続）"
+  },
+  "timing": {
+    "startedAt": "{{time}} に開始",
+    "ttfb": "サーバー応答を待機 (TTFB)",
+    "download": "コンテンツのダウンロード",
+    "total": "合計",
+    "transferred": "転送量"
+  },
+  "tree": {
+    "showMore_other": "さらに表示（残り {{count}} 件）",
+    "invalidXml": "正しい XML ではないため、プレーンテキストで表示しています"
+  },
+  "clamp": {
+    "expand_other": "展開（全 {{count}} 文字）",
+    "showAll_other": "すべて表示（残り {{count}} 文字）"
+  },
+  "common": {
+    "loading": "読み込み中…",
+    "none": "なし",
+    "collapse": "折りたたむ",
+    "semicolon": "；"
+  },
+  "menu": {
+    "about": "{{name}} について",
+    "services": "サービス",
+    "hide": "{{name}} を隠す",
+    "hideOthers": "ほかを隠す",
+    "unhide": "すべてを表示",
+    "quit": "{{name}} を終了",
+    "capture": "キャプチャ",
+    "startCapture": "キャプチャ開始",
+    "stopCapture": "キャプチャ停止",
+    "clear": "記録をクリア",
+    "focusSearch": "リクエストを検索",
+    "ca": "CA 証明書…",
+    "settings": "設定…",
+    "edit": "編集",
+    "undo": "取り消す",
+    "redo": "やり直す",
+    "cut": "切り取り",
+    "copy": "コピー",
+    "paste": "貼り付け",
+    "selectAll": "すべて選択",
+    "view": "表示",
+    "forceReload": "強制的に再読み込み",
+    "toggleDevTools": "開発者ツール",
+    "resetZoom": "実際のサイズ",
+    "zoomIn": "拡大",
+    "zoomOut": "縮小",
+    "toggleFullScreen": "フルスクリーン切り替え",
+    "window": "ウインドウ",
+    "help": "ヘルプ",
+    "revealCa": "CA 証明書をフォルダに表示",
+    "openDataDir": "データディレクトリを開く"
+  },
+  "tray": {
+    "show": "{{name}} を表示",
+    "capturing": "{{name}} · キャプチャ中（ポート {{port}}）",
+    "idle": "{{name}} · キャプチャ停止中",
+    "quit": "{{name}} を終了"
+  },
+  "settings": {
+    "title": "設定",
+    "general": "一般",
+    "about": "このアプリについて",
+    "language": "言語",
+    "theme": "テーマ",
+    "themeOptions": {
+      "auto": "システムに合わせる",
+      "light": "ライト",
+      "dark": "ダーク"
+    },
+    "port": "ポート番号",
+    "version": "バージョン",
+    "update": {
+      "title": "アップデート",
+      "check": "アップデートを確認",
+      "checking": "確認中…",
+      "upToDate": "最新バージョンです",
+      "available": "新しいバージョン {{version}} があります",
+      "failed": "確認に失敗しました。しばらくしてからお試しください"
+    },
+    "reset": "デフォルトに戻す",
+    "resetConfirm": "すべての設定をデフォルトに戻しますか？",
+    "close": "閉じる"
+  },
+  "languages": {
+    "en": "English",
+    "zh": "简体中文",
+    "ja": "日本語"
+  }
+}

@@ -5,6 +5,8 @@
  * 比如 timings 那一组，现在采一点不费事，等有了时间轴视图再想补就补不回来了。
  */
 
+import type { SupportedLanguage } from './i18n';
+
 /** 发起请求的本机应用 */
 export interface ClientApp {
   pid: number;
@@ -98,4 +100,33 @@ export type ProxyEvent = { type: 'flow'; flow: Flow } | { type: 'status'; status
 export type CaResult<T> = { ok: true; value: T } | { ok: false; error: string };
 
 /** 菜单触发、由渲染进程执行的动作。渲染进程持有门禁 / 选中项等状态，所以交给它判断 */
-export type MenuAction = 'toggle-capture' | 'clear' | 'open-ca' | 'focus-search';
+export type MenuAction = 'toggle-capture' | 'clear' | 'open-ca' | 'focus-search' | 'open-settings';
+
+/**
+ * 应用设置。
+ *
+ * 只放真正被消费的字段 —— 没有实现的选项不进这里。存一份没人读的配置比不存更糟：
+ * 它会让界面显示一个并不生效的值，用户以为自己改动了什么。
+ */
+export interface AppSettings {
+  /** 收窄成受支持的语言：settings.json 是纯文本，手改出来的 'fr' 不该流进 i18n */
+  language: SupportedLanguage;
+  theme: 'light' | 'dark' | 'auto';
+  proxy: {
+    port: number;
+  };
+}
+
+/**
+ * 检查更新的结果。
+ *
+ * V0 还没有更新源，主进程的桩固定返回「已是最新」。字段先按接得上真实更新源的形状定好，
+ * 以后换成查发布页时渲染进程一行都不用改。
+ */
+export interface UpdateCheckResult {
+  currentVersion: string;
+  /** 更新源里有没有比 currentVersion 更新的版本 */
+  updateAvailable: boolean;
+  /** 更新源给出的最新版本号；没有更新源时为 null */
+  latestVersion: string | null;
+}

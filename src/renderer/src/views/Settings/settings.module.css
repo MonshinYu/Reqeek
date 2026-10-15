@@ -1,0 +1,189 @@
+/*
+ * 颜色一律走 tokens.css 的 color role，不写死色值 —— 写死的话这个窗口在浅色主题下
+ * 会保持暗色，而且因为它是独立窗口，改起来很容易被漏掉。
+ * 按钮用 components/Button，这里不再维护第二套。
+ */
+
+.window {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: var(--md-surface);
+  color: var(--md-on-surface);
+}
+
+/* Windows/Linux 平台适配 */
+.window.platformWin32,
+.window.platformLinux {
+  --header-padding-left: 32px;
+}
+
+/* macOS 平台适配 */
+.window.platformDarwin {
+  --header-padding-left: 88px;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--md-outline-variant);
+  border-top-color: var(--md-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.header {
+  padding: 10px 32px;
+  padding-left: var(--header-padding-left, 32px);
+  border-bottom: 1px solid var(--md-outline-variant);
+}
+
+.header h1 {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 28px 32px;
+}
+
+.section {
+  margin-bottom: 32px;
+}
+
+.section:last-child {
+  margin-bottom: 12px;
+}
+
+.section h2 {
+  font-size: var(--font-label);
+  font-weight: 600;
+  color: var(--md-outline);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--md-outline-variant);
+}
+
+.field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  gap: 24px;
+}
+
+.field label {
+  font-size: var(--font-body);
+  color: var(--md-on-surface);
+  flex: 1;
+  font-weight: 500;
+}
+
+.field select,
+.field input[type='number'] {
+  width: 220px;
+  padding: 7px 12px;
+  background: var(--md-surface-container-low);
+  border: 1px solid var(--md-outline-variant);
+  border-radius: var(--shape-sm);
+  color: var(--md-on-surface);
+  font-size: var(--font-body);
+  outline: none;
+  transition:
+    border-color var(--duration-short) var(--ease-standard),
+    background var(--duration-short) var(--ease-standard);
+  -moz-appearance: textfield; /* Firefox */
+}
+
+/* 隐藏数字输入框的上下箭头 */
+.field input[type='number']::-webkit-inner-spin-button,
+.field input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.field select:hover,
+.field input[type='number']:hover {
+  border-color: var(--md-outline);
+}
+
+.field select:focus,
+.field input[type='number']:focus {
+  border-color: var(--md-primary);
+}
+
+/* 只读的值（版本号）：跟右侧控件贴同一条右边线，但不抢视线 */
+.field .value {
+  font-size: var(--font-body);
+  color: var(--md-on-surface-variant);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 检查更新：状态提示在左，按钮在右 */
+.updateRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.hint {
+  font-size: var(--font-label);
+  color: var(--md-outline);
+  white-space: nowrap;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 32px;
+  border-top: 1px solid var(--md-outline-variant);
+}
+
+/* macOS 标题栏拖动区域 */
+.window {
+  -webkit-app-region: drag;
+}
+
+.content,
+.footer,
+.field input,
+.field select,
+.window button {
+  -webkit-app-region: no-drag;
+}
+
+/* 滚动条样式 */
+.content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.content::-webkit-scrollbar-thumb {
+  background: var(--md-outline-variant);
+  border-radius: var(--shape-xs);
+}
+
+.content::-webkit-scrollbar-thumb:hover {
+  background: var(--md-outline);
+}
