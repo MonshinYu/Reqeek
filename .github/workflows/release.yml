@@ -87,9 +87,15 @@ jobs:
           node-version: 24
           cache: pnpm
 
-      # 缓存放在工作目录之外，既方便 actions/cache 复用，也避免被 electron-builder
-      # 误打进应用包。runner context 只能在 step 内部求值，所以路径在这里写全 ——
-      # 下面「打包」步骤里的同名环境变量必须与此保持一致。
+      # Electron 的两个缓存目录放在工作目录之外，既方便 actions/cache 复用，
+      # 也避免被 electron-builder 误打进应用包。
+      #
+      # runner context 在 workflow 顶层 env 和 job 级 env 里都不可用（GitHub 会
+      # 报 "Unrecognized named-value: 'runner'"），只能在 step 内部求值，所以路径
+      # 没法定义成一处共享。下面三处必须保持一致：
+      #   1. 本步骤的 path（actions/cache 要知道缓存哪些目录）
+      #   2. 「安装依赖」的 env（electron 的 postinstall 在这里下载二进制）
+      #   3. 「打包」的 env（electron-builder 在这里读缓存）
       - name: 缓存 Electron 二进制
         uses: actions/cache@v4
         with:
@@ -105,7 +111,13 @@ jobs:
           sed -i -E '/^electron(_builder_binaries)?_mirror=/d' .npmrc
           cat .npmrc
 
+      # electron 和 electron-builder 的 postinstall 都在这一步下载各自的二进制，
+      # 缓存位置必须与 actions/cache 的 path 一致，否则缓存永远命不中，打包步骤
+      # 还会再下载一份。
       - name: 安装依赖
+        env:
+          ELECTRON_CACHE: ${{ runner.temp }}/electron-cache
+          ELECTRON_BUILDER_CACHE: ${{ runner.temp }}/electron-builder-cache
         run: pnpm install --frozen-lockfile
 
       # 含 typecheck，类型不过直接失败
