@@ -12,11 +12,13 @@ files:
   - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
   - '!.claude/**'
   - '!.idea/**'
+  # 打包产物目录必须排除：输出目录被改到别处时，electron-builder 不会自动排除它
+  - '!dist/**'
 win:
   executableName: reqeek
   icon: build/icon.ico
 nsis:
-  artifactName: ${name}-${version}-setup.${ext}
+  artifactName: ${name}-${version}-win-${arch}-setup.${ext}
   shortcutName: ${productName}
   uninstallDisplayName: ${productName}
   createDesktopShortcut: always
@@ -25,8 +27,16 @@ mac:
   icon: build/icon.icns
   entitlementsInherit: build/entitlements.mac.plist
   notarize: false
+  # 没有 Developer ID 证书，改用 ad-hoc 签名。Apple Silicon 强制要求所有可执行文件带签名，
+  # 完全未签名的 arm64 应用会被系统拒绝启动，所以这一步不能省。
+  # 拿到正式证书后，把这里删掉并配置 CSC_LINK / CSC_KEY_PASSWORD 即可。
+  identity: '-'
+  # ad-hoc 签名没有 Team ID，若同时启用硬化运行时，库验证会让应用起不来
+  # （electron-builder 对此会给出明确警告）。
+  hardenedRuntime: false
+  artifactName: ${name}-${version}-mac-${arch}.${ext}
 dmg:
-  artifactName: ${name}-${version}.${ext}
+  artifactName: ${name}-${version}-mac-${arch}.${ext}
 linux:
   icon: build/icon.png
   target:

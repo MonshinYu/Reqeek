@@ -1,0 +1,154 @@
+name: Release
+
+# 触发方式：
+#   1. 推送 v* 标签（如 v0.1.0）→ 构建四个平台安装包，并创建草稿 Release
+#   2. 在 Actions 页面手动运行   → 只构建并上传构建产物，不创建 Release
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+# 默认只读，发布所需的写权限单独授予 release job
+permissions:
+  contents: read
+
+# 同一个标签重复触发时排队执行，不打断正在进行的发布
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  # 把 Electron 二进制缓存到工作目录之外，既方便 actions/cache 复用，
+  # 也避免被 electron-builder 误打进应用包
+  ELECTRON_CACHE: ${{ runner.temp }}/electron-cache
+  ELECTRON_BUILDER_CACHE: ${{ runner.temp }}/electron-builder-cache
+
+jobs:
+  build:
+    name: 打包 ${{ matrix.label }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 40
+    strategy:
+      # 单个平台失败不牵连其他平台，便于一次看清哪些架构有问题
+      fail-fast: false
+      matrix:
+        include:
+          # macOS：GitHub 的 Intel runner（macos-13）已退役，两种架构都在 Apple Silicon
+          # runner 上构建。Electron 为各架构预编译了二进制，本项目又没有 native 模块，
+          # 因此交叉构建 x64 包是安全的。
+          - os: macos-15
+            target: mac
+            arch: x64
+            label: macOS x64
+            artifact: mac-x64
+          - os: macos-15
+            target: mac
+            arch: arm64
+            label: macOS arm64
+            artifact: mac-arm64
+          # Windows：runner 本身是 x64，arm64 包同样由 electron-builder 交叉构建
+          - os: windows-latest
+            target: win
+            arch: x64
+            label: Windows x64
+            artifact: win-x64
+          - os: windows-latest
+            target: win
+            arch: arm64
+            label: Windows arm64
+            artifact: win-arm64
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      # 标签版本与 package.json 对不上时，产物文件名会和标签打架，所以提前拦下
+      - name: 校验标签版本
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: bash
+        run: |
+          tag_version="${GITHUB_REF_NAME#v}"
+          pkg_version="$(node -p "require('./package.json').version")"
+          if [ "$tag_version" != "$pkg_version" ]; then
+            echo "::error::标签 v${tag_version} 与 package.json 的 ${pkg_version} 不一致，请先同步版本号"
+            exit 1
+          fi
+          echo "版本校验通过：v${tag_version}"
+
+      - name: 安装 pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: 安装 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: 缓存 Electron 二进制
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ env.ELECTRON_CACHE }}
+            ${{ env.ELECTRON_BUILDER_CACHE }}
+          key: electron-${{ runner.os }}-${{ matrix.arch }}-${{ hashFiles('package.json') }}
+
+      # 项目的 .npmrc 指向国内的 npmmirror，而 runner 在海外，删掉这两行改走官方源
+      - name: 切换下载源
+        shell: bash
+        run: |
+          sed -i -E '/^electron(_builder_binaries)?_mirror=/d' .npmrc
+          cat .npmrc
+
+      - name: 安装依赖
+        run: pnpm install --frozen-lockfile
+
+      # 含 typecheck，类型不过直接失败
+      - name: 构建
+        run: pnpm build
+
+      # --publish never：交给最后的 release job 统一发布，避免多个 job 抢建同一个 Release。
+      # electron-builder.yml 里同样硬编码了 npmmirror，用命令行参数覆盖掉。
+      #
+      # 注意：这里不要设置 CSC_IDENTITY_AUTO_DISCOVERY=false。它会让 electron-builder
+      # 跳过整个签名流程，连 ad-hoc 签名一起跳过，产出的 arm64 包在 Apple Silicon 上
+      # 会被系统直接拒绝启动。macOS 所需的 ad-hoc 签名由 electron-builder.yml 的
+      # mac.identity 配置。
+      - name: 打包
+        run: pnpm exec electron-builder --${{ matrix.target }} --${{ matrix.arch }} --publish never "-c.electronDownload.mirror=https://github.com/electron/electron/releases/download/"
+
+      - name: 上传构建产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: |
+            dist/*.exe
+            dist/*.dmg
+          if-no-files-found: error
+
+  release:
+    name: 创建草稿 Release
+    needs: build
+    # 仅标签触发的运行会发布；手动运行的产物留在 Actions 页面下载
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: 下载全部构建产物
+        uses: actions/download-artifact@v4
+        with:
+          path: release
+          merge-multiple: true
+
+      - name: 列出待发布文件
+        run: ls -lh release
+
+      # 草稿模式：确认四个包都能正常安装后再手动点 Publish
+      - name: 创建草稿 Release
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: true
+          name: ${{ github.ref_name }}
+          generate_release_notes: true
+          files: release/*
