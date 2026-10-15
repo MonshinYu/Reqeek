@@ -1,8 +1,10 @@
 name: Release
 
 # 触发方式：只能在 Actions 页面手动运行，提交代码和推送标签都不会自动触发。
-#   - 填写 tag（如 v0.1.0）→ 构建四个平台安装包，并创建草稿 Release
-#   - 留空 tag            → 只构建并上传构建产物，不创建 Release
+#   - 填写 tag（如 v0.1.0）→ 构建该标签四个平台的安装包，并创建草稿 Release。
+#     标签必须已经在远端，否则会在「确认标签已推送到远端」这一步直接报错。
+#     首次使用请先执行：git tag v0.1.0 && git push origin v0.1.0
+#   - 留空 tag            → 在当前分支上构建，只上传构建产物，不创建 Release
 on:
   workflow_dispatch:
     inputs:
@@ -56,6 +58,25 @@ jobs:
             artifact: win-arm64
 
     steps:
+      # checkout 的 ref 指向不存在的标签时，只会抛一句 "The process 'git' failed
+      # with exit code 1"，完全看不出是标签没推上来，所以提前用 API 拦下。
+      - name: 确认标签已推送到远端
+        if: inputs.tag != ''
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          INPUT_TAG: ${{ inputs.tag }}
+        run: |
+          code=$(curl -s -o /dev/null -w '%{http_code}' \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/git/ref/tags/${INPUT_TAG}")
+          if [ "$code" != "200" ]; then
+            echo "::error::远端没有标签 ${INPUT_TAG}（GitHub API 返回 ${code}）。请先在本地执行：git tag ${INPUT_TAG} && git push origin ${INPUT_TAG}"
+            exit 1
+          fi
+          echo "标签 ${INPUT_TAG} 已存在"
+
       - name: 检出代码
         uses: actions/checkout@v4
         with:
