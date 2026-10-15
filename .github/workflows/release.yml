@@ -25,12 +25,6 @@ jobs:
     name: 打包 ${{ matrix.label }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 40
-    env:
-      # 把 Electron 二进制缓存到工作目录之外，既方便 actions/cache 复用，
-      # 也避免被 electron-builder 误打进应用包。
-      # runner context 只有 job 内部可用，所以定义在 job 级而非顶层。
-      ELECTRON_CACHE: ${{ runner.temp }}/electron-cache
-      ELECTRON_BUILDER_CACHE: ${{ runner.temp }}/electron-builder-cache
     strategy:
       # 单个平台失败不牵连其他平台，便于一次看清哪些架构有问题
       fail-fast: false
@@ -93,12 +87,15 @@ jobs:
           node-version: 24
           cache: pnpm
 
+      # 缓存放在工作目录之外，既方便 actions/cache 复用，也避免被 electron-builder
+      # 误打进应用包。runner context 只能在 step 内部求值，所以路径在这里写全 ——
+      # 下面「打包」步骤里的同名环境变量必须与此保持一致。
       - name: 缓存 Electron 二进制
         uses: actions/cache@v4
         with:
           path: |
-            ${{ env.ELECTRON_CACHE }}
-            ${{ env.ELECTRON_BUILDER_CACHE }}
+            ${{ runner.temp }}/electron-cache
+            ${{ runner.temp }}/electron-builder-cache
           key: electron-${{ runner.os }}-${{ matrix.arch }}-${{ hashFiles('package.json') }}
 
       # 项目的 .npmrc 指向国内的 npmmirror，而 runner 在海外，删掉这两行改走官方源
@@ -123,6 +120,12 @@ jobs:
       # 会被系统直接拒绝启动。macOS 所需的 ad-hoc 签名由 electron-builder.yml 的
       # mac.identity 配置。
       - name: 打包
+        # electron 的下载器和 electron-builder 读这两个变量决定缓存目录，
+        # 必须与上面 actions/cache 的 path 一致。同样因为 runner context
+        # 在 job 级 env 不可用，只能定义在 step 级。
+        env:
+          ELECTRON_CACHE: ${{ runner.temp }}/electron-cache
+          ELECTRON_BUILDER_CACHE: ${{ runner.temp }}/electron-builder-cache
         run: pnpm exec electron-builder --${{ matrix.target }} --${{ matrix.arch }} --publish never "-c.electronDownload.mirror=https://github.com/electron/electron/releases/download/"
 
       - name: 上传构建产物
