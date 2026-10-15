@@ -125,11 +125,20 @@ jobs:
             ${{ runner.temp }}/electron-builder-cache
           key: electron-${{ runner.os }}-${{ matrix.arch }}-${{ hashFiles('package.json') }}
 
-      # 项目的 .npmrc 指向国内的 npmmirror，而 runner 在海外，删掉这两行改走官方源
+      # 项目的 .npmrc 指向国内的 npmmirror，而 runner 在海外，删掉这两行改走官方源。
+      #
+      # 这里不能用 `sed -i -E`：macOS runner 上的 BSD sed 会把 -E 当成 -i 的备份后缀，
+      # 结果是文件原封不动、还多出一个 .npmrc-E，退出码却是 0 —— 静默失效，最难查。
+      # 改用重定向写法（BSD/GNU sed 通吃），并在结尾断言一次。
       - name: 切换下载源
         shell: bash
         run: |
-          sed -i -E '/^electron(_builder_binaries)?_mirror=/d' .npmrc
+          sed -E '/^electron(_builder_binaries)?_mirror=/d' .npmrc > .npmrc.tmp
+          mv .npmrc.tmp .npmrc
+          if grep -q -E '^electron(_builder_binaries)?_mirror=' .npmrc; then
+            echo "::error::.npmrc 中的镜像源没有被删除，electron 会去下载国内镜像"
+            exit 1
+          fi
           cat .npmrc
 
       # electron 和 electron-builder 的 postinstall 都在这一步下载各自的二进制，
