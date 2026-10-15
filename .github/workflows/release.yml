@@ -1,13 +1,15 @@
 name: Release
 
-# 触发方式：
-#   1. 推送 v* 标签（如 v0.1.0）→ 构建四个平台安装包，并创建草稿 Release
-#   2. 在 Actions 页面手动运行   → 只构建并上传构建产物，不创建 Release
+# 触发方式：只能在 Actions 页面手动运行，提交代码和推送标签都不会自动触发。
+#   - 填写 tag（如 v0.1.0）→ 构建四个平台安装包，并创建草稿 Release
+#   - 留空 tag            → 只构建并上传构建产物，不创建 Release
 on:
-  push:
-    tags:
-      - 'v*'
   workflow_dispatch:
+    inputs:
+      tag:
+        description: '要发布的版本标签（如 v0.1.0）。留空则只构建产物，不创建 Release'
+        required: false
+        type: string
 
 # 默认只读，发布所需的写权限单独授予 release job
 permissions:
@@ -15,20 +17,20 @@ permissions:
 
 # 同一个标签重复触发时排队执行，不打断正在进行的发布
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ inputs.tag || github.ref }}
   cancel-in-progress: false
-
-env:
-  # 把 Electron 二进制缓存到工作目录之外，既方便 actions/cache 复用，
-  # 也避免被 electron-builder 误打进应用包
-  ELECTRON_CACHE: ${{ runner.temp }}/electron-cache
-  ELECTRON_BUILDER_CACHE: ${{ runner.temp }}/electron-builder-cache
 
 jobs:
   build:
     name: 打包 ${{ matrix.label }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 40
+    env:
+      # 把 Electron 二进制缓存到工作目录之外，既方便 actions/cache 复用，
+      # 也避免被 electron-builder 误打进应用包。
+      # runner context 只有 job 内部可用，所以定义在 job 级而非顶层。
+      ELECTRON_CACHE: ${{ runner.temp }}/electron-cache
+      ELECTRON_BUILDER_CACHE: ${{ runner.temp }}/electron-builder-cache
     strategy:
       # 单个平台失败不牵连其他平台，便于一次看清哪些架构有问题
       fail-fast: false
@@ -62,19 +64,25 @@ jobs:
     steps:
       - name: 检出代码
         uses: actions/checkout@v4
+        with:
+          # 填了 tag 就检出该标签，留空则检出手动运行时所选的分支
+          ref: ${{ inputs.tag || github.ref }}
 
       # 标签版本与 package.json 对不上时，产物文件名会和标签打架，所以提前拦下
       - name: 校验标签版本
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: inputs.tag != ''
         shell: bash
+        env:
+          # 经 env 传递，避免把用户输入直接拼进脚本
+          INPUT_TAG: ${{ inputs.tag }}
         run: |
-          tag_version="${GITHUB_REF_NAME#v}"
+          tag_version="${INPUT_TAG#v}"
           pkg_version="$(node -p "require('./package.json').version")"
           if [ "$tag_version" != "$pkg_version" ]; then
-            echo "::error::标签 v${tag_version} 与 package.json 的 ${pkg_version} 不一致，请先同步版本号"
+            echo "::error::标签 ${INPUT_TAG} 与 package.json 的 ${pkg_version} 不一致，请先同步版本号"
             exit 1
           fi
-          echo "版本校验通过：v${tag_version}"
+          echo "版本校验通过：${INPUT_TAG}"
 
       - name: 安装 pnpm
         uses: pnpm/action-setup@v4
@@ -129,8 +137,8 @@ jobs:
   release:
     name: 创建草稿 Release
     needs: build
-    # 仅标签触发的运行会发布；手动运行的产物留在 Actions 页面下载
-    if: startsWith(github.ref, 'refs/tags/v')
+    # 只有填了 tag 的运行会发布；留空时产物留在 Actions 页面下载
+    if: inputs.tag != ''
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -149,6 +157,8 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           draft: true
-          name: ${{ github.ref_name }}
+          # 手动运行没有标签 ref，github.ref_name 会是分支名，必须显式指定标签
+          tag_name: ${{ inputs.tag }}
+          name: ${{ inputs.tag }}
           generate_release_notes: true
           files: release/*
