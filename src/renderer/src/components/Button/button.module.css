@@ -1,26 +1,39 @@
 .button {
-  height: 32px;
-  padding: 0 16px;
-  border: 1px solid var(--md-outline-variant);
-  border-radius: var(--shape-full);
-  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  flex: none;
+  border: 1px solid transparent;
+  background-color: transparent;
+  color: var(--md-on-surface);
+  white-space: nowrap;
   cursor: pointer;
   user-select: none;
-  transition: background var(--duration-short) var(--ease-standard);
+  /* 控件自己声明不参与窗口拖动，不指望调用方记得写 */
+  -webkit-app-region: no-drag;
+  transition:
+    box-shadow var(--duration-short) var(--ease-standard),
+    background-color var(--duration-short) var(--ease-standard),
+    border-color var(--duration-short) var(--ease-standard),
+    color var(--duration-short) var(--ease-standard);
 }
 
-.small {
-  height: 26px;
-  padding: 0 12px;
-  font-size: var(--font-label);
-}
-
+/*
+ * 交互状态统一叠一层铺满的 inset 阴影，而不是改 background-color：
+ * filled 的底色本身就是语义色（--md-primary），改它就得为每个变体各写一套 hover。
+ * 用 --md-state-layer 还有个好处 —— 它在暗色下偏白、亮色下偏黑，方向自动是对的。
+ *
+ * 用 inset box-shadow 而不是 linear-gradient 铺背景，是因为渐变不参与过渡：
+ * 实测 150ms 过渡走到一半时，background-image 已经直接跳到终点值了 ——
+ * 表现就是所有按钮的悬停都是硬跳。box-shadow 会正常插值，且自动跟着圆角裁。
+ */
 .button:hover:not(:disabled) {
-  background: rgb(var(--md-state-layer) / var(--state-hover));
+  box-shadow: inset 0 0 0 999px rgb(var(--md-state-layer) / var(--state-hover));
 }
 
 .button:active:not(:disabled) {
-  background: rgb(var(--md-state-layer) / var(--state-pressed));
+  box-shadow: inset 0 0 0 999px rgb(var(--md-state-layer) / var(--state-pressed));
 }
 
 .button:disabled {
@@ -28,13 +41,61 @@
   cursor: not-allowed;
 }
 
-.filled {
-  background: var(--md-primary);
-  color: var(--md-on-primary);
-  border-color: transparent;
+/* ---- 形状 ---- */
+.pill {
+  border-radius: var(--shape-full);
 }
 
-.filled:hover:not(:disabled) {
-  background: var(--md-primary);
-  filter: brightness(1.1);
+.rounded {
+  border-radius: var(--shape-xs);
+}
+
+/* ---- 尺寸：三档，对应 tokens.css 里的控件高度刻度 ---- */
+.xs {
+  height: var(--control-h-xs);
+  padding: 0 var(--space-4);
+  font-size: var(--font-label);
+}
+
+.sm {
+  height: var(--control-h-sm);
+  padding: 0 var(--space-5);
+}
+
+.md {
+  height: var(--control-h-md);
+  padding: 0 var(--space-6);
+}
+
+.fullWidth {
+  width: 100%;
+}
+
+/* ---- 变体 ---- */
+.outlined {
+  border-color: var(--md-outline-variant);
+}
+
+.filled {
+  background-color: var(--md-primary);
+  color: var(--md-on-primary);
+}
+
+.danger {
+  border-color: var(--md-outline-variant);
+  color: var(--md-error);
+}
+
+/*
+ * text：无边框、无底色，靠状态叠层和 aria-pressed 表达。
+ * 过滤 chip 和侧栏项都是「一组里选一个」，本来就用 aria-pressed 表达选中，
+ * 所以选中态直接挂在属性选择器上，视图侧不用再各写一遍。
+ */
+.text {
+  color: var(--md-on-surface-variant);
+}
+
+.text[aria-pressed='true'] {
+  background-color: var(--md-secondary-container);
+  color: var(--md-on-secondary-container);
 }

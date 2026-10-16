@@ -1,6 +1,8 @@
 import React, {useMemo, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import styles from './xml-tree.module.css';
+import {Button} from '@/components/Button';
+import {Icon} from '@/components/Icon';
 
 const PAGE_SIZE = 200;
 
@@ -87,8 +89,8 @@ const XmlNode = (props: { element: Element; depth: number }): React.ReactElement
         aria-expanded={open}
         onClick={() => setOpen(!open)}
       >
-        <span className={styles.arrow} aria-hidden="true">
-          {open ? '▾' : '▸'}
+        <span className={styles.arrow}>
+          <Icon name={open ? 'chevron-down' : 'chevron-right'} size={12} />
         </span>
         <OpenTag element={element} />
         <span className={styles.punct}>&gt;</span>
@@ -112,13 +114,14 @@ const XmlNode = (props: { element: Element; depth: number }): React.ReactElement
               )
             )}
             {children.length > shown && (
-              <button
-                type="button"
+              <Button
+                variant="text"
+                size="xs"
                 className={styles.more}
                 onClick={() => setShown(shown + PAGE_SIZE)}
               >
                 {t('tree.showMore', {count: children.length - shown})}
-              </button>
+              </Button>
             )}
           </div>
           <div className={styles.close}>

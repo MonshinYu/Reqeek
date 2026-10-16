@@ -16,14 +16,7 @@ body {
   background-color: var(--md-surface);
   color: var(--md-on-surface);
   font-size: var(--font-body);
-  font-family:
-    'Inter',
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    'PingFang SC',
-    'Microsoft YaHei',
-    sans-serif;
+  font-family: var(--font-sans);
   overflow: hidden;
   user-select: none;
 }
@@ -37,4 +30,73 @@ input {
 :focus-visible {
   outline: 2px solid var(--md-primary);
   outline-offset: 1px;
+}
+
+/*
+ * ---- 滚动条 ----
+ *
+ * 三个平台统一成覆盖式观感：透明轨道 + 半透明滑块，悬停加深。
+ * 原来只有设置窗口的 .content 定过 8px 滚动条，主窗口三个滚动区全是系统默认 ——
+ * macOS 是 overlay 细条不占宽，Windows 是 15-17px 的经典条且占布局宽度，
+ * 同一个应用两个窗口的滚动条外观和内容宽度都对不上。
+ *
+ * 只用 ::-webkit-scrollbar 一套，不叠加标准的 scrollbar-width / scrollbar-color：
+ * 在 Chromium 里两者同时出现时标准属性会整体接管、::-webkit-scrollbar-* 全部失效，
+ * 而标准属性表达不了 hover / active 态。
+ *
+ * 配套约定：所有常驻滚动容器都要写 scrollbar-gutter: stable。
+ * 该属性不可继承、也写不进 ::-webkit-scrollbar，只能逐个容器声明；
+ * 漏写的话滚动条出现/消失时内容会横向跳一下。
+ */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* 2px 透明边框 + padding-box 裁剪：滑块只占中间 6px，做出覆盖式的观感 */
+::-webkit-scrollbar-thumb {
+  background: rgb(var(--md-state-layer) / var(--state-hover));
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  border-radius: var(--shape-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--md-state-layer) / 0.24);
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: rgb(var(--md-state-layer) / var(--state-pressed));
+  background-clip: padding-box;
+}
+
+/* Windows / Linux 经典滚动条两端的箭头按钮：本项目不需要 */
+::-webkit-scrollbar-button {
+  display: none;
+}
+
+/*
+ * 关掉动效。项目里有一条无限旋转的 spinner，还有箭头旋转与各种 hover 过渡，
+ * 这类持续动画对前庭敏感的用户最不友好 —— 无障碍的其它方面（焦点环、aria-*、
+ * role=grid）本来就做得很细，唯独这条一直空着。
+ *
+ * 用 !important 是有意的：这层是给用户的否决权，必须压过组件自己的 transition 声明；
+ * 时长留 0.01ms 而不是 0，是为了让 transitionend / animationend 仍然照常触发，
+ * 免得依赖这些事件的逻辑（比如浮层的关闭回调）在开了减少动效后失效。
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

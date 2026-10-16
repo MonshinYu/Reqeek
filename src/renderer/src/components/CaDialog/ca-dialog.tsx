@@ -1,7 +1,8 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import styles from './ca-dialog.module.css';
 import {Button} from '@/components/Button';
+import {Dialog} from '@/components/Dialog';
 import type {CaResult, CaStatus} from '@shared/types';
 
 interface CaDialogProps {
@@ -24,14 +25,8 @@ export const CaDialog = (props: CaDialogProps): React.ReactElement => {
   const { ca, onChange, onClose } = props;
   const { t } = useTranslation();
 
-  const dialogRef = useRef<HTMLDialogElement>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const dialog = dialogRef.current;
-    if (dialog && !dialog.open) dialog.showModal();
-  }, []);
 
   const run = async (task: () => Promise<CaResult<CaStatus | void>>): Promise<void> => {
     setBusy(true);
@@ -46,9 +41,34 @@ export const CaDialog = (props: CaDialogProps): React.ReactElement => {
   };
 
   return (
-    <dialog ref={dialogRef} className={styles.dialog} aria-labelledby="ca-title" onClose={onClose}>
-      <h2 id="ca-title">{t('ca.dialogTitle')}</h2>
-
+    <Dialog
+      title={t('ca.dialogTitle')}
+      className={styles.dialog}
+      onClose={onClose}
+      footer={
+        <>
+          <Button
+            variant="filled"
+            disabled={busy || !ca || ca.trust === 'trusted' || ca.trust === 'unsupported'}
+            onClick={() => run(() => window.api.installCa())}
+          >
+            {busy ? t('ca.actions.busy') : t('ca.actions.install')}
+          </Button>
+          {/* 卸载根证书是破坏性操作：装过的机器上所有 HTTPS 都会退回不透明隧道 */}
+          <Button
+            variant="danger"
+            disabled={busy || !ca || ca.trust === 'not-installed' || ca.trust === 'unsupported'}
+            onClick={() => run(() => window.api.uninstallCa())}
+          >
+            {t('ca.actions.uninstall')}
+          </Button>
+          <Button disabled={busy} onClick={() => run(() => window.api.revealCa())}>
+            {t('ca.actions.revealShort')}
+          </Button>
+          <Button onClick={onClose}>{t('ca.actions.close')}</Button>
+        </>
+      }
+    >
       {ca ? (
         <dl className={styles.info}>
           <dt>{t('ca.field.name')}</dt>
@@ -71,26 +91,6 @@ export const CaDialog = (props: CaDialogProps): React.ReactElement => {
           {error}
         </p>
       )}
-
-      <div className={styles.actions}>
-        <Button
-          variant="filled"
-          disabled={busy || !ca || ca.trust === 'trusted' || ca.trust === 'unsupported'}
-          onClick={() => run(() => window.api.installCa())}
-        >
-          {busy ? t('ca.actions.busy') : t('ca.actions.install')}
-        </Button>
-        <Button
-          disabled={busy || !ca || ca.trust === 'not-installed' || ca.trust === 'unsupported'}
-          onClick={() => run(() => window.api.uninstallCa())}
-        >
-          {t('ca.actions.uninstall')}
-        </Button>
-        <Button disabled={busy} onClick={() => run(() => window.api.revealCa())}>
-          {t('ca.actions.revealShort')}
-        </Button>
-        <Button onClick={() => dialogRef.current?.close()}>{t('ca.actions.close')}</Button>
-      </div>
-    </dialog>
+    </Dialog>
   );
 };

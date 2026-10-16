@@ -1,0 +1,78 @@
+.dialog {
+  display: flex;
+  flex-direction: column;
+  /*
+   * margin: auto 必须自己写。原生 dialog 靠 UA 样式表的这条居中，而全局 reset 里的
+   * `* { margin: 0 }` 是作者样式、优先级压过 UA，不补这一行对话框会贴在左上角。
+   */
+  margin: auto;
+  max-width: calc(100vw - 48px);
+  /* 上下各留 24px：内容再长也不许把对话框顶出视口，超出部分由 .body 内部滚动消化 */
+  max-height: calc(100vh - 48px);
+  /* 让圆角把内部滚动条一起裁进去 */
+  overflow: hidden;
+  border: none;
+  border-radius: var(--shape-lg);
+  background: var(--md-surface-container-high);
+  color: var(--md-on-surface);
+  user-select: text;
+  /*
+   * 入场：淡入 + 轻微上浮。对话框是条件渲染、每次打开都重新挂载，所以动画自然重放。
+   * 不做退场：关闭要立刻消失，且组件随后就卸载了。
+   */
+  animation: dialog-in var(--duration-short) var(--ease-standard);
+}
+
+@keyframes dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.98);
+  }
+}
+
+/*
+ * 同理必须自己写。UA 的 dialog:not([open]) { display: none } 优先级低于作者样式，
+ * 上面那条 display: flex 会把它盖掉 —— 不补这行，关掉的对话框还浮在屏幕上。
+ */
+.dialog:not([open]) {
+  display: none;
+}
+
+/*
+ * 遮罩固定用黑色：M3 的 scrim 两套主题都取黑，浅色下也不是"忘了改"。
+ * 跟着一起淡入 —— 底下一整页瞬间变暗是模态最生硬的那一下。
+ */
+.dialog::backdrop {
+  background: rgb(0 0 0 / 0.5);
+  animation: backdrop-in var(--duration-short) var(--ease-standard);
+}
+
+@keyframes backdrop-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.title {
+  flex: none;
+  padding: var(--space-7) var(--space-7) var(--space-5);
+  font-size: var(--font-heading);
+  font-weight: 600;
+}
+
+.body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0 var(--space-7);
+}
+
+.footer {
+  flex: none;
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  padding: var(--space-6) var(--space-7) var(--space-7);
+}

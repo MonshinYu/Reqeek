@@ -11,6 +11,7 @@
     "clearRecords": "清空记录",
     "searchPlaceholder": "搜索：主机 / 路径 / 方法 / 状态码",
     "searchRequests": "搜索请求",
+    "clearSearch": "清除搜索",
     "ca": "CA 证书"
   },
   "filter": {
@@ -139,6 +140,7 @@
     "loading": "加载中…",
     "none": "无",
     "collapse": "收起",
+    "cancel": "取消",
     "semicolon": "；"
   },
   "menu": {
@@ -192,22 +194,17 @@
       "dark": "深色"
     },
     "port": "端口号",
+    "portInvalid": "端口需在 {{min}} 到 {{max}} 之间",
     "version": "版本",
     "update": {
       "title": "更新",
       "check": "检查更新",
       "checking": "检查中…",
       "upToDate": "已是最新版本",
-      "downloading": "正在下载新版本 {{percent}}%",
-      "readyRestart": "新版本 {{version}} 已下载，重启后完成安装",
-      "readyOpened": "新版本 {{version}} 的安装包已打开，拖入「应用程序」即可完成更新",
-      "install": "重启并安装",
-      "openInstaller": "打开安装包",
-      "checkRateLimited": "请求过于频繁，请稍后重试",
+      "available": "发现新版本 {{version}}",
+      "openSite": "打开官网更新",
       "checkNetworkFailed": "网络连接失败，请检查网络后重试",
-      "checkNoRelease": "暂无可用的发布版本",
-      "checkFailed": "检查失败，请稍后重试",
-      "downloadFailed": "下载失败，请稍后重试"
+      "checkServerFailed": "服务暂时不可用，请稍后重试"
     },
     "reset": "恢复默认",
     "resetConfirm": "恢复默认设置？",

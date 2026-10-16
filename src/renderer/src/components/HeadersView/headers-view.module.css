@@ -3,11 +3,22 @@
   padding: 4px 12px;
 }
 
+/*
+ * 这几段是可点的折叠标题（原生 details/summary），但此前除了光标之外没有任何反馈。
+ * 负外边距让高亮铺满整行，不然只有文字那一小块变色，看着像随手画的。
+ */
 .section > summary {
-  padding: 4px 0;
+  margin: 0 -12px;
+  padding: 4px 12px;
+  border-radius: var(--shape-xs);
   font-weight: 600;
   cursor: pointer;
   user-select: none;
+  transition: background var(--duration-short) var(--ease-standard);
+}
+
+.section > summary:hover {
+  background: rgb(var(--md-state-layer) / var(--state-hover));
 }
 
 .count {

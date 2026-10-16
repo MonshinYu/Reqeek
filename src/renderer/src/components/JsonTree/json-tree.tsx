@@ -1,6 +1,8 @@
 import React, {useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import styles from './json-tree.module.css';
+import {Button} from '@/components/Button';
+import {Icon} from '@/components/Icon';
 import {ClampText} from '@/components/ClampText';
 
 /** 单个容器一次最多渲染的子项数，更多的点按钮再展开，避免几万项的数组卡死渲染 */
@@ -81,8 +83,8 @@ const JsonNode = (props: JsonNodeProps): React.ReactElement => {
         aria-expanded={open}
         onClick={() => setOpen(!open)}
       >
-        <span className={styles.arrow} aria-hidden="true">
-          {open ? '▾' : '▸'}
+        <span className={styles.arrow}>
+          <Icon name={open ? 'chevron-down' : 'chevron-right'} size={12} />
         </span>
         {label}
         <span className={styles.summary}>
@@ -95,13 +97,14 @@ const JsonNode = (props: JsonNodeProps): React.ReactElement => {
             <JsonNode key={key} name={key} value={child} depth={depth + 1} />
           ))}
           {total > shown && (
-            <button
-              type="button"
+            <Button
+              variant="text"
+              size="xs"
               className={styles.more}
               onClick={() => setShown(shown + PAGE_SIZE)}
             >
               {t('tree.showMore', {count: total - shown})}
-            </button>
+            </Button>
           )}
         </div>
       )}

@@ -2,49 +2,17 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: var(--space-3);
   min-height: 36px;
   flex: none;
-  padding: 4px 16px;
+  padding: var(--space-2) var(--space-6);
   border-bottom: 1px solid var(--md-outline-variant);
 }
 
+/* 分组竖线：类型标签与若干开关之间 */
 .sep {
   width: 1px;
   height: 16px;
-  margin: 0 4px;
+  margin: 0 var(--space-2);
   background: var(--md-outline-variant);
-}
-
-.chip {
-  height: 24px;
-  padding: 0 10px;
-  border: none;
-  border-radius: var(--shape-xs);
-  background: transparent;
-  color: var(--md-on-surface-variant);
-  font-size: var(--font-label);
-  cursor: pointer;
-}
-
-.chip:hover {
-  background: rgb(var(--md-state-layer) / var(--state-hover));
-}
-
-.chip[aria-pressed='true'] {
-  background: var(--md-secondary-container);
-  color: var(--md-on-secondary-container);
-}
-
-.check {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: var(--font-label);
-  color: var(--md-on-surface-variant);
-  cursor: pointer;
-}
-
-.check input {
-  accent-color: var(--md-primary);
 }

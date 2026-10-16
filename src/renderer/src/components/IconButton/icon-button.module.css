@@ -1,0 +1,53 @@
+.iconButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  border: none;
+  border-radius: var(--shape-full);
+  background: transparent;
+  cursor: pointer;
+  user-select: none;
+  /* 控件自己声明不参与窗口拖动，不指望调用方记得写 */
+  -webkit-app-region: no-drag;
+  transition:
+    background var(--duration-short) var(--ease-standard),
+    color var(--duration-short) var(--ease-standard);
+}
+
+.iconButton:hover:not(:disabled) {
+  background: rgb(var(--md-state-layer) / var(--state-hover));
+}
+
+.iconButton:active:not(:disabled) {
+  background: rgb(var(--md-state-layer) / var(--state-pressed));
+}
+
+.iconButton:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+/* ---- 尺寸 ---- */
+.xs {
+  width: var(--control-h-xs);
+  height: var(--control-h-xs);
+}
+
+.sm {
+  width: var(--control-h-sm);
+  height: var(--control-h-sm);
+}
+
+/* ---- 图标色 ---- */
+.subtle {
+  color: var(--md-on-surface-variant);
+}
+
+.strong {
+  color: var(--md-on-surface);
+}
+
+.danger {
+  color: var(--md-error);
+}

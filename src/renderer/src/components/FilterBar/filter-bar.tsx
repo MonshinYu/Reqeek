@@ -1,6 +1,8 @@
 import React from 'react';
 import {useTranslation} from 'react-i18next';
 import styles from './filter-bar.module.css';
+import {Button} from '@/components/Button';
+import {Checkbox} from '@/components/Checkbox';
 import {type FilterState, TYPE_FILTERS} from '@/lib/filter';
 
 interface FilterBarProps {
@@ -17,42 +19,37 @@ export const FilterBar = (props: FilterBarProps): React.ReactElement => {
 
   return (
     <div className={styles.root} role="group" aria-label={t('filter.group')}>
+      {/* 类型标签沿用 Chrome DevTools 的英文原名，故意不翻译（见 lib/filter.ts） */}
       {TYPE_FILTERS.map((item) => (
-        <button
+        <Button
           key={item.key}
-          type="button"
-          className={styles.chip}
+          variant="text"
+          size="xs"
+          shape="rounded"
           aria-pressed={filter.type === item.key}
           onClick={() => patch({ type: item.key })}
         >
           {item.label}
-        </button>
+        </Button>
       ))}
+
       <span className={styles.sep} />
-      <label className={styles.check}>
-        <input
-          type="checkbox"
-          checked={filter.invert}
-          onChange={(event) => patch({ invert: event.target.checked })}
-        />
-        {t('filter.invertSearch')}
-      </label>
-      <label className={styles.check}>
-        <input
-          type="checkbox"
-          checked={filter.errorsOnly}
-          onChange={(event) => patch({ errorsOnly: event.target.checked })}
-        />
-        {t('filter.errorsOnly')}
-      </label>
-      <label className={styles.check}>
-        <input
-          type="checkbox"
-          checked={filter.hideTunnels}
-          onChange={(event) => patch({ hideTunnels: event.target.checked })}
-        />
-        {t('filter.hideTunnels')}
-      </label>
+
+      <Checkbox
+        label={t('filter.invertSearch')}
+        checked={filter.invert}
+        onChange={(event) => patch({ invert: event.target.checked })}
+      />
+      <Checkbox
+        label={t('filter.errorsOnly')}
+        checked={filter.errorsOnly}
+        onChange={(event) => patch({ errorsOnly: event.target.checked })}
+      />
+      <Checkbox
+        label={t('filter.hideTunnels')}
+        checked={filter.hideTunnels}
+        onChange={(event) => patch({ hideTunnels: event.target.checked })}
+      />
     </div>
   );
 };

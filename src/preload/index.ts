@@ -8,7 +8,7 @@ import type {
   MenuAction,
   ProxyEvent,
   ProxyStatus,
-  UpdateStatus
+  UpdateCheckResult
 } from '@shared/types';
 
 /**
@@ -73,17 +73,10 @@ const api = {
   resetSettings: (): Promise<AppSettings> => ipcRenderer.invoke('settings:reset'),
   getAppVersion: (): Promise<string> => ipcRenderer.invoke('app:version'),
 
-  /**
-   * 发起一次检查更新。不返回结果：结论和下载进度都走 onUpdateStatus，
-   * 因为 macOS 上「查」完会直接开始下载，整个过程要几分钟
-   */
-  checkForUpdates: (): Promise<void> => ipcRenderer.invoke('update:check'),
-  /** 设置窗口打开时接回当前状态（可能在别处已经查过、甚至正在下载） */
-  getUpdateStatus: (): Promise<UpdateStatus> => ipcRenderer.invoke('update:status'),
-  installUpdate: (): Promise<void> => ipcRenderer.invoke('update:install'),
-  /** 订阅更新状态，返回取消订阅函数 */
-  onUpdateStatus: (callback: (status: UpdateStatus) => void): (() => void) =>
-    subscribe('update:status', callback),
+  /** 查一次版本号。不下载也不安装，有新版本时由界面引导到官网 */
+  checkForUpdates: (): Promise<UpdateCheckResult> => ipcRenderer.invoke('update:check'),
+  /** 用系统浏览器打开官网。地址写死在主进程，渲染侧只能触发，不能指定 */
+  openUpdateSite: (): Promise<void> => ipcRenderer.invoke('update:open-site'),
 
   openSettings: (): void => ipcRenderer.send('settings:open'),
 

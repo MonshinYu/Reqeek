@@ -19,8 +19,10 @@
 
 .toggle {
   display: inline-flex;
-  align-items: baseline;
-  gap: 2px;
+  /* 原来是 baseline：▾ ▸ 这类字形按基线对齐正好。换成 SVG 之后没有基线概念，
+     会默认贴到基线上显得偏低，改成 center 才和旁边的等宽文字居中对齐。 */
+  align-items: center;
+  gap: var(--space-1);
   padding: 0;
   border: none;
   background: transparent;
@@ -29,6 +31,7 @@
   text-align: left;
   cursor: pointer;
   user-select: none;
+  transition: background var(--duration-short) var(--ease-standard);
 }
 
 .toggle:hover {
@@ -36,6 +39,9 @@
 }
 
 .arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 12px;
   color: var(--md-outline);
 }
@@ -74,18 +80,7 @@
   color: var(--md-outline);
 }
 
+/* 只剩外边距：外观全部来自 Button variant="text" */
 .more {
-  margin: 2px 0 2px 14px;
-  padding: 0 8px;
-  border: 1px solid var(--md-outline-variant);
-  border-radius: var(--shape-xs);
-  background: transparent;
-  color: var(--md-primary);
-  font: inherit;
-  cursor: pointer;
-  user-select: none;
-}
-
-.more:hover {
-  background: rgb(var(--md-state-layer) / var(--state-hover));
+  margin: var(--space-1) 0 var(--space-1) 14px;
 }

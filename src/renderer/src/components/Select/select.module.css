@@ -1,0 +1,164 @@
+/*
+ * 触发器沿用设置页原来那套原生 select 的配色与圆角（surface-container-low 底 /
+ * outline-variant 边框 / shape-sm 圆角 / 12px 水平内边距）。
+ *
+ * 高度改成写死的 --control-h-md，不再用「上下 7px 内边距 + min-height」那套：
+ * 13px 字在这套字体下的行盒约 18.5px，7px 内边距一撑，实际高度是 34.5px，
+ * min-height 根本拦不住 —— 结果 Select 比 Button 和 Input 高 2.5px，
+ * 正是这次要消掉的那类不一致。纵向内边距交给居中去管。
+ */
+.trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  height: var(--control-h-md);
+  padding: 0 var(--space-5);
+  border: 1px solid var(--md-outline-variant);
+  border-radius: var(--shape-sm);
+  background: var(--md-surface-container-low);
+  color: var(--md-on-surface);
+  font-size: var(--font-body);
+  text-align: start;
+  cursor: pointer;
+  /* 标题栏整条是拖动区：在组件里声明一次，免得被放进 titlebar 时忘了 */
+  -webkit-app-region: no-drag;
+  transition:
+    border-color var(--duration-short) var(--ease-standard),
+    background var(--duration-short) var(--ease-standard);
+}
+
+/*
+ * 这两条要放在一起看：:not(:disabled) 让它们特异性相同，谁在后面谁赢。
+ * 展开态写在后面 —— 鼠标悬停在一个已展开的下拉上时，边框该保持主色而不是退回灰色。
+ */
+.trigger:hover:not(:disabled) {
+  border-color: var(--md-outline);
+}
+
+.trigger[aria-expanded='true']:not(:disabled) {
+  border-color: var(--md-primary);
+}
+
+.trigger:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+/* 德语、俄语比中文长一倍，超了省略，别把调用方定好的宽度撑开 */
+.value {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.arrow {
+  flex: none;
+  color: var(--md-on-surface-variant);
+  transition: transform var(--duration-short) var(--ease-standard);
+}
+
+.trigger[aria-expanded='true'] .arrow {
+  transform: rotate(180deg);
+}
+
+/*
+ * 面板 portal 到 document.body，靠 position: fixed 把包含块钉死在视口 ——
+ * 这样将来任何祖先加上 transform / filter / contain 都不会让它错位或被裁掉。
+ *
+ * display 必须显式写出来：hidden 属性的 UA 样式就是 display: none，
+ * 一旦被这里的 display 盖掉，面板关了还会浮在屏幕上。所以下面还要补一条 [hidden]。
+ */
+.panel {
+  position: fixed;
+  display: block;
+  z-index: var(--z-popover);
+  max-width: calc(100vw - 16px);
+  /* 让圆角把列表的滚动条一起裁进去 */
+  overflow: hidden;
+  border: 1px solid var(--md-outline-variant);
+  border-radius: var(--shape-md);
+  /*
+   * 底色与 CaDialog 一致（surface-container-high），不加阴影：全项目没有阴影 token，
+   * 单独给面板来一层只会和唯一的另一个浮层脱节。
+   */
+  background: var(--md-surface-container-high);
+  color: var(--md-on-surface);
+  -webkit-app-region: no-drag;
+  /*
+   * 入场：淡入 + 从贴着触发器的那条边微微展开（transform-origin 由组件按是否翻转内联给出）。
+   * 面板是 display: none ↔ block 切换的，所以这段动画每次打开都会重放。
+   * 关闭不给退场动画：面板要立刻消失，留一段残影反而显得拖沓，
+   * 而且那意味着关闭后还得在 DOM 里挂一个不可交互的浮层。
+   */
+  animation: panel-in var(--duration-short) var(--ease-standard);
+}
+
+@keyframes panel-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
+.panel[hidden] {
+  display: none;
+}
+
+.list {
+  overflow-y: auto;
+  /* 滚到底不要把手势链给背后的设置页 */
+  overscroll-behavior: contain;
+  /* max-height 由 use-select-position 在运行期算出来内联设置，这里不写死 */
+  padding: var(--space-2) 0;
+  /* 全局 reset 只清了 margin/padding，没清 list-style */
+  list-style: none;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-5);
+  cursor: pointer;
+  /*
+   * 高亮是跟着指针走的，用最短的一档：150ms 会拖出一条尾巴，高亮像在追光标。
+   * 高亮状态只有一个来源（data-active），键盘和鼠标都写它 —— 所以不会出现
+   * "鼠标停在一项上、键盘高亮在另一项"这种两条高亮打架的情况。
+   */
+  transition: background-color var(--duration-xs) var(--ease-standard);
+}
+
+/* 高亮 =「回车会选中的那个」，和「当前选中值」是两件事，所以是两个独立状态 */
+.option[data-active='true'] {
+  background: rgb(var(--md-state-layer) / var(--state-hover));
+}
+
+.option[aria-selected='true'] {
+  color: var(--md-primary);
+}
+
+.option[aria-disabled='true'] {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+/* 勾固定占位、靠透明度显隐：不占位的话选中状态一变文字就左右挪 */
+.check {
+  flex: none;
+  color: var(--md-primary);
+  opacity: 0;
+  transition: opacity var(--duration-short) var(--ease-standard);
+}
+
+.option[aria-selected='true'] .check {
+  opacity: 1;
+}
+
+.optionLabel {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}

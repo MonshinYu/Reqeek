@@ -1,6 +1,7 @@
 import React from 'react';
 import {useTranslation} from 'react-i18next';
 import {type AppGroup, UNKNOWN_APP} from '@/lib/filter';
+import {Button} from '@/components/Button';
 import styles from './app-sidebar.module.css';
 
 interface AppSidebarProps {
@@ -22,19 +23,24 @@ export const AppSidebar = (props: AppSidebarProps): React.ReactElement => {
 
   return (
     <nav className={styles.sidebar} aria-label={t('sidebar.byApp')}>
-      <button
-        type="button"
+      <Button
+        variant="text"
+        size="sm"
+        shape="rounded"
         className={styles.item}
         aria-pressed={selected === null}
         onClick={() => onSelect(null)}
       >
         <span className={styles.name}>{t('sidebar.allApps')}</span>
         <span className={styles.count}>{total}</span>
-      </button>
+      </Button>
+
       {groups.map((group) => (
-        <button
+        <Button
           key={group.name}
-          type="button"
+          variant="text"
+          size="sm"
+          shape="rounded"
           className={styles.item}
           aria-pressed={selected === group.name}
           title={labelOf(group.name)}
@@ -42,7 +48,7 @@ export const AppSidebar = (props: AppSidebarProps): React.ReactElement => {
         >
           <span className={styles.name}>{labelOf(group.name)}</span>
           <span className={styles.count}>{group.count}</span>
-        </button>
+        </Button>
       ))}
     </nav>
   );

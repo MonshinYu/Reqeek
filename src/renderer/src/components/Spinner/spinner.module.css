@@ -1,0 +1,19 @@
+.spinner {
+  --spinner-size: 16px;
+
+  display: inline-block;
+  flex: none;
+  width: var(--spinner-size);
+  height: var(--spinner-size);
+  /* 边框粗细跟着直径走：16px → 2px，32px → 3px，和原来设置窗口那个 spinner 一致 */
+  border: max(2px, calc(var(--spinner-size) / 10)) solid var(--md-outline-variant);
+  border-top-color: var(--md-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

@@ -11,6 +11,7 @@
     "clearRecords": "Clear records",
     "searchPlaceholder": "Search host / path / method / status",
     "searchRequests": "Search requests",
+    "clearSearch": "Clear search",
     "ca": "CA Certificate"
   },
   "filter": {
@@ -144,6 +145,7 @@
     "loading": "Loading…",
     "none": "None",
     "collapse": "Collapse",
+    "cancel": "Cancel",
     "semicolon": "; "
   },
   "menu": {
@@ -197,22 +199,17 @@
       "dark": "Dark"
     },
     "port": "Port",
+    "portInvalid": "Port must be between {{min}} and {{max}}",
     "version": "Version",
     "update": {
       "title": "Updates",
       "check": "Check for Updates",
       "checking": "Checking…",
       "upToDate": "Up to date",
-      "downloading": "Downloading the new version — {{percent}}%",
-      "readyRestart": "Version {{version}} is downloaded, restart to finish installing",
-      "readyOpened": "Version {{version}} installer opened — drag it to Applications",
-      "install": "Restart and Install",
-      "openInstaller": "Open Installer",
-      "checkRateLimited": "Too many requests, try again later",
+      "available": "Version {{version}} is available",
+      "openSite": "Open Website to Update",
       "checkNetworkFailed": "Network connection failed, check your connection and try again",
-      "checkNoRelease": "No release available",
-      "checkFailed": "Check failed, try again later",
-      "downloadFailed": "Download failed, try again later"
+      "checkServerFailed": "Update service is temporarily unavailable, try again later"
     },
     "reset": "Reset to Defaults",
     "resetConfirm": "Reset all settings to defaults?",

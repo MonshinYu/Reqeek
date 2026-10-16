@@ -1,7 +1,12 @@
-.toggle,
-.more {
-  margin-left: 6px;
-  padding: 0 6px;
+/*
+ * 这个按钮保留独立实现，不套 Button：它是**行内**的，夹在正文中间，
+ * 而 Button 有固定高度（最小 24px），塞进文本流里会把行高撑开、行距忽大忽小。
+ * 同样理由，块级的「显示更多」（ClampBlock / JsonTree / XmlTree）都已经换成
+ * Button variant="text" —— 那边没有这个问题。
+ */
+.toggle {
+  margin-left: var(--space-3);
+  padding: 0 var(--space-3);
   border: 1px solid var(--md-outline-variant);
   border-radius: var(--shape-xs);
   background: transparent;
@@ -10,16 +15,16 @@
   font-size: var(--font-label);
   cursor: pointer;
   user-select: none;
+  transition: background var(--duration-short) var(--ease-standard);
 }
 
+.toggle:hover {
+  background: rgb(var(--md-state-layer) / var(--state-hover));
+}
+
+/* 只剩布局：外观全部来自 Button variant="text" */
 .more {
   align-self: flex-start;
-  margin: 0;
-}
-
-.toggle:hover,
-.more:hover {
-  background: rgb(var(--md-state-layer) / var(--state-hover));
 }
 
 .code {

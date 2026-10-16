@@ -11,6 +11,7 @@
     "clearRecords": "Limpar registros",
     "searchPlaceholder": "Buscar host / caminho / método / status",
     "searchRequests": "Buscar solicitações",
+    "clearSearch": "Limpar pesquisa",
     "ca": "Certificado CA"
   },
   "filter": {
@@ -144,6 +145,7 @@
     "loading": "Carregando…",
     "none": "Nenhum",
     "collapse": "Recolher",
+    "cancel": "Cancelar",
     "semicolon": "; "
   },
   "menu": {
@@ -197,22 +199,17 @@
       "dark": "Escuro"
     },
     "port": "Porta",
+    "portInvalid": "A porta deve estar entre {{min}} e {{max}}",
     "version": "Versão",
     "update": {
       "title": "Atualizações",
       "check": "Verificar Atualizações",
       "checking": "Verificando…",
       "upToDate": "Atualizado",
-      "downloading": "Baixando a nova versão — {{percent}}%",
-      "readyRestart": "A versão {{version}} foi baixada, reinicie para concluir a instalação",
-      "readyOpened": "O instalador da versão {{version}} foi aberto — arraste-o para Aplicativos",
-      "install": "Reiniciar e Instalar",
-      "openInstaller": "Abrir Instalador",
-      "checkRateLimited": "Demasiados pedidos, tente novamente mais tarde",
+      "available": "A versão {{version}} está disponível",
+      "openSite": "Abrir o site para atualizar",
       "checkNetworkFailed": "Falha na conexão de rede, verifique a conexão e tente novamente",
-      "checkNoRelease": "Nenhuma versão disponível",
-      "checkFailed": "Falha na verificação, tente novamente mais tarde",
-      "downloadFailed": "Falha no download, tente novamente mais tarde"
+      "checkServerFailed": "Serviço de atualização indisponível, tente novamente mais tarde"
     },
     "reset": "Restaurar Padrões",
     "resetConfirm": "Restaurar todas as configurações para os padrões?",

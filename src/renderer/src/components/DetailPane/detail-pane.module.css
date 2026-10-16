@@ -20,14 +20,20 @@
   user-select: none;
 }
 
+/* 和 .tab 一样属于 tab 条的结构件：满高、带右分隔线，不是独立的按钮式控件 */
 .close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 26px;
   border: none;
   border-right: 1px solid var(--md-outline-variant);
   background: transparent;
   color: var(--md-on-surface-variant);
-  font-size: 16px;
   cursor: pointer;
+  transition:
+    background var(--duration-short) var(--ease-standard),
+    color var(--duration-short) var(--ease-standard);
 }
 
 .close:hover {
@@ -37,11 +43,16 @@
 .tab {
   padding: 0 12px;
   border: none;
+  /* 下划线用透明占位再换色，切换 tab 时不会因为边框突然出现把文字顶上去 */
   border-bottom: 2px solid transparent;
   background: transparent;
   color: var(--md-on-surface-variant);
   font-size: var(--font-label);
   cursor: pointer;
+  transition:
+    background var(--duration-short) var(--ease-standard),
+    color var(--duration-short) var(--ease-standard),
+    border-bottom-color var(--duration-short) var(--ease-standard);
 }
 
 .tab:hover {
@@ -57,7 +68,11 @@
   flex: 1;
   min-height: 0;
   overflow: auto;
-  padding: 4px 0 12px;
+  /* 滚动条出现/消失时不让内容横向跳一下（配套约定见 global.css 的滚动条一节） */
+  scrollbar-gutter: stable;
+  /* 滚到底不要把手势链给旁边的请求列表 */
+  overscroll-behavior: contain;
+  padding: var(--space-2) 0 var(--space-5);
 }
 
 .empty {

@@ -11,6 +11,7 @@
     "clearRecords": "Aufzeichnungen löschen",
     "searchPlaceholder": "Host / Pfad / Methode / Status suchen",
     "searchRequests": "Anfragen suchen",
+    "clearSearch": "Suche löschen",
     "ca": "CA-Zertifikat"
   },
   "filter": {
@@ -144,6 +145,7 @@
     "loading": "Wird geladen…",
     "none": "Keine",
     "collapse": "Einklappen",
+    "cancel": "Abbrechen",
     "semicolon": "; "
   },
   "menu": {
@@ -197,22 +199,17 @@
       "dark": "Dunkel"
     },
     "port": "Port",
+    "portInvalid": "Der Port muss zwischen {{min}} und {{max}} liegen",
     "version": "Version",
     "update": {
       "title": "Updates",
       "check": "Nach Updates suchen",
       "checking": "Suche nach Updates…",
       "upToDate": "Auf dem neuesten Stand",
-      "downloading": "Neue Version wird heruntergeladen — {{percent}} %",
-      "readyRestart": "Version {{version}} wurde heruntergeladen — zum Abschließen neu starten",
-      "readyOpened": "Installer für Version {{version}} geöffnet — zum Installieren in den Ordner \"Programme\" ziehen",
-      "install": "Neu starten und installieren",
-      "openInstaller": "Installer öffnen",
-      "checkRateLimited": "Zu viele Anfragen, später erneut versuchen",
+      "available": "Version {{version}} ist verfügbar",
+      "openSite": "Website zum Aktualisieren öffnen",
       "checkNetworkFailed": "Keine Netzwerkverbindung, Verbindung prüfen und erneut versuchen",
-      "checkNoRelease": "Keine Version verfügbar",
-      "checkFailed": "Suche fehlgeschlagen, später erneut versuchen",
-      "downloadFailed": "Download fehlgeschlagen, später erneut versuchen"
+      "checkServerFailed": "Update-Dienst ist vorübergehend nicht verfügbar, später erneut versuchen"
     },
     "reset": "Auf Standardwerte zurücksetzen",
     "resetConfirm": "Alle Einstellungen auf die Standardwerte zurücksetzen?",

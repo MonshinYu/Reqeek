@@ -2,17 +2,19 @@
   flex: 1;
   min-height: 0;
   overflow: auto;
+  /* 滚动条出现/消失时不让内容横向跳一下（配套约定见 global.css 的滚动条一节） */
+  scrollbar-gutter: stable;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 16px;
-  padding: 32px;
+  gap: var(--space-6);
+  padding: var(--space-8);
   text-align: center;
 }
 
 .gate h1 {
-  font-size: 24px;
+  font-size: var(--font-display);
   font-weight: 500;
 }
 
@@ -26,7 +28,7 @@
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--space-4);
   width: 460px;
   max-width: 100%;
   text-align: left;
@@ -35,7 +37,7 @@
 .steps li {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: var(--space-1);
   padding: 10px 14px;
   border: 1px solid var(--md-outline-variant);
   border-radius: var(--shape-md);
@@ -65,5 +67,5 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 8px;
+  gap: var(--space-4);
 }

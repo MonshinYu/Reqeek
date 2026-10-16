@@ -4,6 +4,7 @@ import styles from './detail-pane.module.css';
 import type {Flow, FlowDetail} from '@shared/types';
 import {mimeFromHeaders} from '@/lib/body';
 import {BodyPanel} from '@/components/BodyPanel';
+import {Icon} from '@/components/Icon';
 import {HeadersView} from '@/components/HeadersView';
 import {TimingView} from '@/components/TimingView';
 
@@ -58,7 +59,7 @@ export const DetailPane = (props: DetailPaneProps): React.ReactElement => {
           aria-label={t('detail.close')}
           onClick={onClose}
         >
-          ×
+          <Icon name="close" size={14} />
         </button>
         {TABS.map((item) => (
           <button

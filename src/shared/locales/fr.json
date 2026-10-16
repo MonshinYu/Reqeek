@@ -11,6 +11,7 @@
     "clearRecords": "Effacer les enregistrements",
     "searchPlaceholder": "Rechercher hôte / chemin / méthode / statut",
     "searchRequests": "Rechercher des requêtes",
+    "clearSearch": "Effacer la recherche",
     "ca": "Certificat CA"
   },
   "filter": {
@@ -144,6 +145,7 @@
     "loading": "Chargement…",
     "none": "Aucun",
     "collapse": "Réduire",
+    "cancel": "Annuler",
     "semicolon": "; "
   },
   "menu": {
@@ -197,22 +199,17 @@
       "dark": "Sombre"
     },
     "port": "Port",
+    "portInvalid": "Le port doit être compris entre {{min}} et {{max}}",
     "version": "Version",
     "update": {
       "title": "Mises à jour",
       "check": "Rechercher des mises à jour",
       "checking": "Recherche…",
       "upToDate": "À jour",
-      "downloading": "Téléchargement de la nouvelle version — {{percent}} %",
-      "readyRestart": "La version {{version}} est téléchargée, redémarrer pour terminer l'installation",
-      "readyOpened": "L'installateur de la version {{version}} est ouvert — le faire glisser dans Applications",
-      "install": "Redémarrer et installer",
-      "openInstaller": "Ouvrir l'installateur",
-      "checkRateLimited": "Trop de requêtes, réessayer plus tard",
+      "available": "La version {{version}} est disponible",
+      "openSite": "Ouvrir le site pour mettre à jour",
       "checkNetworkFailed": "Connexion réseau impossible, vérifier la connexion et réessayer",
-      "checkNoRelease": "Aucune version disponible",
-      "checkFailed": "Échec de la recherche, réessayer plus tard",
-      "downloadFailed": "Échec du téléchargement, réessayer plus tard"
+      "checkServerFailed": "Service de mise à jour indisponible, réessayer plus tard"
     },
     "reset": "Réinitialiser les valeurs par défaut",
     "resetConfirm": "Réinitialiser tous les paramètres ?",

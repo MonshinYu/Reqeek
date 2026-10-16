@@ -30,11 +30,8 @@ jobs:
     strategy:
       # 单个平台失败不牵连另一个平台，便于一次看清哪些平台有问题
       fail-fast: false
-      # 一个平台一个 job，一次把两个架构都构建出来 —— 不能拆成「一个架构一个 job」：
-      # latest.yml 里必须同时列出 x64 和 arm64 的包，客户端按自己的架构从里面挑
-      # （electron-updater 的 Provider.findFile 用 process.arch 匹配文件名）。
-      # 拆开的话两个 job 会各写一份同名的 latest.yml，后上传的盖掉先上传的，
-      # 另一个架构的机器就永远查不到更新。
+      # 一个平台一个 job，一次把两个架构都构建出来。拆成「一个架构一个 job」的话，
+      # 产物要分两批下载再合并上传，反而更绕；这里一次出齐，代价只是多跑一轮交叉构建。
       matrix:
         include:
           # macOS：GitHub 的 Intel runner（macos-13）已退役，两种架构都在 Apple Silicon
@@ -169,16 +166,11 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact }}
-          # latest.yml 是 Windows 自动更新的元数据：客户端靠它比对版本、取包地址和
-          # SHA-512 校验值，少一个字节应用就永远查不到更新。
-          # mac job 产不出这个文件 —— 更新元数据只有 zip 和 NSIS 目标会写，而 macOS
-          # 只出 dmg（见 electron-builder.yml 的 mac.target）。macOS 客户端改用 GitHub API
-          # 查版本，不需要它。写成 latest*.yml 是为了将来加回 zip 时不用改这里。
-          # 也不能图省事写 dist/*.yml —— 那会连 builder-debug.yml 一起传上去。
+          # 只传安装包本身。不能图省事写 dist/*.yml —— 那会连 builder-debug.yml
+          # 一起传上去。
           path: |
             dist/*.exe
             dist/*.dmg
-            dist/latest*.yml
           if-no-files-found: error
 
   release:

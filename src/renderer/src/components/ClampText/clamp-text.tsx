@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import styles from './clamp-text.module.css';
+import {Button} from '@/components/Button';
 
 /** 单个值（头部值、JSON 字符串、表单值）超过这个长度就截短 */
 export const VALUE_LIMIT = 300;
@@ -40,9 +41,14 @@ export const ClampBlock = (props: ClampTextProps): React.ReactElement => {
     <>
       <pre className={styles.code}>{clipped ? text.slice(0, limit) : text}</pre>
       {text.length > limit && (
-        <button type="button" className={styles.more} onClick={() => setExpanded(!expanded)}>
+        <Button
+          variant="text"
+          size="xs"
+          className={styles.more}
+          onClick={() => setExpanded(!expanded)}
+        >
           {expanded ? t('common.collapse') : t('clamp.showAll', {count: text.length - limit})}
-        </button>
+        </Button>
       )}
     </>
   );

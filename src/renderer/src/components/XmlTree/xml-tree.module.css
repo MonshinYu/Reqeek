@@ -19,6 +19,7 @@
   composes: children from '../JsonTree/json-tree.module.css';
 }
 
+/* 只剩外边距：外观全部来自 Button variant="text" */
 .more {
   composes: more from '../JsonTree/json-tree.module.css';
 }

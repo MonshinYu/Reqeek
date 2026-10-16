@@ -1,6 +1,6 @@
 /* 整条可拖动，内部可交互元素设为 no-drag。
    左右留白按平台处理：macOS 红绿灯在左，Windows / Linux 的系统按钮在右。
-   platform--* 类由 main.tsx 挂在 body 上，是少数确实需要全局的类名。 */
+   platform--* 类由各窗口入口挂在 body 上，是少数确实需要全局的类名。 */
 .titleBar {
   -webkit-app-region: drag;
   height: 44px;
@@ -13,6 +13,9 @@
   border-bottom: 1px solid var(--md-outline-variant);
 }
 
+/*
+ * 控件组件各自也声明了 no-drag，这条属于兜底：将来往这里放裸元素时不用再想起来。
+ */
 .titleBar button,
 .titleBar input {
   -webkit-app-region: no-drag;
@@ -37,25 +40,11 @@
   min-width: 8px;
 }
 
+/* 只留布局：边框、底色、圆角、焦点环都由 Input 自己管 */
 .search {
   width: 280px;
   min-width: 120px;
   flex: 0 1 280px;
-  height: 28px;
-  padding: 0 12px;
-  border: 1px solid var(--md-outline-variant);
-  border-radius: var(--shape-full);
-  background: var(--md-surface-container);
-  user-select: text;
-}
-
-.search:focus {
-  outline: none;
-  border-color: var(--md-primary);
-}
-
-.search:disabled {
-  opacity: 0.38;
 }
 
 .error {
@@ -65,34 +54,5 @@
   white-space: nowrap;
   color: var(--md-error);
   font-size: var(--font-label);
-}
-
-.iconButton {
-  width: 28px;
-  height: 28px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  border-radius: var(--shape-full);
-  background: transparent;
-  color: var(--md-on-surface-variant);
-  cursor: pointer;
-}
-
-.iconButton:hover:not(:disabled) {
-  background: rgb(var(--md-state-layer) / var(--state-hover));
-}
-
-.iconButton:disabled {
-  opacity: 0.38;
-  cursor: not-allowed;
-}
-
-.record {
-  color: var(--md-error);
-}
-
-.stop {
-  color: var(--md-on-surface);
+  user-select: text;
 }

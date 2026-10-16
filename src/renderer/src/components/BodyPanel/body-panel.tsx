@@ -122,7 +122,7 @@ export const BodyPanel = (props: BodyPanelProps): React.ReactElement => {
     <div className={styles.root}>
       {notes.length > 0 && <p className={styles.note}>{notes.join(t('common.semicolon'))}</p>}
       {copyText !== null && (
-        <Button size="small" className={styles.copy} onClick={() => void copy(copyText)}>
+        <Button size="sm" className={styles.copy} onClick={() => void copy(copyText)}>
           {copied
             ? t('body.copied')
             : mode === 'preview' && view.kind === 'json'

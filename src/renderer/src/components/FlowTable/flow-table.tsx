@@ -1,6 +1,8 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import styles from './flow-table.module.css';
+import {Button} from '@/components/Button';
+import {Icon} from '@/components/Icon';
 import type {FlowGroup} from '@/lib/group';
 import {
   flowName,
@@ -167,19 +169,21 @@ export const FlowTable = (props: FlowTableProps): React.ReactElement => {
               onClick={() => column.sortable && onSort(column.key as SortKey)}
             >
               {t(column.labelKey)}
-              {active && <span aria-hidden="true">{sort.dir === 'asc' ? ' ▲' : ' ▼'}</span>}
+              {active && (
+                <Icon name={sort.dir === 'asc' ? 'chevron-up' : 'chevron-down'} size={12} />
+              )}
             </button>
           );
         })}
       </div>
 
       <div className={styles.toolbar}>
-        <button type="button" className={styles.toolbarButton} onClick={onExpandAll}>
+        <Button variant="text" size="xs" onClick={onExpandAll}>
           {t('table.expandAll')}
-        </button>
-        <button type="button" className={styles.toolbarButton} onClick={onCollapseAll}>
+        </Button>
+        <Button variant="text" size="xs" onClick={onCollapseAll}>
           {t('table.collapseAll')}
-        </button>
+        </Button>
       </div>
 
       <div
@@ -207,7 +211,7 @@ export const FlowTable = (props: FlowTableProps): React.ReactElement => {
                       row.expanded ? `${styles.arrow} ${styles.arrowExpanded}` : styles.arrow
                     }
                   >
-                    ▶
+                    <Icon name="chevron-right" size={12} />
                   </span>
                   <strong>{row.domain}</strong>
                   <span className={styles.count}>

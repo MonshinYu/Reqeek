@@ -11,6 +11,7 @@
     "clearRecords": "기록 지우기",
     "searchPlaceholder": "호스트 / 경로 / 메서드 / 상태 검색",
     "searchRequests": "요청 검색",
+    "clearSearch": "검색 지우기",
     "ca": "CA 인증서"
   },
   "filter": {
@@ -139,6 +140,7 @@
     "loading": "불러오는 중…",
     "none": "없음",
     "collapse": "접기",
+    "cancel": "취소",
     "semicolon": "; "
   },
   "menu": {
@@ -192,22 +194,17 @@
       "dark": "다크"
     },
     "port": "포트",
+    "portInvalid": "포트는 {{min}}에서 {{max}} 사이여야 합니다",
     "version": "버전",
     "update": {
       "title": "업데이트",
       "check": "업데이트 확인",
       "checking": "확인 중…",
       "upToDate": "최신 버전입니다",
-      "downloading": "새 버전 다운로드 중 — {{percent}}%",
-      "readyRestart": "버전 {{version}} 다운로드 완료, 재시작하면 설치가 완료됩니다",
-      "readyOpened": "버전 {{version}} 설치 프로그램을 열었습니다 — 응용 프로그램으로 드래그하십시오",
-      "install": "재시작 후 설치",
-      "openInstaller": "설치 프로그램 열기",
-      "checkRateLimited": "요청이 너무 많습니다. 나중에 다시 시도하십시오",
+      "available": "새 버전 {{version}} 사용 가능",
+      "openSite": "웹사이트에서 업데이트",
       "checkNetworkFailed": "네트워크 연결에 실패했습니다. 연결을 확인한 후 다시 시도하십시오",
-      "checkNoRelease": "사용 가능한 릴리스가 없습니다",
-      "checkFailed": "확인에 실패했습니다. 나중에 다시 시도하십시오",
-      "downloadFailed": "다운로드에 실패했습니다. 나중에 다시 시도하십시오"
+      "checkServerFailed": "업데이트 서비스를 일시적으로 사용할 수 없습니다. 나중에 다시 시도하십시오"
     },
     "reset": "기본값으로 재설정",
     "resetConfirm": "모든 설정을 기본값으로 되돌리시겠습니까?",

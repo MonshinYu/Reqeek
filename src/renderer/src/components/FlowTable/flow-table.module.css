@@ -4,7 +4,17 @@
   min-height: 0;
   display: flex;
   flex-direction: column;
-  --cols: minmax(0, 1fr) 80px 90px 80px 80px 220px;
+  /*
+   * 宽裕时每列正好停在原来的宽度上（80/90/80/80/220），Name 吃掉剩余空间；
+   * 空间不够时中间几列各自缩到下限、瀑布图先让位，Name 保底 140px。
+   *
+   * 原来的写法是 `minmax(0, 1fr) 80px 90px 80px 80px 220px` —— 中间五列合计 550px
+   * 完全不可压缩，而窗口缩到最小宽度（720）时侧栏固定占 190px，列表区只剩 530px，
+   * 比这 550px 还窄，Name 列直接归零、右边被 overflow-x: hidden 裁掉。
+   */
+  --cols:
+    minmax(140px, 1fr) minmax(56px, 80px) minmax(64px, 90px) minmax(56px, 80px)
+    minmax(56px, 80px) minmax(0, 220px);
 }
 
 .compact {
@@ -26,16 +36,25 @@
   border-bottom: 1px solid var(--md-outline-variant);
 }
 
+/*
+ * 这一列的表头不是按钮式控件，而是表格的结构件：满高、无圆角、右边一条分隔线，
+ * 只有"可排序列"才带 cursor: pointer。所以它保留独立实现，不套 Button ——
+ * 硬套的结果是给它加一堆再逐条覆盖回去的规则。
+ */
 .th {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--space-1);
   height: 100%;
-  padding: 0 8px;
+  padding: 0 var(--space-4);
   border: none;
   border-right: 1px solid var(--md-outline-variant);
   background: transparent;
-  text-align: left;
   font-size: var(--font-label);
   color: var(--md-on-surface-variant);
   cursor: pointer;
+  transition: background var(--duration-short) var(--ease-standard);
 }
 
 .th:disabled {
@@ -49,29 +68,21 @@
 .toolbar {
   flex: none;
   display: flex;
-  gap: 4px;
-  padding: 4px 8px;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-4);
   border-bottom: 1px solid var(--md-outline-variant);
-}
-
-.toolbarButton {
-  padding: 2px 8px;
-  border: 1px solid var(--md-outline-variant);
-  border-radius: 4px;
-  background: transparent;
-  font-size: var(--font-label);
-  color: var(--md-on-surface-variant);
-  cursor: pointer;
-}
-
-.toolbarButton:hover {
-  background: rgb(var(--md-state-layer) / var(--state-hover));
 }
 
 .scroll {
   flex: 1;
+  /* 显式写出来，不再靠"overflow 非 visible 时 flex 最小尺寸自动为 0"这条隐式规则 */
+  min-height: 0;
   overflow-x: hidden;
   overflow-y: auto;
+  /* 滚动条出现/消失时不让列横向跳一下（配套约定见 global.css 的滚动条一节） */
+  scrollbar-gutter: stable;
+  /* 滚到底不要把手势链给旁边的侧栏或详情面板 */
+  overscroll-behavior: contain;
   position: relative;
   outline: none;
 }
@@ -82,6 +93,19 @@
   right: 0;
   height: var(--row-height);
   cursor: default;
+  /*
+   * body 上全局禁选，这里要开回来：URL、状态码、大小、耗时都是用户会想复制的东西，
+   * 详情面板里同一批数据本来就能选 —— 列表里选不中是不该有的差别。
+   */
+  user-select: text;
+  /*
+   * 用最短的一档。这是全应用最常被划过的元素，而且是一行一行扫着看；
+   * 150ms 在快速移动鼠标时会拖出一串正在淡出的残影，反而糊。
+   * 80ms 足够磨掉硬跳的棱角，又不会滞后。
+   */
+  transition:
+    background-color var(--duration-xs) var(--ease-standard),
+    color var(--duration-xs) var(--ease-standard);
 }
 
 .odd {
@@ -173,6 +197,7 @@
   cursor: pointer;
   font-weight: 500;
   color: var(--md-on-surface);
+  transition: background var(--duration-short) var(--ease-standard);
 }
 
 .group:hover {
@@ -202,9 +227,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
   color: var(--md-on-surface-variant);
-  transition: transform 0.15s ease;
+  /* 原来写的是 `transform 0.15s ease`：时长看着一样，曲线却不是 --ease-standard，
+     改 token 时这里不会跟着变，箭头旋转会和其它过渡脱节 */
+  transition: transform var(--duration-short) var(--ease-standard);
 }
 
 .arrowExpanded {

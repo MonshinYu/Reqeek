@@ -11,6 +11,7 @@
     "clearRecords": "記録をクリア",
     "searchPlaceholder": "ホスト / パス / メソッド / ステータスを検索",
     "searchRequests": "リクエストを検索",
+    "clearSearch": "検索をクリア",
     "ca": "CA 証明書"
   },
   "filter": {
@@ -139,6 +140,7 @@
     "loading": "読み込み中…",
     "none": "なし",
     "collapse": "折りたたむ",
+    "cancel": "キャンセル",
     "semicolon": "；"
   },
   "menu": {
@@ -192,22 +194,17 @@
       "dark": "ダーク"
     },
     "port": "ポート番号",
+    "portInvalid": "ポートは {{min}} から {{max}} の間で指定してください",
     "version": "バージョン",
     "update": {
       "title": "アップデート",
       "check": "アップデートを確認",
       "checking": "確認中…",
       "upToDate": "最新バージョンです",
-      "downloading": "新しいバージョンをダウンロード中 {{percent}}%",
-      "readyRestart": "バージョン {{version}} をダウンロードしました。再起動でインストールが完了します",
-      "readyOpened": "バージョン {{version}} のインストーラを開きました。「アプリケーション」へドラッグしてください",
-      "install": "再起動してインストール",
-      "openInstaller": "インストーラを開く",
-      "checkRateLimited": "リクエストが多すぎます。しばらくしてからお試しください",
+      "available": "新しいバージョン {{version}} があります",
+      "openSite": "公式サイトを開いて更新",
       "checkNetworkFailed": "ネットワークに接続できません。接続を確認してからお試しください",
-      "checkNoRelease": "利用可能なリリースがありません",
-      "checkFailed": "確認に失敗しました。しばらくしてからお試しください",
-      "downloadFailed": "ダウンロードに失敗しました。しばらくしてからお試しください"
+      "checkServerFailed": "アップデートサービスを利用できません。しばらくしてからお試しください"
     },
     "reset": "デフォルトに戻す",
     "resetConfirm": "すべての設定をデフォルトに戻しますか？",

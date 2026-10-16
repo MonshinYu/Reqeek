@@ -1,10 +1,10 @@
 .statusBar {
   display: flex;
   align-items: center;
-  gap: 16px;
-  height: 28px;
+  gap: var(--space-6);
+  height: var(--control-h-sm);
   flex: none;
-  padding: 0 16px;
+  padding: 0 var(--space-6);
   font-size: var(--font-label);
   color: var(--md-on-surface-variant);
   border-top: 1px solid var(--md-outline-variant);

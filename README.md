@@ -1,147 +1,297 @@
 # Reqeek
 
-Reqeek 是一个基于 Electron、React 和 TypeScript 构建的桌面抓包工具。它在本机启动一个 HTTP/HTTPS 代理，记录经过代理的请求，并提供请求列表、详情和过滤界面。
+A desktop HTTP/HTTPS capture tool. Reqeek runs a local man-in-the-middle proxy, points the system
+proxy at itself for the duration of a recording session, and shows every request that passes
+through — method, URL, status, timing, headers and bodies — in a table you can search, filter and
+drill into.
 
-## 功能
+The proxy core never leaves your machine: it binds `127.0.0.1`, and the root certificate it signs
+with is generated locally on first run. Nothing is uploaded anywhere.
 
-- **HTTP 抓包**：转发明文 HTTP 请求，记录方法、URL、状态码、耗时、首字节时间（TTFB）和流量大小。
-- **HTTPS 解密**：为 CONNECT 请求签发站点证书，解密后记录请求头、响应头和 body。解密握手失败的域名会自动回退为透明隧道，之后不再尝试解密。
-- **WebSocket**：支持 `ws` 和解密后的 `wss` 升级请求，升级成功后按裸字节流转发并统计流量。
-- **请求详情**：查看请求头和响应头、body（按 `Content-Encoding` 解码）、耗时视图。JSON 和 XML 以树形结构展示。
-- **来源应用**：根据客户端源端口反查发起请求的本机应用。
-- **过滤与搜索**：在界面中过滤和搜索请求列表。
-- **系统代理管理**：开始抓包时自动设置系统代理，停止或退出时还原。设置前会把原配置落盘为快照；应用异常退出后，下次启动会按快照还原。
-- **证书管理**：生成本地根 CA，并在界面中安装、卸载和查看信任状态。
+Built with Electron, React and TypeScript. macOS and Windows.
 
-## 平台支持
+---
 
-| 能力 | macOS | Windows | Linux |
-| --- | --- | --- | --- |
-| 自动设置系统代理 | 有驱动 | 有驱动 | 无驱动 |
-| 自动安装并信任根证书 | 有驱动 | 有驱动 | 无驱动 |
-| 开始抓包 | 可用 | 可用 | 暂不可用 |
+## Features
 
-macOS 和 Windows 都有系统代理与证书信任的驱动实现。Linux 只有打包配置（AppImage、snap、deb）：证书信任状态恒为 `unsupported`，而开始抓包要求证书处于「已信任」状态，系统代理驱动也会直接报错，所以 Linux 上目前无法启动抓包。
+**Recording**
 
-## 工作原理
+- Local HTTP proxy bound to `127.0.0.1`, installed as the system proxy while recording and restored
+  to its previous state when you stop recording or quit
+- HTTPS decryption through a locally generated root CA — leaf certificates are signed on demand per
+  host and cached in memory
+- Anything that can't be decrypted falls back to an opaque CONNECT tunnel rather than failing:
+  non-443 ports, built-in exclusions (Apple push and OCSP traffic), and hostnames that can't be
+  turned into a valid certificate SAN
+- WebSocket and other `101` upgrades are forwarded and byte-counted
+- Records survive the window being closed — the tray keeps the session running
 
-1. 点击「开始抓包」后，Reqeek 先检查根 CA 是否处于「已信任」状态。未信任时拒绝启动，界面会停在证书安装引导页。
-2. 检查通过后，Reqeek 在 `127.0.0.1:8989` 启动代理。端口绑定成功后才修改系统代理，避免端口被占用时用户断网。
-3. 明文 HTTP 请求直接转发并记录。
-4. HTTPS 请求通过 `CONNECT` 进入代理。默认只对 443 端口解密；Apple 推送（`push.apple.com`、`push.services.apple.com`）和 OCSP 域名被内置排除，直接走隧道，只记录域名、流量大小和时长。
-5. 停止抓包时先还原系统代理，再关闭代理服务。
+**Inspecting**
 
-监听地址固定为 `127.0.0.1`，只接受本机连接。代理端口在 `src/main/ipc/proxy.ts` 的 `PROXY_PORT` 中定义。
+- Virtualised request list with collapsible domain groups and columns for name, status, type, size,
+  time and a waterfall bar; click a header to sort by time, name, status, type, size or duration
+- Search across host / path / method / status, with an invert option
+- Filter bar of resource-type tabs (All, Fetch/XHR, Doc, CSS, JS, Font, Img, Media, WS, Other) plus
+  toggles for errors only and hiding tunnels
+- Sidebar that filters by the application that made the request — resolved from the OS, so a
+  browser's helper processes all report under one name
+- Detail pane that opens beside the list and narrows it to the name column, with five tabs:
+  Headers, Payload, Preview, Response and Timing
+- Body rendering chosen by content type — JSON and XML trees, a sandboxed HTML preview, an inline
+  image preview, decoded URL-encoded form fields, a hex dump for binary, and plain text — with
+  `gzip` / `deflate` / `br` decoded on demand and a copy button per body
 
-## 快速开始
+**Around it**
 
-### 环境要求
+- System tray with the recording state, so a capture is one click away
+- Nine UI languages, light / dark / system theme
+- Settings for port, language and theme, applied live — no restart, no save button
+- In-app update check that compares against the published version and points you at the download page
 
-- Node.js 20 或更高版本
-- pnpm 11.18.0（`package.json` 中通过 `packageManager` 指定）
+### Keyboard shortcuts
 
-### 安装依赖
+| Shortcut         | Action                         |
+| ---------------- | ------------------------------ |
+| `Cmd/Ctrl` + `R` | Start or stop recording        |
+| `Cmd/Ctrl` + `K` | Clear records                  |
+| `Cmd/Ctrl` + `F` | Focus the search field         |
+| `Cmd/Ctrl` + `,` | Open settings                  |
+| `↑` / `↓`        | Move the selection in the list |
+
+`Cmd/Ctrl` + `R` displaces the usual reload shortcut, which is why the dev build puts Force Reload
+on `Shift` + `Cmd/Ctrl` + `R`.
+
+### Not implemented yet
+
+- No export — no HAR, no CSV, nothing written to disk. A session lives in the app and is gone when
+  you clear it.
+- No search inside a body, and no match highlighting. The JSON and XML trees colour by value type,
+  not by search term.
+
+## Platform support
+
+| Feature               | macOS           | Windows                | Linux           |
+| --------------------- | --------------- | ---------------------- | --------------- |
+| System proxy          | `networksetup`  | Registry               | not implemented |
+| Root CA trust         | Keychain        | Certificate store      | not implemented |
+| Client app resolution | `lsof` / `ps`   | `netstat` / `tasklist` | not implemented |
+
+macOS and Windows are fully supported. Linux packaging is configured and produces installers, but
+the two platform-specific pieces the capture engine depends on — installing the system proxy and
+trusting the root CA — have no driver yet, so recording cannot start there.
+
+## Installing
+
+Prebuilt installers are attached to [Releases](https://github.com/MonshinYu/Reqeek/releases): a
+`.dmg` per architecture for macOS, and an NSIS `.exe` setup per architecture for Windows.
+
+The builds are unsigned. macOS release builds carry an ad-hoc signature (Apple Silicon refuses to
+launch a completely unsigned binary) but no Developer ID, so Gatekeeper will still ask you to
+confirm on first launch, and the Windows installer will show an unknown-publisher warning.
+
+### First run
+
+Reqeek cannot decrypt HTTPS until its root certificate is trusted, and it refuses to start recording
+until it is. The main window opens on a three-step gate:
+
+1. **Generate** — the root CA is created in the app's data directory on first launch
+2. **Install and trust** — macOS asks for keychain authorization; Windows shows a certificate
+   installation prompt
+3. **Verify** — the gate re-checks the trust state and lets you through
+
+The gate distinguishes "in the trust store" from "trusted". Importing a certificate on macOS does
+not trust it, and the difference shows up as a handshake failure with no other explanation, so the
+gate reports the exact state and tells you what to change.
+
+The root certificate and its private key live only in the app data directory
+(`~/Library/Application Support/Reqeek/ca` on macOS, `%APPDATA%\Reqeek\ca` on Windows). Both can be
+removed from the CA dialog; the private key is written `0600` and never leaves the machine.
+
+## Development
+
+### Requirements
+
+- Node.js 20 or newer
+- pnpm 11 (`packageManager` in `package.json` pins the version)
+
+### Setup
 
 ```bash
 pnpm install
-```
-
-`.npmrc` 把 Electron 和 electron-builder 的二进制下载源配置为 npmmirror（`electron_mirror` 和 `electron_builder_binaries_mirror` 两行），`electron-builder.yml` 的 `electronDownload.mirror` 打包时也指向 npmmirror。如果你在可以直接访问官方源的网络环境，可以删除这三处镜像配置。
-
-### 开发
-
-```bash
 pnpm dev
 ```
 
-### 类型检查
+`pnpm dev` starts electron-vite with hot reload for the renderer and restarts the main process on
+change.
 
-```bash
-pnpm typecheck
+### Scripts
+
+| Command             | What it does                                          |
+| ------------------- | ----------------------------------------------------- |
+| `pnpm dev`          | Development with hot reload                           |
+| `pnpm start`        | Preview a production build                            |
+| `pnpm typecheck`    | Type-check the main/preload and renderer projects     |
+| `pnpm build`        | Type-check, then build to `out/`                      |
+| `pnpm build:mac`    | Build and package for macOS                           |
+| `pnpm build:win`    | Build and package for Windows                         |
+| `pnpm build:linux`  | Build and package for Linux                           |
+| `pnpm build:unpack` | Package to a directory without producing an installer |
+
+There is no test suite. `pnpm typecheck` (also run as part of `pnpm build`) is the gate.
+
+### Project layout
+
 ```
-
-### 预览构建产物
-
-```bash
-pnpm build
-pnpm start
-```
-
-### 打包
-
-```bash
-pnpm build:mac     # macOS
-pnpm build:win     # Windows
-pnpm build:linux   # Linux
-pnpm build:unpack  # 只生成未压缩的目录，用于本地检查
-```
-
-产物输出到 `dist/`（electron-builder 默认目录）。
-
-## 使用方法
-
-1. 启动应用，首次使用时按提示安装并信任 CA 证书。macOS 会弹出系统授权对话框，证书写入当前用户的登录钥匙串。
-2. 点击「开始抓包」，或按 `Cmd/Ctrl + R`。
-3. 在浏览器或其他应用中发起请求，请求会出现在列表里。
-4. 选中一条请求查看请求头、响应头、body 和耗时。
-5. 用完后停止抓包或直接退出，应用会还原系统代理设置。
-
-### 快捷键
-
-| 操作 | 快捷键 |
-| --- | --- |
-| 开始 / 停止抓包 | `Cmd/Ctrl + R` |
-| 清空记录 | `Cmd/Ctrl + K` |
-| 搜索请求 | `Cmd/Ctrl + F` |
-
-「帮助」菜单提供「在文件夹中显示 CA 证书」和「打开数据目录」。
-
-## 项目结构
-
-```text
 src/
-├── main/                   # Electron 主进程
-│   ├── index.ts            # 应用入口、窗口、单实例锁、退出时还原代理
-│   ├── menu.ts             # 应用菜单与快捷键
-│   ├── ipc/                # 主进程与渲染进程的 IPC 通道
-│   └── proxy/              # 代理核心（不依赖 electron）
-│       ├── server.ts       # HTTP 代理、CONNECT 隧道、MITM、WebSocket 升级
-│       ├── tunnel.ts       # 透明隧道
-│       ├── filters.ts      # 解密范围过滤（端口、域名）
-│       ├── capture.ts      # 请求头与 body 采集
-│       ├── body-decode.ts  # 按 Content-Encoding 解码
-│       ├── client-process.ts # 按源端口反查发起请求的应用
-│       ├── ca/             # 根 CA 生成与各平台信任驱动
-│       ├── mitm/           # TLS 解密层与回退策略
-│       └── system-proxy/   # 各平台系统代理驱动与快照还原
-├── preload/                # 预加载脚本，向渲染进程暴露受限 API
-├── renderer/               # React 界面
+├── main/                    Electron main process
+│   ├── index.ts             Lifecycle, windows, single-instance lock
+│   ├── menu.ts  tray.ts     Application menu and tray menu
+│   ├── theme.ts             nativeTheme, window background, title bar overlay
+│   ├── settings.ts          settings.json load / normalize / save
+│   ├── settings-window.ts   The separate settings window
+│   ├── i18n.ts              Main-process translations
+│   ├── ipc/                 IPC channel registration
+│   └── proxy/               The capture engine — imports no Electron
+│       ├── index.ts         Lifecycle facade (start / stop / recover)
+│       ├── server.ts        HTTP forwarding and CONNECT handling
+│       ├── tunnel.ts        Opaque CONNECT tunnels
+│       ├── mitm/            TLS interception
+│       ├── ca/              Root CA, leaf signing, platform trust drivers
+│       ├── system-proxy/    Platform drivers and the snapshot state machine
+│       ├── capture.ts       Header and body capture
+│       ├── body-decode.ts   gzip / deflate / brotli decoding
+│       ├── detail-store.ts  Budgeted store for headers and bodies
+│       ├── client-process.ts Client app resolution
+│       └── filters.ts       Which CONNECT targets get intercepted
+├── preload/                 The contextBridge API surface
+├── renderer/                React UI (two windows: home and settings)
 │   └── src/
-│       ├── components/     # 请求表、详情面板、过滤栏、JSON/XML 树等
-│       ├── store/          # 请求数据状态
-│       └── lib/            # 过滤、排序、分组、格式化工具
-└── shared/
-    └── types.ts            # 主进程与渲染进程共用的数据类型
+│       ├── views/           Home and Settings roots
+│       ├── components/      UI kit
+│       ├── lib/             Pure helpers (filtering, sorting, grouping, formatting)
+│       ├── store/           Traffic state
+│       └── styles/          Design tokens and global CSS
+└── shared/                  Types, settings constraints, i18n, locale files
 ```
 
-代理核心只依赖 Node 内置模块，不引入 `electron`，需要时可以迁移到独立进程。
+`@main`, `@shared` and `@` (renderer) are path aliases configured in `electron.vite.config.ts`.
 
-## 技术栈
+## How it works
 
-- Electron 39
-- React 19
-- TypeScript 5.9
-- electron-vite / Vite 7
-- electron-builder
-- `@peculiar/x509`（根 CA 与站点证书）
+### Process model
 
-## 注意事项
+One main process owns the proxy, the CA, the system proxy state and the traffic history; two
+renderer windows (home and settings) talk to it over IPC through a `contextBridge` API. The proxy
+core deliberately imports nothing from Electron — it takes its state directory as a parameter — so
+it can move into a utility process, or be tested in plain Node, without changes.
 
-- 根 CA 的证书和私钥保存在应用数据目录的 `ca/` 下（`ca.pem` 和 `ca.key`），可以通过「帮助 → 打开数据目录」找到。信任这张证书后，持有私钥的人可以伪造任何 HTTPS 站点，请不要分享 `ca.key`。不再使用时，请在界面中卸载证书。
-- 使用证书固定（certificate pinning）的应用会拒绝被解密，这类流量只能以隧道形式记录。
-- 请只在自己拥有或获得授权的设备和网络流量上使用本工具。
-- 同一时间只允许运行一个实例，避免两个实例互相还原对方的系统代理设置。
+The app takes a single-instance lock. Only one process may hold the system proxy snapshot at a time;
+a second instance would otherwise treat the first one's live state as crash residue and restore the
+user's proxy settings out from under it.
 
-## 许可证
+### Capture pipeline
 
-本项目采用 [MIT License](./LICENSE)。
+```
+client ──▶ HTTP proxy (127.0.0.1:8989)
+              │
+              ├─ CONNECT ─▶ intercepted? ─yes─▶ TLS termination ─▶ HTTP forwarding
+              │                            └─no──▶ opaque tunnel (bytes counted, not parsed)
+              └─ plain HTTP ─▶ forwarding
+```
+
+A `CONNECT` request is decrypted only when the target port is 443 (plus any configured ports), the
+host is not on the exclusion list, and the hostname normalizes into a certificate the client will
+actually accept. Everything else is tunneled verbatim. That last condition is not a formality: a
+certificate signed with the wrong SAN type is still a valid certificate, it just fails the handshake
+with no obvious cause, so any hostname Reqeek isn't certain about is tunneled instead of decrypted.
+
+Both paths produce the same `Flow` record, so tunnels show up in the list with their duration and
+byte counts — just without headers or bodies.
+
+### Certificates
+
+The root CA is an ECDSA P-256 certificate valid for 10 years. Leaf certificates are signed on demand
+per host (199 days, with the validity start backdated two days to absorb clock skew) and cached in
+an LRU of 512 hosts. Private keys are written `0600` in a `0700` directory.
+
+Regeneration is conservative by design. If both CA files are missing it generates a new pair; if
+only one is present it treats the pair as debris and regenerates; if both are present but don't
+match, it refuses to start rather than overwrite something the user may still be able to recover.
+
+### System proxy handling
+
+The system proxy is four independent settings — web, secureWeb, SOCKS and PAC — each with its own
+switch and address, and different platforms store them completely differently (per network service
+via `networksetup` on macOS, registry keys on Windows). Reqeek models that instead of treating the
+proxy as one on/off switch: only web and secureWeb are touched, SOCKS and PAC are left alone, and
+the bypass list is merged with rather than replaced by Reqeek's own `localhost` / `127.0.0.1` entries.
+
+Before anything is written, the current configuration is snapshotted to disk with the owning
+process's identity, and the snapshot is written **before** the system is modified. If the app is
+killed mid-recording, the next launch finds that snapshot and restores exactly what was there. The
+restore is per-field, never a blanket "turn the proxy off".
+
+Start and stop are ordered for the same reason: bind the port before installing the system proxy,
+and remove the system proxy before closing the port. Inverted, either leaves a window in which the
+machine's proxy points at nothing.
+
+### Memory budgets
+
+Capture is bounded at every stage, because a proxy that grows without limit is a proxy that takes
+the machine down with it.
+
+| Bound          | Value  | Applies to                                     |
+| -------------- | ------ | ---------------------------------------------- |
+| Per body       | 5 MB   | Retained bytes; the full size is still counted |
+| Decoded output | 20 MB  | Decompression, against crafted bombs           |
+| All details    | 64 MB  | Whole entries evicted oldest-first             |
+| Retained flows | 20,000 | History replayed to a reloading window         |
+
+The list and the details are separate: `Flow` records are pushed to the renderer in batches (500 per
+100 ms, widening to 2,000 per 50 ms when the backlog grows), while headers and bodies are fetched
+per request, and only when you open a record.
+
+## Updating
+
+Reqeek checks `https://reqeek.com/api/version` when you ask it to, compares the version against the
+running build, and — if there's something newer — links you to the website. It does not download or
+install anything itself: on macOS a self-update would need a Developer ID signature the project
+doesn't have, and on Windows it would need to execute an unsigned installer.
+
+The request deliberately does not go through Electron's network stack. Reqeek *is* a proxy, the
+system proxy usually points back at it, and the update endpoint isn't in the bypass list — so a
+request through Chromium's stack would be intercepted by Reqeek's own MITM and fail whenever the
+root certificate isn't trusted. It uses Node's global `fetch` instead, which ignores the proxy
+environment and connects directly.
+
+## Security notes
+
+- `contextIsolation` and `sandbox` are on, `nodeIntegration` is off; renderers see only the API
+  exposed in `src/preload/index.ts`
+- A Content-Security-Policy restricts the home window to `'self'` (plus `data:` images)
+- New windows and navigation away from the app are denied outright
+- The IPC surface is fixed: the renderer can trigger "open the update website" but cannot pass a URL
+- The proxy listens on `127.0.0.1` only, and refuses to start while the root certificate is
+  untrusted — an untrusted CA means unreadable traffic and a pointless system proxy change
+- The root CA — private key included — and the system proxy snapshot are written `0600` inside a
+  `0700` directory
+
+## Internationalization
+
+Nine languages ship today: German, English, Spanish, French, Japanese, Korean, Portuguese, Russian
+and Simplified Chinese. The language list lives in `src/shared/i18n.ts`, and adding one means
+touching the locale directory plus the two import sites noted in that file.
+
+## Releasing
+
+`.github/workflows/release.yml` is manual-only. Run it from the Actions page with a tag (for example
+`v0.1.0`) to build all four packages and open a draft release; the tag must already exist on the
+remote, and its version must match `package.json`. Leave the tag empty to build and upload artifacts
+without creating a release.
+
+Each platform job produces both architectures. macOS builds are ad-hoc signed; there is no
+notarization.
+
+## License
+
+[MIT](LICENSE) © 2026 MonshinYu

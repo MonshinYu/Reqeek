@@ -3,20 +3,11 @@ productName: Reqeek
 copyright: Copyright © 2026 MonshinYu
 directories:
   buildResources: build
-# 更新源。显式写出来而不是让 electron-builder 从 git remote 推断 —— 推断失败时
-# 它不会生成 latest.yml，而那个文件是 Windows 自动更新的必需项。
-#
-# 这里只决定「更新元数据指向哪个仓库」，上传与否由命令行的 --publish 参数决定，
-# CI 里用的是 --publish never（发布统一交给 release job）。
-publish:
-  provider: github
-  owner: MonshinYu
-  repo: Reqeek
 files:
   - '!**/.vscode/*'
   - '!src/*'
   - '!electron.vite.config.{js,ts,mjs,cjs}'
-  - '!{.editorconfig,dev-app-update.yml,CHANGELOG.md,README.md}'
+  - '!{.editorconfig,CHANGELOG.md,README.md}'
   - '!{.env,.env.*,.npmrc,pnpm-lock.yaml,pnpm-workspace.yaml}'
   - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
   - '!.claude/**'
@@ -26,10 +17,6 @@ files:
 win:
   executableName: reqeek
   icon: build/icon.ico
-  # 没有代码签名证书。设为 false 之后，打包时不会去计算 publisherName，也就不会把它
-  # 写进 app-update.yml —— 运行时 electron-updater 因此不做 Authenticode 校验，
-  # 未签名的更新包才装得上。完整性由 latest.yml 里的 SHA-512 保证，不是没有校验。
-  verifyUpdateCodeSignature: false
 nsis:
   artifactName: ${name}-${version}-win-${arch}-setup.${ext}
   shortcutName: ${productName}
@@ -50,17 +37,8 @@ mac:
   # 只出 dmg，不要默认的 zip：zip 是 Squirrel.Mac 自动更新专用的格式，而 macOS 的
   # 自动更新要求 Developer ID 签名（见上面 identity），现在出了也没人能用，
   # 白白多压一份 100MB 的包。
-  #
-  # 附带一个后果：只有 zip 和 NSIS 会写更新元数据（app-builder-lib 的
-  # ArchiveTarget 里写死了 format === 'zip'），所以这个配置下不会生成 latest-mac.yml。
-  # 不影响客户端 —— macOS 那边直接问 GitHub 的 releases/latest 要版本号（见
-  # src/main/updater.ts）。将来拿到证书时，在这里加一行 zip，latest-mac.yml 会随之出现，
-  # CI 的 dist/latest*.yml 会自动带上它。
   target:
     - dmg
-  # 改这个模板时注意：macOS 的检查更新在被 GitHub 限流时会按同样的规律拼 dmg 链接
-  # （src/main/updater.ts 的 pickMacAsset，模板里的 ${name} 对应它那里的 APP_SLUG）。
-  # 两边不同步的表现是「检查正常、下载阶段 404」，用户只看得到一句「下载失败」。
   artifactName: ${name}-${version}-mac-${arch}.${ext}
 dmg:
   artifactName: ${name}-${version}-mac-${arch}.${ext}

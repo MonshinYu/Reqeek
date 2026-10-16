@@ -1,0 +1,63 @@
+.field {
+  display: flex;
+  gap: var(--space-7);
+}
+
+/* 标签在左、控件在右：设置页那种一行一项的排布 */
+.horizontal {
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-5) 0;
+}
+
+.horizontal .label {
+  flex: 1;
+}
+
+.horizontal .control {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-2);
+}
+
+/* 标签在上、控件占满整行 */
+.vertical {
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.vertical .control {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.label {
+  font-size: var(--font-body);
+  font-weight: 500;
+  color: var(--md-on-surface);
+}
+
+.description,
+.error {
+  font-size: var(--font-label);
+  /* 300px 是设置窗口那个 220px 控件旁边还能读得下德语的长度 */
+  max-width: 300px;
+  user-select: text;
+}
+
+.description {
+  color: var(--md-on-surface-variant);
+}
+
+.error {
+  color: var(--md-error);
+}
+
+/* 水平排布下说明/错误挂在控件下方，与控件右对齐 */
+.horizontal .description,
+.horizontal .error {
+  text-align: right;
+}

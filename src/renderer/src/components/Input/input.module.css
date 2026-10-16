@@ -1,0 +1,93 @@
+.root {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0 var(--space-5);
+  border: 1px solid var(--md-outline-variant);
+  border-radius: var(--shape-sm);
+  background: var(--md-surface-container-low);
+  color: var(--md-on-surface);
+  /* 控件自己声明不参与窗口拖动，不指望调用方记得写 */
+  -webkit-app-region: no-drag;
+  transition:
+    border-color var(--duration-short) var(--ease-standard),
+    background var(--duration-short) var(--ease-standard);
+}
+
+.sm {
+  height: var(--control-h-sm);
+}
+
+.md {
+  height: var(--control-h-md);
+}
+
+/*
+ * 悬停 / 聚焦 / 错误 / 禁用四种外观全部由内部 input 的真实状态推导，不另挂 data-*：
+ * 多一份要手动同步的状态，就多一次「看着像禁用了其实还能点」的机会。
+ */
+.root:hover:has(input:enabled) {
+  border-color: var(--md-outline);
+}
+
+/*
+ * 焦点环画在容器上而不是 input 上：input 铺满容器内部、自己不带内边距，
+ * 圆环贴着它的边画会挤在边框内侧。全局那条 :focus-visible 照旧管其它控件。
+ */
+.root:has(input:focus-visible) {
+  outline: 2px solid var(--md-primary);
+  outline-offset: 1px;
+}
+
+.input:focus-visible {
+  outline: none;
+}
+
+.root:has(input[aria-invalid='true']) {
+  border-color: var(--md-error);
+}
+
+.root:has(input:disabled) {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  /* 系统原生输入框在三个平台上的内阴影、圆角、文本基线都不一样，一律关掉自己画 */
+  appearance: none;
+  outline: none;
+  /* body 上全局禁选，输入框必须开回来，否则选不中、复制不了 */
+  user-select: text;
+}
+
+.input::placeholder {
+  color: var(--md-outline);
+}
+
+/*
+ * 数字框的上下箭头：各平台外观不一，还会吃掉本来就窄的输入区。
+ * 原来那行 -moz-appearance: textfield 没跟过来 —— Firefox 专用，Electron 里永远不生效。
+ */
+.input[type='number']::-webkit-inner-spin-button,
+.input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* 自绘清空按钮接管，隐藏 Chromium 原生那个：它无法主题化，三平台大小也不一样 */
+.input[type='search']::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+}
+
+.affix {
+  display: flex;
+  align-items: center;
+  flex: none;
+}

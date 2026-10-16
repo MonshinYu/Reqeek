@@ -1,30 +1,15 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {useTranslation} from 'react-i18next';
-import {isSupportedLanguage, SUPPORTED_LANGUAGES} from '@shared/i18n';
+import {SUPPORTED_LANGUAGES} from '@shared/i18n';
 import {isValidPort, MAX_PORT, MIN_PORT} from '@shared/settings';
-import type {AppSettings, UpdateErrorReason, UpdateStatus} from '@shared/types';
-import {Button} from '@/components';
+import type {AppSettings, UpdateCheckResult, UpdateFailureReason} from '@shared/types';
+import {Button} from '@/components/Button';
+import {Dialog} from '@/components/Dialog';
+import {FormField} from '@/components/FormField';
+import {Input} from '@/components/Input';
+import {Select, type SelectOption} from '@/components/Select';
+import {Spinner} from '@/components/Spinner';
 import styles from './settings.module.css';
-
-/**
- * 查询失败的文案。
- *
- * 四类原因各给一句对症的：用户看到「检查失败」时唯一想知道的就是「我该做什么」，
- * 而「该等一会儿」「该查网络」「做什么都没用」是三件不同的事，一句笼统的话答不了。
- * 写成穷尽的 switch 而不是查表，好让以后加原因时漏掉这里会编译不过。
- */
-const checkFailKey = (reason: UpdateErrorReason): string => {
-  switch (reason) {
-    case 'rate-limited':
-      return 'settings.update.checkRateLimited';
-    case 'network':
-      return 'settings.update.checkNetworkFailed';
-    case 'no-release':
-      return 'settings.update.checkNoRelease';
-    case 'unknown':
-      return 'settings.update.checkFailed';
-  }
-};
 
 /**
  * 设置窗口：通用（语言 / 主题 / 端口号）+ 关于（版本 / 检查更新）。
@@ -32,13 +17,39 @@ const checkFailKey = (reason: UpdateErrorReason): string => {
  * 改动即时落盘，没有保存按钮 —— 原来那套「保存后关窗」在只有几个选项时纯属多一步。
  * 唯一的例外是端口：草稿留在本地，失焦或回车才提交（见 portDraft）。
  */
+
+/**
+ * 更新状态。idle / checking 只存在于界面，主进程只会返回另外三个。
+ *
+ * 和主进程共用 phase 这个判别字段，所以能把两边的成员并进同一个联合类型里，
+ * 窄化一路走得通，不用写类型断言。
+ */
+type UpdateState = UpdateCheckResult | {phase: 'idle'} | {phase: 'checking'};
+
+/** 失败原因到文案的映射，写成穷尽的 switch：以后加原因时漏掉这里会编译不过 */
+const failureKey = (reason: UpdateFailureReason): string => {
+  switch (reason) {
+    case 'network':
+      return 'settings.update.checkNetworkFailed';
+    case 'server':
+      return 'settings.update.checkServerFailed';
+  }
+};
+
 export const Settings = (): React.ReactElement => {
   const {t} = useTranslation();
   const [settings, setSettings] = useState<AppSettings | null>(null);
   const [version, setVersion] = useState('');
   // 用户敲到一半的「8」不是合法端口，不该被立刻纠正掉，所以输入框自己持有一份草稿
   const [portDraft, setPortDraft] = useState('');
-  const [updateState, setUpdateState] = useState<UpdateStatus>({phase: 'idle'});
+  /** 端口不合法时的提示。与草稿一起在提交时判定，输入过程中清掉 */
+  const [portError, setPortError] = useState<string | null>(null);
+  /*
+   * 更新状态留在本窗口，不放主进程 —— 一次请求最多十秒就回来了，没有要跨窗口重连的
+   * 进度可言。（上一版把状态放主进程，是因为下载要跑几分钟、关掉窗口再打开得能接回进度。）
+   */
+  const [update, setUpdate] = useState<UpdateState>({phase: 'idle'});
+  const [resetOpen, setResetOpen] = useState(false);
   /** 提交序号：用来丢弃被后续改动追上的那次保存响应 */
   const requestSeq = useRef(0);
 
@@ -49,15 +60,6 @@ export const Settings = (): React.ReactElement => {
       setPortDraft(String(loaded.proxy.port));
     });
     void window.api.getAppVersion().then(setVersion);
-  }, []);
-
-  /*
-   * 更新状态不归这个窗口所有：下载可能要跑几分钟，窗口关掉再打开得能接回进度，
-   * 所以状态存在主进程，这里先拉一次当前值，再订阅之后的变化。
-   */
-  useEffect(() => {
-    void window.api.getUpdateStatus().then(setUpdateState);
-    return window.api.onUpdateStatus(setUpdateState);
   }, []);
 
   /*
@@ -83,94 +85,87 @@ export const Settings = (): React.ReactElement => {
     if (!settings) return;
 
     const parsed = Number(portDraft);
-    // 草稿不合法或没变就退回已保存的值：静默改写会让用户以为自己改成功了
-    if (!isValidPort(parsed) || parsed === settings.proxy.port) {
+    // 草稿不合法就退回已保存的值，并说明原因 —— 静默改写会让用户以为自己改成功了
+    if (!isValidPort(parsed)) {
+      setPortError(t('settings.portInvalid', {min: MIN_PORT, max: MAX_PORT}));
       setPortDraft(String(settings.proxy.port));
       return;
     }
+
+    setPortError(null);
+    if (parsed === settings.proxy.port) return;
 
     commit({...settings, proxy: {port: parsed}});
   };
 
   const handleReset = (): void => {
-    if (!confirm(t('settings.resetConfirm'))) return;
-
     // 恢复默认同样要占一个序号，否则在途的保存响应回来会把默认值又改回去
     requestSeq.current += 1;
+    setPortError(null);
     void window.api.resetSettings().then((restored) => {
       setSettings(restored);
       setPortDraft(String(restored.proxy.port));
     });
   };
 
-  /** 不 await：macOS 上查完会紧接着下载，整个过程几分钟，进度和结论都从 onUpdateStatus 来 */
-  const handleCheckUpdate = (): void => {
-    void window.api.checkForUpdates();
-  };
+  const handleUpdate = (): void => {
+    // 有新版本时按钮已经换成「打开官网更新」，这里只负责打开官网
+    if (update.phase === 'available') {
+      void window.api.openUpdateSite();
+      return;
+    }
 
-  const handleInstallUpdate = (): void => {
-    void window.api.installUpdate();
+    setUpdate({phase: 'checking'});
+    void window.api.checkForUpdates().then(setUpdate);
   };
 
   if (!settings) {
     return (
       <div className={styles.loading}>
-        <div className={styles.spinner} />
+        <Spinner size={32} label={t('common.loading')} />
       </div>
     );
   }
 
-  // 获取平台类名
-  const platform = navigator.platform.toLowerCase();
-  let platformClass = '';
-  if (platform.includes('win')) {
-    platformClass = styles.platformWin32;
-  } else if (platform.includes('mac')) {
-    platformClass = styles.platformDarwin;
-  } else if (platform.includes('linux')) {
-    platformClass = styles.platformLinux;
-  }
+  /*
+   * 选项在组件里现算，不放模块级常量：模块级只在加载时求值一次，
+   * 存下来的文案会永远停在启动时的语言上（项目里四处注释都强调过这条）。
+   * 显式标注类型是为了让 Select 的泛型推成窄联合类型而不是 string，
+   * onChange 拿到手就是 AppSettings['language']，不需要类型守卫或断言。
+   */
+  const languageOptions: SelectOption<AppSettings['language']>[] = SUPPORTED_LANGUAGES.map(
+    (code) => ({value: code, label: t(`languages.${code}`)})
+  );
+
+  const themeOptions: SelectOption<AppSettings['theme']>[] = [
+    {value: 'auto', label: t('settings.themeOptions.auto')},
+    {value: 'light', label: t('settings.themeOptions.light')},
+    {value: 'dark', label: t('settings.themeOptions.dark')}
+  ];
 
   const updateHint = (): string => {
-    switch (updateState.phase) {
+    switch (update.phase) {
+      case 'idle':
+        return '';
       case 'checking':
         return t('settings.update.checking');
       case 'up-to-date':
         return t('settings.update.upToDate');
-      case 'downloading':
-        return t('settings.update.downloading', {percent: updateState.percent});
-      case 'ready':
-        // 两个平台停在不同地方：Windows 等用户点一下重启，macOS 已经把 dmg 打开了
-        return updateState.kind === 'restart'
-          ? t('settings.update.readyRestart', {version: updateState.version})
-          : t('settings.update.readyOpened', {version: updateState.version});
-      case 'error':
-        return updateState.stage === 'download'
-          ? t('settings.update.downloadFailed')
-          : t(checkFailKey(updateState.reason));
-      default:
-        return '';
+      case 'available':
+        return t('settings.update.available', {version: update.version});
+      case 'failed':
+        return t(failureKey(update.reason));
     }
   };
 
-  /** 安装包就位后按钮换成后续动作，而不是退回「检查更新」—— 再查一遍只会又下一遍 100MB */
-  const updateButtonLabel = (): string => {
-    switch (updateState.phase) {
-      case 'ready':
-        return updateState.kind === 'restart'
-          ? t('settings.update.install')
-          : t('settings.update.openInstaller');
-      default:
-        return t('settings.update.check');
-    }
-  };
+  /** 只有「有新版本」时按钮才换标签；其余状态一律回到「检查更新」，好让用户能再查一次 */
+  const updateButtonLabel = (): string =>
+    update.phase === 'available' ? t('settings.update.openSite') : t('settings.update.check');
 
   const hint = updateHint();
-  const updateBusy = updateState.phase === 'checking' || updateState.phase === 'downloading';
-  const updateReadyToInstall = updateState.phase === 'ready';
 
   return (
-    <div className={`${styles.window} ${platformClass}`}>
+    <div className={styles.window}>
       <div className={styles.header}>
         <h1>{t('settings.title')}</h1>
       </div>
@@ -179,91 +174,94 @@ export const Settings = (): React.ReactElement => {
         <section className={styles.section}>
           <h2>{t('settings.general')}</h2>
 
-          <div className={styles.field}>
-            <label htmlFor="setting-language">{t('settings.language')}</label>
-            <select
+          <FormField label={t('settings.language')} htmlFor="setting-language">
+            <Select
               id="setting-language"
+              className={styles.formControl}
+              options={languageOptions}
               value={settings.language}
-              onChange={(e) => {
-                const language = e.target.value;
-                if (!isSupportedLanguage(language)) return;
-                commit({...settings, language});
-              }}
-            >
-              {SUPPORTED_LANGUAGES.map((code) => (
-                <option key={code} value={code}>
-                  {t(`languages.${code}`)}
-                </option>
-              ))}
-            </select>
-          </div>
+              onChange={(language) => commit({...settings, language})}
+            />
+          </FormField>
 
-          <div className={styles.field}>
-            <label htmlFor="setting-theme">{t('settings.theme')}</label>
-            <select
+          <FormField label={t('settings.theme')} htmlFor="setting-theme">
+            <Select
               id="setting-theme"
+              className={styles.formControl}
+              options={themeOptions}
               value={settings.theme}
-              onChange={(e) =>
-                commit({...settings, theme: e.target.value as AppSettings['theme']})
-              }
-            >
-              <option value="auto">{t('settings.themeOptions.auto')}</option>
-              <option value="light">{t('settings.themeOptions.light')}</option>
-              <option value="dark">{t('settings.themeOptions.dark')}</option>
-            </select>
-          </div>
+              onChange={(theme) => commit({...settings, theme})}
+            />
+          </FormField>
 
-          <div className={styles.field}>
-            <label htmlFor="setting-port">{t('settings.port')}</label>
-            <input
+          <FormField label={t('settings.port')} htmlFor="setting-port" error={portError}>
+            <Input
               id="setting-port"
+              className={styles.formControl}
               type="number"
               min={MIN_PORT}
               max={MAX_PORT}
               value={portDraft}
-              onChange={(e) => setPortDraft(e.target.value)}
+              onChange={(event) => {
+                setPortDraft(event.target.value);
+                // 用户一开始改就把上一次的报错收掉，别让红字挂在那儿
+                setPortError(null);
+              }}
               onBlur={commitPort}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') commitPort();
+              onKeyDown={(event) => {
+                if (event.key === 'Enter') commitPort();
               }}
             />
-          </div>
+          </FormField>
         </section>
 
         <section className={styles.section}>
           <h2>{t('settings.about')}</h2>
 
-          <div className={styles.field}>
-            <label>{t('settings.version')}</label>
+          <FormField label={t('settings.version')}>
             <span className={styles.value}>{version || '—'}</span>
-          </div>
+          </FormField>
 
-          <div className={styles.field}>
-            <label>{t('settings.update.title')}</label>
+          <FormField label={t('settings.update.title')}>
             <div className={styles.updateRow}>
+              {/* 必须条件渲染：.updateRow 有 gap，空的 span 照样占一个间距，按钮会莫名左移 */}
               {hint && <span className={styles.hint}>{hint}</span>}
-              <Button
-                onClick={updateReadyToInstall ? handleInstallUpdate : handleCheckUpdate}
-                disabled={updateBusy}
-              >
+              <Button loading={update.phase === 'checking'} onClick={handleUpdate}>
                 {updateButtonLabel()}
               </Button>
             </div>
-          </div>
-
-          {/* 进度条挂在 field 外面，好占满整行；只有一个细条，不抢按钮的位置 */}
-          {updateState.phase === 'downloading' && (
-            <div className={styles.progress}>
-              <div className={styles.progressBar} style={{width: `${updateState.percent}%`}} />
-            </div>
-          )}
+          </FormField>
         </section>
       </div>
 
       <div className={styles.footer}>
-        <Button onClick={handleReset}>{t('settings.reset')}</Button>
+        <Button onClick={() => setResetOpen(true)}>{t('settings.reset')}</Button>
         <Button onClick={() => window.close()}>{t('settings.close')}</Button>
       </div>
+
+      {resetOpen && (
+        <Dialog
+          title={t('settings.reset')}
+          className={styles.confirm}
+          onClose={() => setResetOpen(false)}
+          footer={
+            <>
+              <Button
+                variant="filled"
+                onClick={() => {
+                  setResetOpen(false);
+                  handleReset();
+                }}
+              >
+                {t('settings.reset')}
+              </Button>
+              <Button onClick={() => setResetOpen(false)}>{t('common.cancel')}</Button>
+            </>
+          }
+        >
+          <p className={styles.confirmText}>{t('settings.resetConfirm')}</p>
+        </Dialog>
+      )}
     </div>
   );
 };

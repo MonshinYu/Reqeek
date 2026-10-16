@@ -1,32 +1,99 @@
 /*
- * Material 3 的 color role 子集 + 形状 / 字号 / 动效刻度。
+ * Material 3 的 color role 子集 + 形状 / 间距 / 控件 / 字号 / 动效刻度。
  *
  * 颜色分成暗、亮两套，挂在 prefers-color-scheme 上而不是某个类名或属性上：
  * Electron 的 nativeTheme.themeSource 直接决定这个 media query 的求值结果，
  * 所以「选了深色」「选了跟随系统」都不需要往窗口里塞任何状态 —— 主进程改一下，
  * 所有窗口（含以后新开的）自动跟着走。
+ *
+ * 全部 token 必须留在 :root。Select 这类浮层会 portal 到 body 下，靠的正是
+ * 「:root 是任何节点的祖先」这条继承链拿到主题；一旦挪到 .window / [data-theme]
+ * 这类作用域选择器上，浮层会当场掉色。
  */
 
 :root {
-  /* ---- 形状 / 字号 / 动效：两套主题共用，不重复声明 ---- */
+  /* ---- 形状 ---- */
   --shape-xs: 4px;
   --shape-sm: 8px;
   --shape-md: 12px;
   --shape-lg: 16px;
   --shape-full: 999px;
 
-  --font-body: 13px;
-  --font-label: 12px;
-  --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  /*
+   * ---- 间距 ----
+   * 取值刻意对齐项目里实际在用的那 8 个，而不是归到 4 的倍数网格：
+   * 迁移时能 1:1 对应，不会顺手改掉任何一处现有间距。
+   */
+  --space-1: 2px;
+  --space-2: 4px;
+  --space-3: 6px;
+  --space-4: 8px;
+  --space-5: 12px;
+  --space-6: 16px;
+  --space-7: 24px;
+  --space-8: 32px;
 
+  /*
+   * ---- 控件高度 ----
+   * 只有三档，各有明确归属。别再往中间插值 —— 之前 24/26/28/32/36 五个高度
+   * 散在 12 套按钮样式里，正是这条刻度缺位的结果。
+   */
+  --control-h-xs: 24px; /* 表格密度：chip、行内小按钮、表头 */
+  --control-h-sm: 28px; /* 紧凑工具条：标题栏图标按钮、侧栏项、搜索框 */
+  --control-h-md: 32px; /* 表单控件：Button / Input / Select */
+
+  --icon-sm: 12px;
+  --icon-md: 14px;
+  --icon-lg: 16px;
+
+  /* ---- 字体 ---- */
+  /*
+   * 栈里没有 'Inter'：项目不带这个字体资源，CSP 的 default-src 'self' 也拦外链，
+   * 写它只会让每一项都白解析一次。
+   * 中文兜底分三段：macOS 的 PingFang SC、Windows 的 Microsoft YaHei，
+   * 以及 Linux 的 Noto Sans CJK / 思源黑体 / 文泉驿 —— 前两个是平台独占、
+   * 互不回退，少了第三段 Linux 上的中文就只能听凭 fontconfig 挑（可能是衬线或日文字形）。
+   */
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', 'Helvetica Neue', Arial,
+    'PingFang SC', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Source Han Sans SC',
+    'WenQuanYi Micro Hei', sans-serif;
+  --font-mono:
+    ui-monospace, 'SF Mono', Menlo, Consolas, 'Noto Sans Mono CJK SC', 'DejaVu Sans Mono',
+    monospace;
+
+  --font-label: 12px;
+  --font-body: 13px;
+  --font-title: 16px;
+  --font-heading: 20px;
+  --font-display: 24px;
+
+  /*
+   * ---- 状态叠层 ----
+   * 只有 hover / pressed 两档：M3 的第三档是 focus，但本项目的聚焦反馈一律用
+   * global.css 里那条 2px 实心 outline 焦点环，不用叠层，留着只会是个死 token。
+   */
   --state-hover: 0.08;
-  --state-focus: 0.1;
   --state-pressed: 0.12;
 
+  /* ---- 动效 ---- */
   --ease-standard: cubic-bezier(0.2, 0, 0, 1);
   --duration-short: 150ms;
+  /*
+   * 给"跟着指针走"的状态变化用（下拉选项的高亮、密集控件）。150ms 用在这里会拖出一条尾巴，
+   * 高亮像在追光标；80ms 只是把硬跳的棱角磨掉，既不滞后也看得出是个过渡。
+   */
+  --duration-xs: 80ms;
 
   --row-height: 24px;
+
+  /*
+   * ---- 层叠 ----
+   * 没有 --z-modal：模态一律用原生 <dialog> 的 Top Layer，任何 z-index 都压不过它、
+   * 也不需要压。下面两个只给 portal 出去的非模态浮层用。
+   */
+  --z-popover: 100;
+  --z-toast: 200;
 
   /* ---- 暗色（M3 baseline dark）---- */
   color-scheme: dark;
@@ -38,8 +105,6 @@
   --md-secondary-container: #3f4759;
   --md-on-secondary-container: #dbe2f9;
   --md-error: #ffb4ab;
-  --md-error-container: #93000a;
-  --md-on-error-container: #ffdad6;
   --md-success: #7fdc9c;
   --md-warning: #f2c26b;
 
@@ -47,6 +112,8 @@
   --md-surface-container-low: #1f1f24;
   --md-surface-container: #232328;
   --md-surface-container-high: #2d2d33;
+  /* 域名分组头 hover 用的一档，比 -high 再上一层 */
+  --md-surface-container-highest: #36363c;
   --md-on-surface: #e4e2e9;
   --md-on-surface-variant: #c5c6d0;
   --md-outline: #8f909a;
@@ -71,8 +138,6 @@
     --md-secondary-container: #dde2f9;
     --md-on-secondary-container: #161b2c;
     --md-error: #ba1a1a;
-    --md-error-container: #ffdad6;
-    --md-on-error-container: #410002;
     /* success / warning 是 M3 baseline 没有的角色，浅色下另配深色版才够对比度 */
     --md-success: #1e6b3f;
     --md-warning: #7a5900;
@@ -81,6 +146,7 @@
     --md-surface-container-low: #f3f3fa;
     --md-surface-container: #ededf4;
     --md-surface-container-high: #e7e8ee;
+    --md-surface-container-highest: #e1e2e8;
     --md-on-surface: #191c20;
     --md-on-surface-variant: #44474e;
     --md-outline: #74777f;

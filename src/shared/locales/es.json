@@ -11,6 +11,7 @@
     "clearRecords": "Limpiar registros",
     "searchPlaceholder": "Buscar host / ruta / método / estado",
     "searchRequests": "Buscar solicitudes",
+    "clearSearch": "Borrar búsqueda",
     "ca": "Certificado CA"
   },
   "filter": {
@@ -144,6 +145,7 @@
     "loading": "Cargando…",
     "none": "Ninguno",
     "collapse": "Contraer",
+    "cancel": "Cancelar",
     "semicolon": "; "
   },
   "menu": {
@@ -197,22 +199,17 @@
       "dark": "Oscuro"
     },
     "port": "Puerto",
+    "portInvalid": "El puerto debe estar entre {{min}} y {{max}}",
     "version": "Versión",
     "update": {
       "title": "Actualizaciones",
       "check": "Buscar actualizaciones",
       "checking": "Comprobando…",
       "upToDate": "Ya está actualizado",
-      "downloading": "Descargando la nueva versión: {{percent}}%",
-      "readyRestart": "La versión {{version}} ya está descargada; reiniciar para completar la instalación",
-      "readyOpened": "Se abrió el instalador de la versión {{version}}; arrastrarlo a Aplicaciones",
-      "install": "Reiniciar e instalar",
-      "openInstaller": "Abrir el instalador",
-      "checkRateLimited": "Demasiadas solicitudes; volver a intentarlo más tarde",
+      "available": "La versión {{version}} ya está disponible",
+      "openSite": "Abrir la web para actualizar",
       "checkNetworkFailed": "No se pudo conectar a la red; comprobar la conexión e intentarlo de nuevo",
-      "checkNoRelease": "No hay ninguna versión disponible",
-      "checkFailed": "Error al comprobar; volver a intentarlo más tarde",
-      "downloadFailed": "Error al descargar; volver a intentarlo más tarde"
+      "checkServerFailed": "El servicio de actualización no está disponible; volver a intentarlo más tarde"
     },
     "reset": "Restablecer los valores predeterminados",
     "resetConfirm": "¿Restablecer todos los ajustes a los valores predeterminados?",

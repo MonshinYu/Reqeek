@@ -120,48 +120,24 @@ export interface AppSettings {
 /**
  * 检查更新失败的原因。
  *
- * 分开是因为「失败」这一个词对用户没有任何指导意义 —— 该等一会儿、该查网络、
- * 还是什么都做不了只能等我们发版，三者的下一步动作完全不同。
+ * 分开是因为「失败」这一个词对用户没有任何指导意义 —— 该查网络、还是做什么都没用只能等，
+ * 两者的下一步动作完全不同，一句话答不了。
  */
-export type UpdateErrorReason =
-  /** GitHub 限流。跟用户的网络无关，让他去查网络只会白折腾 */
-  | 'rate-limited'
-  /** 连不上。用户能自己做点什么 */
+export type UpdateFailureReason =
+  /** 连不上：DNS 失败、超时。用户能自己做点什么 */
   | 'network'
-  /** 连上了，但没有能装的包。用户做什么都没用 */
-  | 'no-release'
-  /** 兜底：说不出所以然，界面给最笼统的那句 */
-  | 'unknown';
+  /** 连上了，但响应不是我们能认的东西（非 2xx、不是 JSON、版本号格式非法）。
+   *  用户做什么都没用，只能等我们修 */
+  | 'server';
 
 /**
- * 检查更新的状态。
+ * 检查更新的结果，只查版本号，不含下载与安装。
  *
- * 不是一个「请求—返回」的值，而是一条状态流：Windows 上查到新版本就会自动下载，
- * 下载要几十秒到几分钟，进度得一路推到界面上；关掉设置窗口再打开也要能接回当前进度。
- * 所以渲染进程订阅的是它，而不是等一次 IPC 调用的返回值。
+ * 判别字段叫 phase 而不是 status，是为了让渲染进程能把界面自己的 'idle' / 'checking'
+ * 并进同一个联合类型里 —— 判别字段相同，TS 才能一路窄化下去而不必写类型断言。
  */
-export type UpdateStatus =
-  | { phase: 'idle' }
-  | { phase: 'checking' }
+export type UpdateCheckResult =
   | { phase: 'up-to-date' }
-  /** 正在下载；percent 已取整，没变化时主进程不会重复推 */
-  | { phase: 'downloading'; version: string; percent: number }
-  /**
-   * 安装包已就位。kind 是平台给出的下一步：
-   * - restart：Windows，点一下就退出并安装，装完自动启动
-   * - opened：macOS，dmg 已下载并打开，用户自己拖进「应用程序」
-   *
-   * macOS 之所以只能做到这一步：Squirrel.Mac 会拿运行中应用的 designated requirement
-   * 校验更新包，而 ad-hoc 签名（没有 Developer ID）只能绑到当前构建的 cdhash 上，
-   * 每个新版本都必然对不上。这个校验在 Electron 自己的二进制里，配置改不掉。
-   */
-  | { phase: 'ready'; version: string; kind: 'restart' | 'opened' }
-  /**
-   * stage 区分是「查」还是「下」出的问题，两者给用户的建议不一样。
-   *
-   * 查失败还要带 reason：失败的原因在请求层就丢了（状态码被压成一句错误消息），
-   * 界面拿不到就没法给对症的提示。下载失败不细分 —— 能走到下载说明版本和安装包
-   * 都找对了，剩下的只有网络问题，一句话就够。
-   */
-  | { phase: 'error'; stage: 'check'; reason: UpdateErrorReason }
-  | { phase: 'error'; stage: 'download' };
+  /** version 必然是归一化后的 \d+(\.\d+)*，可以直接插进文案 */
+  | { phase: 'available'; version: string }
+  | { phase: 'failed'; reason: UpdateFailureReason };
