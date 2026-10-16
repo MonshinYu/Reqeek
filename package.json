@@ -1,7 +1,7 @@
 {
   "name": "reqeek",
   "productName": "Reqeek",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Reqeek Desktop Packet Capture Tool: Local HTTP/HTTPS proxy for recording and viewing requests and responses.",
   "main": "./out/main/index.js",
   "author": "MonshinYu <MonshinYu@Gmail.com>",
