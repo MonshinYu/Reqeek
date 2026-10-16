@@ -5,8 +5,13 @@
  * 各写一份的话，加语言时漏掉任何一边都会表现成「设置里能选、界面不认」。
  */
 
-/** 界面支持的语言。加语言时这里和 shared/locales/ 下的文件要一起加 */
-export const SUPPORTED_LANGUAGES = ['en', 'zh', 'ja'] as const;
+/**
+ * 界面支持的语言，按字母序 —— 设置里的下拉框直接用它渲染，顺序即所见。
+ *
+ * 加语言时这里和 shared/locales/ 下的文件要一起加，还有 main/i18n.ts 和
+ * renderer/lib/i18n.ts 里那两处 import（它们没法动态扫描，只能各写一行）。
+ */
+export const SUPPORTED_LANGUAGES = ['de', 'en', 'es', 'fr', 'ja', 'ko', 'pt', 'ru', 'zh'] as const;
 
 export type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
 

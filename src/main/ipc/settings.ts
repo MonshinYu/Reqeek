@@ -1,15 +1,12 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
-import { getSettings, resetSettings, saveSettings } from '../settings';
-import { setMainLanguage } from '../i18n';
-import { refreshAppMenu } from '../menu';
-import { applyTheme } from '../theme';
-import { refreshTray } from '../tray';
-import { restartProxyOnPort } from './proxy';
-import type { SupportedLanguage } from '@shared/i18n';
-import type { AppSettings, UpdateCheckResult } from '@shared/types';
-
-/** 桩里的假延迟：让界面的「检查中」真的能被看见，也贴近以后真实请求的节奏 */
-const UPDATE_CHECK_DELAY_MS = 600;
+import {app, BrowserWindow, ipcMain} from 'electron';
+import {getSettings, resetSettings, saveSettings} from '../settings';
+import {setMainLanguage} from '../i18n';
+import {refreshAppMenu} from '../menu';
+import {applyTheme} from '../theme';
+import {refreshTray} from '../tray';
+import {restartProxyOnPort} from './proxy';
+import type {SupportedLanguage} from '@shared/i18n';
+import type {AppSettings} from '@shared/types';
 
 /** 每个窗口的 i18n 都要跟着换；各窗口在 lib/i18n.ts 里各监听一次，不随页面挂载反复订阅 */
 const broadcastLanguage = (language: SupportedLanguage): void => {
@@ -63,15 +60,4 @@ export const registerSettings = (): void => {
   });
 
   ipcMain.handle('app:version', (): string => app.getVersion());
-
-  // V0 没有更新源：先把 IPC 和界面接好，等发布流程定了换成真实查询即可，界面不用动
-  ipcMain.handle('update:check', async (): Promise<UpdateCheckResult> => {
-    await new Promise((resolve) => setTimeout(resolve, UPDATE_CHECK_DELAY_MS));
-
-    return {
-      currentVersion: app.getVersion(),
-      updateAvailable: false,
-      latestVersion: null
-    };
-  });
 };

@@ -5,7 +5,7 @@
  * 比如 timings 那一组，现在采一点不费事，等有了时间轴视图再想补就补不回来了。
  */
 
-import type { SupportedLanguage } from './i18n';
+import type {SupportedLanguage} from './i18n';
 
 /** 发起请求的本机应用 */
 export interface ClientApp {
@@ -118,15 +118,50 @@ export interface AppSettings {
 }
 
 /**
- * 检查更新的结果。
+ * 检查更新失败的原因。
  *
- * V0 还没有更新源，主进程的桩固定返回「已是最新」。字段先按接得上真实更新源的形状定好，
- * 以后换成查发布页时渲染进程一行都不用改。
+ * 分开是因为「失败」这一个词对用户没有任何指导意义 —— 该等一会儿、该查网络、
+ * 还是什么都做不了只能等我们发版，三者的下一步动作完全不同。
  */
-export interface UpdateCheckResult {
-  currentVersion: string;
-  /** 更新源里有没有比 currentVersion 更新的版本 */
-  updateAvailable: boolean;
-  /** 更新源给出的最新版本号；没有更新源时为 null */
-  latestVersion: string | null;
-}
+export type UpdateErrorReason =
+  /** GitHub 限流。跟用户的网络无关，让他去查网络只会白折腾 */
+  | 'rate-limited'
+  /** 连不上。用户能自己做点什么 */
+  | 'network'
+  /** 连上了，但没有能装的包。用户做什么都没用 */
+  | 'no-release'
+  /** 兜底：说不出所以然，界面给最笼统的那句 */
+  | 'unknown';
+
+/**
+ * 检查更新的状态。
+ *
+ * 不是一个「请求—返回」的值，而是一条状态流：Windows 上查到新版本就会自动下载，
+ * 下载要几十秒到几分钟，进度得一路推到界面上；关掉设置窗口再打开也要能接回当前进度。
+ * 所以渲染进程订阅的是它，而不是等一次 IPC 调用的返回值。
+ */
+export type UpdateStatus =
+  | { phase: 'idle' }
+  | { phase: 'checking' }
+  | { phase: 'up-to-date' }
+  /** 正在下载；percent 已取整，没变化时主进程不会重复推 */
+  | { phase: 'downloading'; version: string; percent: number }
+  /**
+   * 安装包已就位。kind 是平台给出的下一步：
+   * - restart：Windows，点一下就退出并安装，装完自动启动
+   * - opened：macOS，dmg 已下载并打开，用户自己拖进「应用程序」
+   *
+   * macOS 之所以只能做到这一步：Squirrel.Mac 会拿运行中应用的 designated requirement
+   * 校验更新包，而 ad-hoc 签名（没有 Developer ID）只能绑到当前构建的 cdhash 上，
+   * 每个新版本都必然对不上。这个校验在 Electron 自己的二进制里，配置改不掉。
+   */
+  | { phase: 'ready'; version: string; kind: 'restart' | 'opened' }
+  /**
+   * stage 区分是「查」还是「下」出的问题，两者给用户的建议不一样。
+   *
+   * 查失败还要带 reason：失败的原因在请求层就丢了（状态码被压成一句错误消息），
+   * 界面拿不到就没法给对症的提示。下载失败不细分 —— 能走到下载说明版本和安装包
+   * 都找对了，剩下的只有网络问题，一句话就够。
+   */
+  | { phase: 'error'; stage: 'check'; reason: UpdateErrorReason }
+  | { phase: 'error'; stage: 'download' };

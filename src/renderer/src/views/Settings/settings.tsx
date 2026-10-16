@@ -1,13 +1,30 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {useTranslation} from 'react-i18next';
-import {SUPPORTED_LANGUAGES, isSupportedLanguage} from '@shared/i18n';
-import {MAX_PORT, MIN_PORT, isValidPort} from '@shared/settings';
-import type {AppSettings} from '@shared/types';
+import {isSupportedLanguage, SUPPORTED_LANGUAGES} from '@shared/i18n';
+import {isValidPort, MAX_PORT, MIN_PORT} from '@shared/settings';
+import type {AppSettings, UpdateErrorReason, UpdateStatus} from '@shared/types';
 import {Button} from '@/components';
 import styles from './settings.module.css';
 
-/** 检查更新在界面上的停留点。骨架阶段还到不了 available，留着是为了接上真实更新源时不用改这里 */
-type UpdateState = 'idle' | 'checking' | 'up-to-date' | 'available' | 'error';
+/**
+ * 查询失败的文案。
+ *
+ * 四类原因各给一句对症的：用户看到「检查失败」时唯一想知道的就是「我该做什么」，
+ * 而「该等一会儿」「该查网络」「做什么都没用」是三件不同的事，一句笼统的话答不了。
+ * 写成穷尽的 switch 而不是查表，好让以后加原因时漏掉这里会编译不过。
+ */
+const checkFailKey = (reason: UpdateErrorReason): string => {
+  switch (reason) {
+    case 'rate-limited':
+      return 'settings.update.checkRateLimited';
+    case 'network':
+      return 'settings.update.checkNetworkFailed';
+    case 'no-release':
+      return 'settings.update.checkNoRelease';
+    case 'unknown':
+      return 'settings.update.checkFailed';
+  }
+};
 
 /**
  * 设置窗口：通用（语言 / 主题 / 端口号）+ 关于（版本 / 检查更新）。
@@ -21,8 +38,7 @@ export const Settings = (): React.ReactElement => {
   const [version, setVersion] = useState('');
   // 用户敲到一半的「8」不是合法端口，不该被立刻纠正掉，所以输入框自己持有一份草稿
   const [portDraft, setPortDraft] = useState('');
-  const [updateState, setUpdateState] = useState<UpdateState>('idle');
-  const [latestVersion, setLatestVersion] = useState<string | null>(null);
+  const [updateState, setUpdateState] = useState<UpdateStatus>({phase: 'idle'});
   /** 提交序号：用来丢弃被后续改动追上的那次保存响应 */
   const requestSeq = useRef(0);
 
@@ -33,6 +49,15 @@ export const Settings = (): React.ReactElement => {
       setPortDraft(String(loaded.proxy.port));
     });
     void window.api.getAppVersion().then(setVersion);
+  }, []);
+
+  /*
+   * 更新状态不归这个窗口所有：下载可能要跑几分钟，窗口关掉再打开得能接回进度，
+   * 所以状态存在主进程，这里先拉一次当前值，再订阅之后的变化。
+   */
+  useEffect(() => {
+    void window.api.getUpdateStatus().then(setUpdateState);
+    return window.api.onUpdateStatus(setUpdateState);
   }, []);
 
   /*
@@ -75,19 +100,16 @@ export const Settings = (): React.ReactElement => {
     void window.api.resetSettings().then((restored) => {
       setSettings(restored);
       setPortDraft(String(restored.proxy.port));
-      setUpdateState('idle');
     });
   };
 
+  /** 不 await：macOS 上查完会紧接着下载，整个过程几分钟，进度和结论都从 onUpdateStatus 来 */
   const handleCheckUpdate = (): void => {
-    setUpdateState('checking');
-    void window.api
-      .checkForUpdates()
-      .then((result) => {
-        setLatestVersion(result.latestVersion);
-        setUpdateState(result.updateAvailable ? 'available' : 'up-to-date');
-      })
-      .catch(() => setUpdateState('error'));
+    void window.api.checkForUpdates();
+  };
+
+  const handleInstallUpdate = (): void => {
+    void window.api.installUpdate();
   };
 
   if (!settings) {
@@ -110,21 +132,42 @@ export const Settings = (): React.ReactElement => {
   }
 
   const updateHint = (): string => {
-    switch (updateState) {
+    switch (updateState.phase) {
       case 'checking':
         return t('settings.update.checking');
       case 'up-to-date':
         return t('settings.update.upToDate');
-      case 'available':
-        return t('settings.update.available', {version: latestVersion ?? ''});
+      case 'downloading':
+        return t('settings.update.downloading', {percent: updateState.percent});
+      case 'ready':
+        // 两个平台停在不同地方：Windows 等用户点一下重启，macOS 已经把 dmg 打开了
+        return updateState.kind === 'restart'
+          ? t('settings.update.readyRestart', {version: updateState.version})
+          : t('settings.update.readyOpened', {version: updateState.version});
       case 'error':
-        return t('settings.update.failed');
+        return updateState.stage === 'download'
+          ? t('settings.update.downloadFailed')
+          : t(checkFailKey(updateState.reason));
       default:
         return '';
     }
   };
 
+  /** 安装包就位后按钮换成后续动作，而不是退回「检查更新」—— 再查一遍只会又下一遍 100MB */
+  const updateButtonLabel = (): string => {
+    switch (updateState.phase) {
+      case 'ready':
+        return updateState.kind === 'restart'
+          ? t('settings.update.install')
+          : t('settings.update.openInstaller');
+      default:
+        return t('settings.update.check');
+    }
+  };
+
   const hint = updateHint();
+  const updateBusy = updateState.phase === 'checking' || updateState.phase === 'downloading';
+  const updateReadyToInstall = updateState.phase === 'ready';
 
   return (
     <div className={`${styles.window} ${platformClass}`}>
@@ -199,11 +242,21 @@ export const Settings = (): React.ReactElement => {
             <label>{t('settings.update.title')}</label>
             <div className={styles.updateRow}>
               {hint && <span className={styles.hint}>{hint}</span>}
-              <Button onClick={handleCheckUpdate} disabled={updateState === 'checking'}>
-                {t('settings.update.check')}
+              <Button
+                onClick={updateReadyToInstall ? handleInstallUpdate : handleCheckUpdate}
+                disabled={updateBusy}
+              >
+                {updateButtonLabel()}
               </Button>
             </div>
           </div>
+
+          {/* 进度条挂在 field 外面，好占满整行；只有一个细条，不抢按钮的位置 */}
+          {updateState.phase === 'downloading' && (
+            <div className={styles.progress}>
+              <div className={styles.progressBar} style={{width: `${updateState.percent}%`}} />
+            </div>
+          )}
         </section>
       </div>
 

@@ -198,16 +198,30 @@
       "check": "アップデートを確認",
       "checking": "確認中…",
       "upToDate": "最新バージョンです",
-      "available": "新しいバージョン {{version}} があります",
-      "failed": "確認に失敗しました。しばらくしてからお試しください"
+      "downloading": "新しいバージョンをダウンロード中 {{percent}}%",
+      "readyRestart": "バージョン {{version}} をダウンロードしました。再起動でインストールが完了します",
+      "readyOpened": "バージョン {{version}} のインストーラを開きました。「アプリケーション」へドラッグしてください",
+      "install": "再起動してインストール",
+      "openInstaller": "インストーラを開く",
+      "checkRateLimited": "リクエストが多すぎます。しばらくしてからお試しください",
+      "checkNetworkFailed": "ネットワークに接続できません。接続を確認してからお試しください",
+      "checkNoRelease": "利用可能なリリースがありません",
+      "checkFailed": "確認に失敗しました。しばらくしてからお試しください",
+      "downloadFailed": "ダウンロードに失敗しました。しばらくしてからお試しください"
     },
     "reset": "デフォルトに戻す",
     "resetConfirm": "すべての設定をデフォルトに戻しますか？",
     "close": "閉じる"
   },
   "languages": {
+    "de": "Deutsch",
     "en": "English",
-    "zh": "简体中文",
-    "ja": "日本語"
+    "es": "Español",
+    "fr": "Français",
+    "ja": "日本語",
+    "ko": "한국어",
+    "pt": "Português",
+    "ru": "Русский",
+    "zh": "简体中文"
   }
 }

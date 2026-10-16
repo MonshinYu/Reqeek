@@ -1,5 +1,15 @@
 import {contextBridge, ipcRenderer} from 'electron';
-import type {AppSettings, CaResult, CaStatus, Flow, FlowDetail, MenuAction, ProxyEvent, ProxyStatus, UpdateCheckResult} from '@shared/types';
+import type {
+  AppSettings,
+  CaResult,
+  CaStatus,
+  Flow,
+  FlowDetail,
+  MenuAction,
+  ProxyEvent,
+  ProxyStatus,
+  UpdateStatus
+} from '@shared/types';
 
 /**
  * 主进程创建窗口时通过 additionalArguments 塞进来的语言。
@@ -62,7 +72,19 @@ const api = {
     ipcRenderer.invoke('settings:save', settings),
   resetSettings: (): Promise<AppSettings> => ipcRenderer.invoke('settings:reset'),
   getAppVersion: (): Promise<string> => ipcRenderer.invoke('app:version'),
-  checkForUpdates: (): Promise<UpdateCheckResult> => ipcRenderer.invoke('update:check'),
+
+  /**
+   * 发起一次检查更新。不返回结果：结论和下载进度都走 onUpdateStatus，
+   * 因为 macOS 上「查」完会直接开始下载，整个过程要几分钟
+   */
+  checkForUpdates: (): Promise<void> => ipcRenderer.invoke('update:check'),
+  /** 设置窗口打开时接回当前状态（可能在别处已经查过、甚至正在下载） */
+  getUpdateStatus: (): Promise<UpdateStatus> => ipcRenderer.invoke('update:status'),
+  installUpdate: (): Promise<void> => ipcRenderer.invoke('update:install'),
+  /** 订阅更新状态，返回取消订阅函数 */
+  onUpdateStatus: (callback: (status: UpdateStatus) => void): (() => void) =>
+    subscribe('update:status', callback),
+
   openSettings: (): void => ipcRenderer.send('settings:open'),
 
   /** 启动时注入的语言（同步值），i18n 初始化用它避免首帧闪错语言 */

@@ -1,14 +1,23 @@
-import { DEFAULT_LANGUAGE, type SupportedLanguage } from '@shared/i18n';
+import {DEFAULT_LANGUAGE, type SupportedLanguage} from '@shared/i18n';
+import de from '@shared/locales/de.json';
 import en from '@shared/locales/en.json';
-import zh from '@shared/locales/zh.json';
+import es from '@shared/locales/es.json';
+import fr from '@shared/locales/fr.json';
 import ja from '@shared/locales/ja.json';
+import ko from '@shared/locales/ko.json';
+import pt from '@shared/locales/pt.json';
+import ru from '@shared/locales/ru.json';
+import zh from '@shared/locales/zh.json';
 
 /*
  * 主进程要翻的只有原生菜单和托盘，用不到复数、格式化这些能力，
  * 所以不把整个 i18next 拖进主进程 bundle —— 一个点号查表加插值就够了。
  * 语言包本身和渲染进程共用同一份（shared/locales），改文案不会漏掉菜单。
+ *
+ * 类型是 Record<SupportedLanguage, …>，所以 shared/i18n.ts 里加了语言却忘了在这里
+ * import 的话，typecheck 会直接报错，不会拖到运行时才发现菜单缺词。
  */
-const RESOURCES: Record<SupportedLanguage, unknown> = { en, zh, ja };
+const RESOURCES: Record<SupportedLanguage, unknown> = { de, en, es, fr, ja, ko, pt, ru, zh };
 
 let current: SupportedLanguage = DEFAULT_LANGUAGE;
 

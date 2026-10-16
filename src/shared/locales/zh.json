@@ -198,16 +198,30 @@
       "check": "检查更新",
       "checking": "检查中…",
       "upToDate": "已是最新版本",
-      "available": "发现新版本 {{version}}",
-      "failed": "检查失败，请稍后重试"
+      "downloading": "正在下载新版本 {{percent}}%",
+      "readyRestart": "新版本 {{version}} 已下载，重启后完成安装",
+      "readyOpened": "新版本 {{version}} 的安装包已打开，拖入「应用程序」即可完成更新",
+      "install": "重启并安装",
+      "openInstaller": "打开安装包",
+      "checkRateLimited": "请求过于频繁，请稍后重试",
+      "checkNetworkFailed": "网络连接失败，请检查网络后重试",
+      "checkNoRelease": "暂无可用的发布版本",
+      "checkFailed": "检查失败，请稍后重试",
+      "downloadFailed": "下载失败，请稍后重试"
     },
     "reset": "恢复默认",
     "resetConfirm": "恢复默认设置？",
     "close": "关闭"
   },
   "languages": {
+    "de": "Deutsch",
     "en": "English",
-    "zh": "简体中文",
-    "ja": "日本語"
+    "es": "Español",
+    "fr": "Français",
+    "ja": "日本語",
+    "ko": "한국어",
+    "pt": "Português",
+    "ru": "Русский",
+    "zh": "简体中文"
   }
 }

@@ -1,0 +1,227 @@
+{
+  "app": {
+    "name": "Reqeek"
+  },
+  "titleBar": {
+    "toolbar": "도구 모음",
+    "startCapture": "기록 시작",
+    "stopCapture": "기록 중지",
+    "caRequired": "먼저 루트 인증서를 설치하고 신뢰해야 합니다",
+    "clear": "지우기",
+    "clearRecords": "기록 지우기",
+    "searchPlaceholder": "호스트 / 경로 / 메서드 / 상태 검색",
+    "searchRequests": "요청 검색",
+    "ca": "CA 인증서"
+  },
+  "filter": {
+    "group": "필터",
+    "invertSearch": "검색 반전",
+    "errorsOnly": "오류만",
+    "hideTunnels": "터널 숨기기"
+  },
+  "sidebar": {
+    "byApp": "앱별 필터",
+    "allApps": "모든 앱",
+    "unknownApp": "알 수 없음"
+  },
+  "table": {
+    "requests": "요청 목록",
+    "name": "이름",
+    "status": "상태",
+    "type": "유형",
+    "size": "크기",
+    "time": "시간",
+    "waterfall": "워터폴",
+    "expandAll": "모두 펼치기",
+    "collapseAll": "모두 접기",
+    "groupCount_other": "요청 {{count}}개"
+  },
+  "detail": {
+    "title": "요청 상세",
+    "close": "상세 닫기",
+    "noRequestBody": "이 요청에는 본문이 없습니다",
+    "noPreviewBody": "미리 볼 응답 본문이 없습니다",
+    "noResponseBody": "응답 본문이 없습니다",
+    "bodyNotCaptured": "이 종류의 기록은 본문을 수집하지 않습니다"
+  },
+  "status": {
+    "idle": "기록 중지됨",
+    "requestCount_other": "요청 {{count}}개",
+    "shownOfTotal": "요청 {{shown}} / {{total}}개",
+    "transferred": "전송됨 {{size}}",
+    "finished": "완료 {{time}}",
+    "httpsOn": "HTTPS 복호화: 사용",
+    "httpsOff": "HTTPS 복호화: 사용 안 함"
+  },
+  "empty": {
+    "noRequests": "아직 기록된 요청이 없습니다",
+    "noRequestsHint": "기록 버튼을 누른 뒤 아무 웹사이트나 방문하십시오",
+    "noMatch": "필터와 일치하는 요청이 없습니다",
+    "noMatchHint": "필터나 검색 조건을 조정하십시오"
+  },
+  "ca": {
+    "gateTitle": "{{name}} 루트 인증서 설치",
+    "gateLead": "HTTPS 콘텐츠를 기록하려면 이 컴퓨터에서 {{name}} 루트 인증서를 신뢰해야 합니다. 인증서와 개인 키는 이 컴퓨터를 벗어나지 않습니다.",
+    "step": {
+      "generate": "1. 인증서 생성",
+      "install": "2. 설치 및 신뢰",
+      "verify": "3. 확인"
+    },
+    "stepState": {
+      "trusted": "설치 및 신뢰 완료",
+      "installed": "키체인에 있지만 아직 신뢰되지 않음",
+      "notInstalled": "설치되지 않음",
+      "unsupported": "이 시스템은 자동 설치를 지원하지 않습니다"
+    },
+    "generating": "생성 중…",
+    "waitingGenerate": "인증서 대기 중",
+    "autoEnter": "완료되면 메인 창이 자동으로 열립니다",
+    "installedWarning": "인증서를 가져왔지만 신뢰되지 않았습니다. 키체인 접근에서 {{name}} 인증서를 찾아 신뢰를 \"항상 신뢰\"로 설정한 뒤 \"다시 확인\"을 클릭하십시오.",
+    "hint": {
+      "darwin": "시스템에서 키체인 승인을 요청합니다. 로그인 암호를 입력하거나 Touch ID를 사용하십시오.",
+      "win32": "시스템에서 인증서 설치 확인 창을 표시합니다. \"예\"를 선택하십시오.",
+      "linux": "먼저 인증서를 내보낸 뒤 사용하는 배포판의 신뢰 저장소에 추가하고 \"다시 확인\"을 클릭하십시오."
+    },
+    "dialogTitle": "CA 루트 인증서",
+    "trust": {
+      "trusted": "설치 및 신뢰 완료 — HTTPS 복호화를 사용할 수 있습니다",
+      "installed": "키체인에 있지만 신뢰되지 않았습니다. 키체인 접근에서 \"항상 신뢰\"로 설정하십시오",
+      "notInstalled": "시스템 신뢰 저장소에 설치되지 않았습니다",
+      "unsupported": "이 플랫폼은 자동 설치를 지원하지 않습니다 — 인증서를 내보내 수동으로 설치하십시오"
+    },
+    "field": {
+      "name": "이름",
+      "fingerprint": "지문 (SHA-256)",
+      "expires": "유효 기간",
+      "status": "상태"
+    },
+    "reading": "인증서 정보를 읽는 중…",
+    "actions": {
+      "install": "설치 및 신뢰",
+      "uninstall": "시스템에서 제거",
+      "reveal": "폴더에서 인증서 표시",
+      "revealShort": "폴더에서 표시",
+      "recheck": "다시 확인",
+      "close": "닫기",
+      "busy": "처리 중…"
+    }
+  },
+  "body": {
+    "noParams": "매개변수 없음",
+    "emptyValue": "(비어 있음)",
+    "truncated": "{{total}}개 중 처음 {{kept}}개만 표시",
+    "htmlPreview": "HTML 미리 보기",
+    "imagePreview": "응답 이미지 미리 보기",
+    "copied": "복사됨",
+    "copy": "복사",
+    "copyPrettyJson": "서식 있는 JSON 복사"
+  },
+  "headers": {
+    "detailEvicted": "상세 정보가 제거되었습니다 (메모리 한도 초과)",
+    "noHeadersCaptured": "이 종류의 기록은 헤더를 수집하지 않습니다 (터널 또는 업그레이드된 연결)"
+  },
+  "timing": {
+    "startedAt": "{{time}}에 시작",
+    "ttfb": "서버 응답 대기 (TTFB)",
+    "download": "콘텐츠 다운로드",
+    "total": "합계",
+    "transferred": "전송"
+  },
+  "tree": {
+    "showMore_other": "더 보기 ({{count}}개 남음)",
+    "invalidXml": "유효한 XML이 아닙니다 — 일반 텍스트로 표시합니다"
+  },
+  "clamp": {
+    "expand_other": "펼치기 ({{count}}자)",
+    "showAll_other": "모두 표시 ({{count}}자 남음)"
+  },
+  "common": {
+    "loading": "불러오는 중…",
+    "none": "없음",
+    "collapse": "접기",
+    "semicolon": "; "
+  },
+  "menu": {
+    "about": "{{name}} 정보",
+    "services": "서비스",
+    "hide": "{{name}} 가리기",
+    "hideOthers": "기타 가리기",
+    "unhide": "모두 보기",
+    "quit": "{{name}} 종료",
+    "capture": "기록",
+    "startCapture": "기록 시작",
+    "stopCapture": "기록 중지",
+    "clear": "기록 지우기",
+    "focusSearch": "요청 검색",
+    "ca": "CA 인증서…",
+    "settings": "설정…",
+    "edit": "편집",
+    "undo": "실행 취소",
+    "redo": "다시 실행",
+    "cut": "잘라내기",
+    "copy": "복사",
+    "paste": "붙여넣기",
+    "selectAll": "모두 선택",
+    "view": "보기",
+    "forceReload": "강제 새로고침",
+    "toggleDevTools": "개발자 도구",
+    "resetZoom": "실제 크기",
+    "zoomIn": "확대",
+    "zoomOut": "축소",
+    "toggleFullScreen": "전체 화면 전환",
+    "window": "윈도우",
+    "help": "도움말",
+    "revealCa": "폴더에서 CA 인증서 표시",
+    "openDataDir": "데이터 디렉터리 열기"
+  },
+  "tray": {
+    "show": "{{name}} 표시",
+    "capturing": "{{name}} · 기록 중 (포트 {{port}})",
+    "idle": "{{name}} · 기록 중지됨",
+    "quit": "{{name}} 종료"
+  },
+  "settings": {
+    "title": "설정",
+    "general": "일반",
+    "about": "정보",
+    "language": "언어",
+    "theme": "테마",
+    "themeOptions": {
+      "auto": "시스템",
+      "light": "라이트",
+      "dark": "다크"
+    },
+    "port": "포트",
+    "version": "버전",
+    "update": {
+      "title": "업데이트",
+      "check": "업데이트 확인",
+      "checking": "확인 중…",
+      "upToDate": "최신 버전입니다",
+      "downloading": "새 버전 다운로드 중 — {{percent}}%",
+      "readyRestart": "버전 {{version}} 다운로드 완료, 재시작하면 설치가 완료됩니다",
+      "readyOpened": "버전 {{version}} 설치 프로그램을 열었습니다 — 응용 프로그램으로 드래그하십시오",
+      "install": "재시작 후 설치",
+      "openInstaller": "설치 프로그램 열기",
+      "checkRateLimited": "요청이 너무 많습니다. 나중에 다시 시도하십시오",
+      "checkNetworkFailed": "네트워크 연결에 실패했습니다. 연결을 확인한 후 다시 시도하십시오",
+      "checkNoRelease": "사용 가능한 릴리스가 없습니다",
+      "checkFailed": "확인에 실패했습니다. 나중에 다시 시도하십시오",
+      "downloadFailed": "다운로드에 실패했습니다. 나중에 다시 시도하십시오"
+    },
+    "reset": "기본값으로 재설정",
+    "resetConfirm": "모든 설정을 기본값으로 되돌리시겠습니까?",
+    "close": "닫기"
+  },
+  "languages": {
+    "de": "Deutsch",
+    "en": "English",
+    "es": "Español",
+    "fr": "Français",
+    "ja": "日本語",
+    "ko": "한국어",
+    "pt": "Português",
+    "ru": "Русский",
+    "zh": "简体中文"
+  }
+}

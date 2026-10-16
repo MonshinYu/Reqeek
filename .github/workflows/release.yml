@@ -28,8 +28,13 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 40
     strategy:
-      # 单个平台失败不牵连其他平台，便于一次看清哪些架构有问题
+      # 单个平台失败不牵连另一个平台，便于一次看清哪些平台有问题
       fail-fast: false
+      # 一个平台一个 job，一次把两个架构都构建出来 —— 不能拆成「一个架构一个 job」：
+      # latest.yml 里必须同时列出 x64 和 arm64 的包，客户端按自己的架构从里面挑
+      # （electron-updater 的 Provider.findFile 用 process.arch 匹配文件名）。
+      # 拆开的话两个 job 会各写一份同名的 latest.yml，后上传的盖掉先上传的，
+      # 另一个架构的机器就永远查不到更新。
       matrix:
         include:
           # macOS：GitHub 的 Intel runner（macos-13）已退役，两种架构都在 Apple Silicon
@@ -37,25 +42,15 @@ jobs:
           # 因此交叉构建 x64 包是安全的。
           - os: macos-15
             target: mac
-            arch: x64
-            label: macOS x64
-            artifact: mac-x64
-          - os: macos-15
-            target: mac
-            arch: arm64
-            label: macOS arm64
-            artifact: mac-arm64
+            arches: '--x64 --arm64'
+            label: macOS x64 + arm64
+            artifact: mac
           # Windows：runner 本身是 x64，arm64 包同样由 electron-builder 交叉构建
           - os: windows-latest
             target: win
-            arch: x64
-            label: Windows x64
-            artifact: win-x64
-          - os: windows-latest
-            target: win
-            arch: arm64
-            label: Windows arm64
-            artifact: win-arm64
+            arches: '--x64 --arm64'
+            label: Windows x64 + arm64
+            artifact: win
 
     steps:
       # checkout 的 ref 指向不存在的标签时，只会抛一句 "The process 'git' failed
@@ -123,7 +118,7 @@ jobs:
           path: |
             ${{ runner.temp }}/electron-cache
             ${{ runner.temp }}/electron-builder-cache
-          key: electron-${{ runner.os }}-${{ matrix.arch }}-${{ hashFiles('package.json') }}
+          key: electron-${{ runner.os }}-${{ hashFiles('package.json') }}
 
       # 项目的 .npmrc 指向国内的 npmmirror，而 runner 在海外，删掉这两行改走官方源。
       #
@@ -168,15 +163,22 @@ jobs:
         env:
           ELECTRON_CACHE: ${{ runner.temp }}/electron-cache
           ELECTRON_BUILDER_CACHE: ${{ runner.temp }}/electron-builder-cache
-        run: pnpm exec electron-builder --${{ matrix.target }} --${{ matrix.arch }} --publish never "-c.electronDownload.mirror=https://github.com/electron/electron/releases/download/"
+        run: pnpm exec electron-builder --${{ matrix.target }} ${{ matrix.arches }} --publish never "-c.electronDownload.mirror=https://github.com/electron/electron/releases/download/"
 
       - name: 上传构建产物
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact }}
+          # latest.yml 是 Windows 自动更新的元数据：客户端靠它比对版本、取包地址和
+          # SHA-512 校验值，少一个字节应用就永远查不到更新。
+          # mac job 产不出这个文件 —— 更新元数据只有 zip 和 NSIS 目标会写，而 macOS
+          # 只出 dmg（见 electron-builder.yml 的 mac.target）。macOS 客户端改用 GitHub API
+          # 查版本，不需要它。写成 latest*.yml 是为了将来加回 zip 时不用改这里。
+          # 也不能图省事写 dist/*.yml —— 那会连 builder-debug.yml 一起传上去。
           path: |
             dist/*.exe
             dist/*.dmg
+            dist/latest*.yml
           if-no-files-found: error
 
   release:

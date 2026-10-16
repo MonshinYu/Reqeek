@@ -1,0 +1,232 @@
+{
+  "app": {
+    "name": "Reqeek"
+  },
+  "titleBar": {
+    "toolbar": "Barra de herramientas",
+    "startCapture": "Iniciar grabación",
+    "stopCapture": "Detener grabación",
+    "caRequired": "Instalar y confiar primero en el certificado raíz",
+    "clear": "Limpiar",
+    "clearRecords": "Limpiar registros",
+    "searchPlaceholder": "Buscar host / ruta / método / estado",
+    "searchRequests": "Buscar solicitudes",
+    "ca": "Certificado CA"
+  },
+  "filter": {
+    "group": "Filtros",
+    "invertSearch": "Invertir búsqueda",
+    "errorsOnly": "Solo errores",
+    "hideTunnels": "Ocultar túneles"
+  },
+  "sidebar": {
+    "byApp": "Filtrar por aplicación",
+    "allApps": "Todas las aplicaciones",
+    "unknownApp": "Desconocido"
+  },
+  "table": {
+    "requests": "Lista de solicitudes",
+    "name": "Nombre",
+    "status": "Estado",
+    "type": "Tipo",
+    "size": "Tamaño",
+    "time": "Tiempo",
+    "waterfall": "Cascada",
+    "expandAll": "Expandir todo",
+    "collapseAll": "Contraer todo",
+    "groupCount_one": "{{count}} solicitud",
+    "groupCount_other": "{{count}} solicitudes"
+  },
+  "detail": {
+    "title": "Detalles de la solicitud",
+    "close": "Cerrar detalles",
+    "noRequestBody": "Esta solicitud no tiene cuerpo",
+    "noPreviewBody": "No hay cuerpo de respuesta para previsualizar",
+    "noResponseBody": "Sin cuerpo de respuesta",
+    "bodyNotCaptured": "Los cuerpos no se graban para este tipo de registro"
+  },
+  "status": {
+    "idle": "Sin grabar",
+    "requestCount_one": "{{count}} solicitud",
+    "requestCount_other": "{{count}} solicitudes",
+    "shownOfTotal": "{{shown}} / {{total}} solicitudes",
+    "transferred": "Transferido {{size}}",
+    "finished": "Completado en {{time}}",
+    "httpsOn": "Descifrado HTTPS: activado",
+    "httpsOff": "Descifrado HTTPS: desactivado"
+  },
+  "empty": {
+    "noRequests": "Aún no se han grabado solicitudes",
+    "noRequestsHint": "Pulsar el botón de grabación y visitar cualquier sitio web",
+    "noMatch": "Ninguna solicitud coincide con el filtro",
+    "noMatchHint": "Ajustar los filtros o los términos de búsqueda"
+  },
+  "ca": {
+    "gateTitle": "Instalar el certificado raíz de {{name}}",
+    "gateLead": "Grabar contenido HTTPS requiere confiar en el certificado raíz de {{name}} en este equipo. El certificado y su clave privada nunca salen de este equipo.",
+    "step": {
+      "generate": "1. Generar el certificado",
+      "install": "2. Instalar y confiar",
+      "verify": "3. Verificar"
+    },
+    "stepState": {
+      "trusted": "Instalado y de confianza",
+      "installed": "En el llavero, pero aún no es de confianza",
+      "notInstalled": "No instalado",
+      "unsupported": "Este sistema no admite la instalación automática"
+    },
+    "generating": "Generando…",
+    "waitingGenerate": "Esperando el certificado",
+    "autoEnter": "La ventana principal se abre automáticamente al terminar",
+    "installedWarning": "El certificado se importó, pero no es de confianza. Abrir Acceso a Llaveros, buscar {{name}}, definir su confianza como «Confiar siempre» y pulsar «Comprobar de nuevo».",
+    "hint": {
+      "darwin": "El sistema pedirá autorización del llavero: introducir la contraseña de inicio de sesión o usar Touch ID.",
+      "win32": "El sistema mostrará un aviso de instalación del certificado: elegir «Sí».",
+      "linux": "Exportar primero el certificado, añadirlo al almacén de confianza de tu distribución y pulsar «Comprobar de nuevo»."
+    },
+    "dialogTitle": "Certificado raíz CA",
+    "trust": {
+      "trusted": "Instalado y de confianza: el descifrado HTTPS está disponible",
+      "installed": "Está en el llavero, pero no es de confianza. Definirlo como «Confiar siempre» en Acceso a Llaveros",
+      "notInstalled": "No está instalado en el almacén de confianza del sistema",
+      "unsupported": "Esta plataforma no admite la instalación automática: exportar el certificado e instalarlo manualmente"
+    },
+    "field": {
+      "name": "Nombre",
+      "fingerprint": "Huella digital (SHA-256)",
+      "expires": "Válido hasta",
+      "status": "Estado"
+    },
+    "reading": "Leyendo la información del certificado…",
+    "actions": {
+      "install": "Instalar y confiar",
+      "uninstall": "Eliminar del sistema",
+      "reveal": "Mostrar el certificado en la carpeta",
+      "revealShort": "Mostrar en la carpeta",
+      "recheck": "Comprobar de nuevo",
+      "close": "Cerrar",
+      "busy": "Procesando…"
+    }
+  },
+  "body": {
+    "noParams": "Sin parámetros",
+    "emptyValue": "(vacío)",
+    "truncated": "Mostrando los primeros {{kept}} de {{total}}",
+    "htmlPreview": "Vista previa HTML",
+    "imagePreview": "Vista previa de la imagen de respuesta",
+    "copied": "Copiado",
+    "copy": "Copiar",
+    "copyPrettyJson": "Copiar JSON con formato"
+  },
+  "headers": {
+    "detailEvicted": "Los detalles se descartaron (se superó el límite de memoria)",
+    "noHeadersCaptured": "Los encabezados no se graban para este tipo de registro (túnel o conexión actualizada)"
+  },
+  "timing": {
+    "startedAt": "Iniciado a las {{time}}",
+    "ttfb": "Esperando la respuesta del servidor (TTFB)",
+    "download": "Descarga del contenido",
+    "total": "Total",
+    "transferred": "Transferido"
+  },
+  "tree": {
+    "showMore_one": "Mostrar más ({{count}} restante)",
+    "showMore_other": "Mostrar más ({{count}} restantes)",
+    "invalidXml": "XML no válido: se muestra el texto sin formato"
+  },
+  "clamp": {
+    "expand_one": "Expandir ({{count}} carácter)",
+    "expand_other": "Expandir ({{count}} caracteres)",
+    "showAll_one": "Mostrar todo ({{count}} carácter restante)",
+    "showAll_other": "Mostrar todo ({{count}} caracteres restantes)"
+  },
+  "common": {
+    "loading": "Cargando…",
+    "none": "Ninguno",
+    "collapse": "Contraer",
+    "semicolon": "; "
+  },
+  "menu": {
+    "about": "Acerca de {{name}}",
+    "services": "Servicios",
+    "hide": "Ocultar {{name}}",
+    "hideOthers": "Ocultar otros",
+    "unhide": "Mostrar todo",
+    "quit": "Salir de {{name}}",
+    "capture": "Grabación",
+    "startCapture": "Iniciar grabación",
+    "stopCapture": "Detener grabación",
+    "clear": "Limpiar registros",
+    "focusSearch": "Buscar solicitudes",
+    "ca": "Certificado CA…",
+    "settings": "Ajustes…",
+    "edit": "Editar",
+    "undo": "Deshacer",
+    "redo": "Rehacer",
+    "cut": "Cortar",
+    "copy": "Copiar",
+    "paste": "Pegar",
+    "selectAll": "Seleccionar todo",
+    "view": "Ver",
+    "forceReload": "Forzar recarga",
+    "toggleDevTools": "Herramientas de desarrollo",
+    "resetZoom": "Tamaño real",
+    "zoomIn": "Acercar",
+    "zoomOut": "Alejar",
+    "toggleFullScreen": "Alternar pantalla completa",
+    "window": "Ventana",
+    "help": "Ayuda",
+    "revealCa": "Mostrar el certificado CA en la carpeta",
+    "openDataDir": "Abrir el directorio de datos"
+  },
+  "tray": {
+    "show": "Mostrar {{name}}",
+    "capturing": "{{name}} · Grabando (puerto {{port}})",
+    "idle": "{{name}} · Sin grabar",
+    "quit": "Salir de {{name}}"
+  },
+  "settings": {
+    "title": "Ajustes",
+    "general": "General",
+    "about": "Acerca de",
+    "language": "Idioma",
+    "theme": "Tema",
+    "themeOptions": {
+      "auto": "Sistema",
+      "light": "Claro",
+      "dark": "Oscuro"
+    },
+    "port": "Puerto",
+    "version": "Versión",
+    "update": {
+      "title": "Actualizaciones",
+      "check": "Buscar actualizaciones",
+      "checking": "Comprobando…",
+      "upToDate": "Ya está actualizado",
+      "downloading": "Descargando la nueva versión: {{percent}}%",
+      "readyRestart": "La versión {{version}} ya está descargada; reiniciar para completar la instalación",
+      "readyOpened": "Se abrió el instalador de la versión {{version}}; arrastrarlo a Aplicaciones",
+      "install": "Reiniciar e instalar",
+      "openInstaller": "Abrir el instalador",
+      "checkRateLimited": "Demasiadas solicitudes; volver a intentarlo más tarde",
+      "checkNetworkFailed": "No se pudo conectar a la red; comprobar la conexión e intentarlo de nuevo",
+      "checkNoRelease": "No hay ninguna versión disponible",
+      "checkFailed": "Error al comprobar; volver a intentarlo más tarde",
+      "downloadFailed": "Error al descargar; volver a intentarlo más tarde"
+    },
+    "reset": "Restablecer los valores predeterminados",
+    "resetConfirm": "¿Restablecer todos los ajustes a los valores predeterminados?",
+    "close": "Cerrar"
+  },
+  "languages": {
+    "de": "Deutsch",
+    "en": "English",
+    "es": "Español",
+    "fr": "Français",
+    "ja": "日本語",
+    "ko": "한국어",
+    "pt": "Português",
+    "ru": "Русский",
+    "zh": "简体中文"
+  }
+}

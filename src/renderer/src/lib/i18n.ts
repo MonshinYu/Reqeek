@@ -1,14 +1,27 @@
 import i18n from 'i18next';
-import { initReactI18next } from 'react-i18next';
-import { DEFAULT_LANGUAGE, matchLanguage, type SupportedLanguage } from '@shared/i18n';
+import {initReactI18next} from 'react-i18next';
+import {DEFAULT_LANGUAGE, matchLanguage, type SupportedLanguage} from '@shared/i18n';
+import de from '@shared/locales/de.json';
 import en from '@shared/locales/en.json';
-import zh from '@shared/locales/zh.json';
+import es from '@shared/locales/es.json';
+import fr from '@shared/locales/fr.json';
 import ja from '@shared/locales/ja.json';
+import ko from '@shared/locales/ko.json';
+import pt from '@shared/locales/pt.json';
+import ru from '@shared/locales/ru.json';
+import zh from '@shared/locales/zh.json';
 
+/* 加语言时这里和 main/i18n.ts 都要补一行 —— 静态 import 没法扫描目录 */
 const resources = {
+  de: { translation: de },
   en: { translation: en },
-  zh: { translation: zh },
-  ja: { translation: ja }
+  es: { translation: es },
+  fr: { translation: fr },
+  ja: { translation: ja },
+  ko: { translation: ko },
+  pt: { translation: pt },
+  ru: { translation: ru },
+  zh: { translation: zh }
 };
 
 /**

@@ -1,7 +1,7 @@
 {
   "name": "reqeek",
   "productName": "Reqeek",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Reqeek Desktop Packet Capture Tool: Local HTTP/HTTPS proxy for recording and viewing requests and responses.",
   "main": "./out/main/index.js",
   "author": "MonshinYu <MonshinYu@Gmail.com>",
@@ -28,6 +28,7 @@
   "dependencies": {
     "@electron-toolkit/utils": "^4.0.0",
     "@peculiar/x509": "^2.1.0",
+    "electron-updater": "^6.8.9",
     "i18next": "^26.4.4",
     "react-i18next": "^17.0.16",
     "reflect-metadata": "^0.2.2"

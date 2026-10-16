@@ -1,0 +1,232 @@
+{
+  "app": {
+    "name": "Reqeek"
+  },
+  "titleBar": {
+    "toolbar": "Symbolleiste",
+    "startCapture": "Aufzeichnung starten",
+    "stopCapture": "Aufzeichnung stoppen",
+    "caRequired": "Zuerst das Root-Zertifikat installieren und vertrauen",
+    "clear": "Leeren",
+    "clearRecords": "Aufzeichnungen löschen",
+    "searchPlaceholder": "Host / Pfad / Methode / Status suchen",
+    "searchRequests": "Anfragen suchen",
+    "ca": "CA-Zertifikat"
+  },
+  "filter": {
+    "group": "Filter",
+    "invertSearch": "Suche umkehren",
+    "errorsOnly": "Nur Fehler",
+    "hideTunnels": "Tunnel ausblenden"
+  },
+  "sidebar": {
+    "byApp": "Nach App filtern",
+    "allApps": "Alle Apps",
+    "unknownApp": "Unbekannt"
+  },
+  "table": {
+    "requests": "Anfrageliste",
+    "name": "Name",
+    "status": "Status",
+    "type": "Typ",
+    "size": "Größe",
+    "time": "Zeit",
+    "waterfall": "Wasserfall",
+    "expandAll": "Alle erweitern",
+    "collapseAll": "Alle reduzieren",
+    "groupCount_one": "{{count}} Anfrage",
+    "groupCount_other": "{{count}} Anfragen"
+  },
+  "detail": {
+    "title": "Anfragedetails",
+    "close": "Details schließen",
+    "noRequestBody": "Diese Anfrage hat keinen Body",
+    "noPreviewBody": "Kein Antwort-Body zur Vorschau",
+    "noResponseBody": "Kein Antwort-Body",
+    "bodyNotCaptured": "Für diese Art von Aufzeichnung werden keine Bodies aufgezeichnet"
+  },
+  "status": {
+    "idle": "Keine Aufzeichnung",
+    "requestCount_one": "{{count}} Anfrage",
+    "requestCount_other": "{{count}} Anfragen",
+    "shownOfTotal": "{{shown}} / {{total}} Anfragen",
+    "transferred": "Übertragen {{size}}",
+    "finished": "Fertig in {{time}}",
+    "httpsOn": "HTTPS-Entschlüsselung: an",
+    "httpsOff": "HTTPS-Entschlüsselung: aus"
+  },
+  "empty": {
+    "noRequests": "Noch keine Anfragen aufgezeichnet",
+    "noRequestsHint": "Auf die Aufzeichnungstaste klicken und eine beliebige Website aufrufen",
+    "noMatch": "Keine Anfragen entsprechen dem Filter",
+    "noMatchHint": "Filter oder Suchbegriffe anpassen"
+  },
+  "ca": {
+    "gateTitle": "{{name}}-Root-Zertifikat installieren",
+    "gateLead": "Zum Aufzeichnen von HTTPS-Inhalten muss dem {{name}}-Root-Zertifikat auf diesem Rechner vertraut werden. Zertifikat und privater Schlüssel verlassen diesen Computer nie.",
+    "step": {
+      "generate": "1. Zertifikat erstellen",
+      "install": "2. Installieren und vertrauen",
+      "verify": "3. Prüfen"
+    },
+    "stepState": {
+      "trusted": "Installiert und vertrauenswürdig",
+      "installed": "Im Schlüsselbund, aber noch nicht vertrauenswürdig",
+      "notInstalled": "Nicht installiert",
+      "unsupported": "Dieses System unterstützt keine automatische Installation"
+    },
+    "generating": "Wird generiert…",
+    "waitingGenerate": "Warten auf das Zertifikat",
+    "autoEnter": "Das Hauptfenster öffnet sich danach automatisch",
+    "installedWarning": "Das Zertifikat wurde importiert, ist aber nicht vertrauenswürdig. Die Schlüsselbundverwaltung öffnen, {{name}} suchen, das Vertrauen auf \"Immer vertrauen\" setzen und dann auf \"Erneut prüfen\" klicken.",
+    "hint": {
+      "darwin": "Das System fragt nach der Schlüsselbund-Autorisierung — Anmeldepasswort eingeben oder Touch ID verwenden.",
+      "win32": "Das System zeigt einen Dialog zur Zertifikatsinstallation — \"Ja\" auswählen.",
+      "linux": "Zuerst das Zertifikat exportieren, in den Truststore der Distribution aufnehmen und dann auf \"Erneut prüfen\" klicken."
+    },
+    "dialogTitle": "CA-Root-Zertifikat",
+    "trust": {
+      "trusted": "Installiert und vertrauenswürdig — HTTPS-Entschlüsselung verfügbar",
+      "installed": "Im Schlüsselbund, aber nicht vertrauenswürdig. In der Schlüsselbundverwaltung auf \"Immer vertrauen\" setzen",
+      "notInstalled": "Nicht im System-Truststore installiert",
+      "unsupported": "Automatische Installation wird auf dieser Plattform nicht unterstützt — Zertifikat exportieren und manuell installieren"
+    },
+    "field": {
+      "name": "Name",
+      "fingerprint": "Fingerabdruck (SHA-256)",
+      "expires": "Gültig bis",
+      "status": "Status"
+    },
+    "reading": "Zertifikatsinformationen werden gelesen…",
+    "actions": {
+      "install": "Installieren und vertrauen",
+      "uninstall": "Aus dem System entfernen",
+      "reveal": "Zertifikat im Ordner anzeigen",
+      "revealShort": "Im Ordner anzeigen",
+      "recheck": "Erneut prüfen",
+      "close": "Schließen",
+      "busy": "Wird ausgeführt…"
+    }
+  },
+  "body": {
+    "noParams": "Keine Parameter",
+    "emptyValue": "(leer)",
+    "truncated": "Nur die ersten {{kept}} von {{total}}",
+    "htmlPreview": "HTML-Vorschau",
+    "imagePreview": "Vorschau des Antwortbilds",
+    "copied": "Kopiert",
+    "copy": "Kopieren",
+    "copyPrettyJson": "Formatiertes JSON kopieren"
+  },
+  "headers": {
+    "detailEvicted": "Details wurden verworfen (Speicherbudget überschritten)",
+    "noHeadersCaptured": "Für diese Art von Aufzeichnung werden keine Header aufgezeichnet (Tunnel oder Upgrade-Verbindung)"
+  },
+  "timing": {
+    "startedAt": "Gestartet um {{time}}",
+    "ttfb": "Warten auf Serverantwort (TTFB)",
+    "download": "Inhaltsdownload",
+    "total": "Gesamt",
+    "transferred": "Übertragen"
+  },
+  "tree": {
+    "showMore_one": "Mehr anzeigen (noch {{count}} Eintrag)",
+    "showMore_other": "Mehr anzeigen (noch {{count}} Einträge)",
+    "invalidXml": "Kein gültiges XML — wird als reiner Text angezeigt"
+  },
+  "clamp": {
+    "expand_one": "Erweitern ({{count}} Zeichen)",
+    "expand_other": "Erweitern ({{count}} Zeichen)",
+    "showAll_one": "Alle anzeigen (noch {{count}} Zeichen)",
+    "showAll_other": "Alle anzeigen (noch {{count}} Zeichen)"
+  },
+  "common": {
+    "loading": "Wird geladen…",
+    "none": "Keine",
+    "collapse": "Einklappen",
+    "semicolon": "; "
+  },
+  "menu": {
+    "about": "Über {{name}}",
+    "services": "Dienste",
+    "hide": "{{name}} ausblenden",
+    "hideOthers": "Andere ausblenden",
+    "unhide": "Alle einblenden",
+    "quit": "{{name}} beenden",
+    "capture": "Aufzeichnung",
+    "startCapture": "Aufzeichnung starten",
+    "stopCapture": "Aufzeichnung stoppen",
+    "clear": "Aufzeichnungen löschen",
+    "focusSearch": "Anfragen suchen",
+    "ca": "CA-Zertifikat…",
+    "settings": "Einstellungen…",
+    "edit": "Bearbeiten",
+    "undo": "Rückgängig",
+    "redo": "Wiederholen",
+    "cut": "Ausschneiden",
+    "copy": "Kopieren",
+    "paste": "Einfügen",
+    "selectAll": "Alles auswählen",
+    "view": "Ansicht",
+    "forceReload": "Neu laden erzwingen",
+    "toggleDevTools": "Entwicklertools",
+    "resetZoom": "Originalgröße",
+    "zoomIn": "Vergrößern",
+    "zoomOut": "Verkleinern",
+    "toggleFullScreen": "Vollbild ein/aus",
+    "window": "Fenster",
+    "help": "Hilfe",
+    "revealCa": "CA-Zertifikat im Ordner anzeigen",
+    "openDataDir": "Datenverzeichnis öffnen"
+  },
+  "tray": {
+    "show": "{{name}} anzeigen",
+    "capturing": "{{name}} · Aufzeichnung (Port {{port}})",
+    "idle": "{{name}} · Keine Aufzeichnung",
+    "quit": "{{name}} beenden"
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "general": "Allgemein",
+    "about": "Über",
+    "language": "Sprache",
+    "theme": "Design",
+    "themeOptions": {
+      "auto": "System",
+      "light": "Hell",
+      "dark": "Dunkel"
+    },
+    "port": "Port",
+    "version": "Version",
+    "update": {
+      "title": "Updates",
+      "check": "Nach Updates suchen",
+      "checking": "Suche nach Updates…",
+      "upToDate": "Auf dem neuesten Stand",
+      "downloading": "Neue Version wird heruntergeladen — {{percent}} %",
+      "readyRestart": "Version {{version}} wurde heruntergeladen — zum Abschließen neu starten",
+      "readyOpened": "Installer für Version {{version}} geöffnet — zum Installieren in den Ordner \"Programme\" ziehen",
+      "install": "Neu starten und installieren",
+      "openInstaller": "Installer öffnen",
+      "checkRateLimited": "Zu viele Anfragen, später erneut versuchen",
+      "checkNetworkFailed": "Keine Netzwerkverbindung, Verbindung prüfen und erneut versuchen",
+      "checkNoRelease": "Keine Version verfügbar",
+      "checkFailed": "Suche fehlgeschlagen, später erneut versuchen",
+      "downloadFailed": "Download fehlgeschlagen, später erneut versuchen"
+    },
+    "reset": "Auf Standardwerte zurücksetzen",
+    "resetConfirm": "Alle Einstellungen auf die Standardwerte zurücksetzen?",
+    "close": "Schließen"
+  },
+  "languages": {
+    "de": "Deutsch",
+    "en": "English",
+    "es": "Español",
+    "fr": "Français",
+    "ja": "日本語",
+    "ko": "한국어",
+    "pt": "Português",
+    "ru": "Русский",
+    "zh": "简体中文"
+  }
+}

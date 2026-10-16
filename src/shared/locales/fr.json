@@ -1,0 +1,232 @@
+{
+  "app": {
+    "name": "Reqeek"
+  },
+  "titleBar": {
+    "toolbar": "Barre d'outils",
+    "startCapture": "Démarrer l'enregistrement",
+    "stopCapture": "Arrêter l'enregistrement",
+    "caRequired": "Installer d'abord le certificat racine et lui faire confiance",
+    "clear": "Effacer",
+    "clearRecords": "Effacer les enregistrements",
+    "searchPlaceholder": "Rechercher hôte / chemin / méthode / statut",
+    "searchRequests": "Rechercher des requêtes",
+    "ca": "Certificat CA"
+  },
+  "filter": {
+    "group": "Filtres",
+    "invertSearch": "Inverser la recherche",
+    "errorsOnly": "Erreurs uniquement",
+    "hideTunnels": "Masquer les tunnels"
+  },
+  "sidebar": {
+    "byApp": "Filtrer par application",
+    "allApps": "Toutes les applications",
+    "unknownApp": "Inconnue"
+  },
+  "table": {
+    "requests": "Liste des requêtes",
+    "name": "Nom",
+    "status": "Statut",
+    "type": "Type",
+    "size": "Taille",
+    "time": "Durée",
+    "waterfall": "Cascade",
+    "expandAll": "Tout développer",
+    "collapseAll": "Tout réduire",
+    "groupCount_one": "{{count}} requête",
+    "groupCount_other": "{{count}} requêtes"
+  },
+  "detail": {
+    "title": "Détails de la requête",
+    "close": "Fermer les détails",
+    "noRequestBody": "Cette requête n'a pas de corps",
+    "noPreviewBody": "Aucun corps de réponse à prévisualiser",
+    "noResponseBody": "Aucun corps de réponse",
+    "bodyNotCaptured": "Les corps ne sont pas enregistrés pour ce type d'enregistrement"
+  },
+  "status": {
+    "idle": "Aucun enregistrement en cours",
+    "requestCount_one": "{{count}} requête",
+    "requestCount_other": "{{count}} requêtes",
+    "shownOfTotal": "{{shown}} / {{total}} requêtes",
+    "transferred": "Transféré : {{size}}",
+    "finished": "Terminé en {{time}}",
+    "httpsOn": "Déchiffrement HTTPS : activé",
+    "httpsOff": "Déchiffrement HTTPS : désactivé"
+  },
+  "empty": {
+    "noRequests": "Aucune requête enregistrée pour l'instant",
+    "noRequestsHint": "Cliquer sur le bouton d'enregistrement, puis naviguer sur n'importe quel site",
+    "noMatch": "Aucune requête ne correspond au filtre",
+    "noMatchHint": "Ajuster les filtres ou les termes de recherche"
+  },
+  "ca": {
+    "gateTitle": "Installer le certificat racine {{name}}",
+    "gateLead": "L'enregistrement du contenu HTTPS exige de faire confiance au certificat racine {{name}} sur cette machine. Le certificat et sa clé privée ne quittent jamais cet ordinateur.",
+    "step": {
+      "generate": "1. Générer le certificat",
+      "install": "2. Installer et faire confiance",
+      "verify": "3. Vérifier"
+    },
+    "stepState": {
+      "trusted": "Installé, confiance accordée",
+      "installed": "Dans le trousseau, confiance pas encore accordée",
+      "notInstalled": "Non installé",
+      "unsupported": "Ce système ne prend pas en charge l'installation automatique"
+    },
+    "generating": "Génération…",
+    "waitingGenerate": "En attente du certificat",
+    "autoEnter": "La fenêtre principale s'ouvre automatiquement une fois l'opération terminée",
+    "installedWarning": "Le certificat a été importé mais la confiance ne lui est pas accordée. Ouvrir le Trousseau d'accès, rechercher {{name}}, définir sa confiance sur « Toujours faire confiance », puis cliquer sur « Revérifier ».",
+    "hint": {
+      "darwin": "Le système demandera l'autorisation d'accéder au trousseau — saisir le mot de passe de session ou utiliser Touch ID.",
+      "win32": "Le système affichera une invite d'installation du certificat — choisir « Oui ».",
+      "linux": "Exporter d'abord le certificat, l'ajouter au magasin de confiance de la distribution, puis cliquer sur « Revérifier »."
+    },
+    "dialogTitle": "Certificat racine CA",
+    "trust": {
+      "trusted": "Installé, confiance accordée — le déchiffrement HTTPS est disponible",
+      "installed": "Dans le trousseau, confiance non accordée. Le définir sur « Toujours faire confiance » dans le Trousseau d'accès",
+      "notInstalled": "Non installé dans le magasin de confiance du système",
+      "unsupported": "Installation automatique non prise en charge sur cette plateforme — exporter le certificat et l'installer manuellement"
+    },
+    "field": {
+      "name": "Nom",
+      "fingerprint": "Empreinte (SHA-256)",
+      "expires": "Valide jusqu'au",
+      "status": "Statut"
+    },
+    "reading": "Lecture des informations du certificat…",
+    "actions": {
+      "install": "Installer et faire confiance",
+      "uninstall": "Retirer du système",
+      "reveal": "Afficher le certificat dans le dossier",
+      "revealShort": "Afficher dans le dossier",
+      "recheck": "Revérifier",
+      "close": "Fermer",
+      "busy": "En cours…"
+    }
+  },
+  "body": {
+    "noParams": "Aucun paramètre",
+    "emptyValue": "(vide)",
+    "truncated": "Affichage des {{kept}} premiers sur {{total}}",
+    "htmlPreview": "Aperçu HTML",
+    "imagePreview": "Aperçu de l'image de la réponse",
+    "copied": "Copié",
+    "copy": "Copier",
+    "copyPrettyJson": "Copier le JSON formaté"
+  },
+  "headers": {
+    "detailEvicted": "Les détails ont été supprimés (budget mémoire dépassé)",
+    "noHeadersCaptured": "Les en-têtes ne sont pas enregistrés pour ce type d'enregistrement (tunnel ou connexion mise à niveau)"
+  },
+  "timing": {
+    "startedAt": "Démarré à {{time}}",
+    "ttfb": "Attente de la réponse du serveur (TTFB)",
+    "download": "Téléchargement du contenu",
+    "total": "Total",
+    "transferred": "Transféré"
+  },
+  "tree": {
+    "showMore_one": "Afficher plus ({{count}} restant)",
+    "showMore_other": "Afficher plus ({{count}} restants)",
+    "invalidXml": "XML non valide — affichage du texte brut à la place"
+  },
+  "clamp": {
+    "expand_one": "Développer ({{count}} caractère)",
+    "expand_other": "Développer ({{count}} caractères)",
+    "showAll_one": "Tout afficher ({{count}} caractère restant)",
+    "showAll_other": "Tout afficher ({{count}} caractères restants)"
+  },
+  "common": {
+    "loading": "Chargement…",
+    "none": "Aucun",
+    "collapse": "Réduire",
+    "semicolon": "; "
+  },
+  "menu": {
+    "about": "À propos de {{name}}",
+    "services": "Services",
+    "hide": "Masquer {{name}}",
+    "hideOthers": "Masquer les autres",
+    "unhide": "Tout afficher",
+    "quit": "Quitter {{name}}",
+    "capture": "Enregistrement",
+    "startCapture": "Démarrer l'enregistrement",
+    "stopCapture": "Arrêter l'enregistrement",
+    "clear": "Effacer les enregistrements",
+    "focusSearch": "Rechercher des requêtes",
+    "ca": "Certificat CA…",
+    "settings": "Paramètres…",
+    "edit": "Édition",
+    "undo": "Annuler",
+    "redo": "Rétablir",
+    "cut": "Couper",
+    "copy": "Copier",
+    "paste": "Coller",
+    "selectAll": "Tout sélectionner",
+    "view": "Affichage",
+    "forceReload": "Recharger de force",
+    "toggleDevTools": "Outils de développement",
+    "resetZoom": "Taille réelle",
+    "zoomIn": "Zoom avant",
+    "zoomOut": "Zoom arrière",
+    "toggleFullScreen": "Basculer en mode plein écran",
+    "window": "Fenêtre",
+    "help": "Aide",
+    "revealCa": "Afficher le certificat CA dans le dossier",
+    "openDataDir": "Ouvrir le dossier de données"
+  },
+  "tray": {
+    "show": "Afficher {{name}}",
+    "capturing": "{{name}} · Enregistrement (port {{port}})",
+    "idle": "{{name}} · Aucun enregistrement en cours",
+    "quit": "Quitter {{name}}"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "general": "Général",
+    "about": "À propos",
+    "language": "Langue",
+    "theme": "Thème",
+    "themeOptions": {
+      "auto": "Système",
+      "light": "Clair",
+      "dark": "Sombre"
+    },
+    "port": "Port",
+    "version": "Version",
+    "update": {
+      "title": "Mises à jour",
+      "check": "Rechercher des mises à jour",
+      "checking": "Recherche…",
+      "upToDate": "À jour",
+      "downloading": "Téléchargement de la nouvelle version — {{percent}} %",
+      "readyRestart": "La version {{version}} est téléchargée, redémarrer pour terminer l'installation",
+      "readyOpened": "L'installateur de la version {{version}} est ouvert — le faire glisser dans Applications",
+      "install": "Redémarrer et installer",
+      "openInstaller": "Ouvrir l'installateur",
+      "checkRateLimited": "Trop de requêtes, réessayer plus tard",
+      "checkNetworkFailed": "Connexion réseau impossible, vérifier la connexion et réessayer",
+      "checkNoRelease": "Aucune version disponible",
+      "checkFailed": "Échec de la recherche, réessayer plus tard",
+      "downloadFailed": "Échec du téléchargement, réessayer plus tard"
+    },
+    "reset": "Réinitialiser les valeurs par défaut",
+    "resetConfirm": "Réinitialiser tous les paramètres ?",
+    "close": "Fermer"
+  },
+  "languages": {
+    "de": "Deutsch",
+    "en": "English",
+    "es": "Español",
+    "fr": "Français",
+    "ja": "日本語",
+    "ko": "한국어",
+    "pt": "Português",
+    "ru": "Русский",
+    "zh": "简体中文"
+  }
+}

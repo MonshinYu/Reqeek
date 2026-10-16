@@ -8,7 +8,14 @@ import {languageArgs, setMainLanguage} from './i18n';
 import {applyTheme, titleBarSymbol, watchTheme, windowBackground} from './theme';
 import {setupAppMenu} from './menu';
 import {hasTray, setupTray} from './tray';
-import {recoverStaleSystemProxyOnStartup, registerProxy, registerTraffic, registerSettings, shutdownProxy} from './ipc';
+import {
+  recoverStaleSystemProxyOnStartup,
+  registerProxy,
+  registerSettings,
+  registerTraffic,
+  registerUpdate,
+  shutdownProxy
+} from './ipc';
 import {setupSettingsIpc} from './settings-window';
 
 // 必须与渲染进程 .titleBar 的高度（title-bar.module.css）一致，系统按钮才能垂直居中
@@ -161,6 +168,7 @@ app.whenReady().then(() => {
   registerTraffic();
   registerProxy();
   registerSettings();
+  registerUpdate();
   setupSettingsIpc();
   setupAppMenu();
   setupTray({

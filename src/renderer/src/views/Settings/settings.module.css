@@ -143,10 +143,27 @@
   gap: 12px;
 }
 
+/* 文案有长有短（「已是最新版本」到「安装包已打开…」），不锁单行，靠右贴着按钮收 */
 .hint {
   font-size: var(--font-label);
   color: var(--md-outline);
-  white-space: nowrap;
+  text-align: right;
+}
+
+/* 下载进度。用 transform 之外的方式做动画：宽度百分比来自主进程，本来就在变 */
+.progress {
+  height: 4px;
+  margin: -6px 0 8px;
+  border-radius: 2px;
+  background: var(--md-surface-container-high);
+  overflow: hidden;
+}
+
+.progressBar {
+  height: 100%;
+  background: var(--md-primary);
+  border-radius: 2px;
+  transition: width var(--duration-short) var(--ease-standard);
 }
 
 .footer {

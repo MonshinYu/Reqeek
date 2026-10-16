@@ -203,16 +203,30 @@
       "check": "Check for Updates",
       "checking": "Checking…",
       "upToDate": "Up to date",
-      "available": "Version {{version}} is available",
-      "failed": "Check failed, try again later"
+      "downloading": "Downloading the new version — {{percent}}%",
+      "readyRestart": "Version {{version}} is downloaded, restart to finish installing",
+      "readyOpened": "Version {{version}} installer opened — drag it to Applications",
+      "install": "Restart and Install",
+      "openInstaller": "Open Installer",
+      "checkRateLimited": "Too many requests, try again later",
+      "checkNetworkFailed": "Network connection failed, check your connection and try again",
+      "checkNoRelease": "No release available",
+      "checkFailed": "Check failed, try again later",
+      "downloadFailed": "Download failed, try again later"
     },
     "reset": "Reset to Defaults",
     "resetConfirm": "Reset all settings to defaults?",
     "close": "Close"
   },
   "languages": {
+    "de": "Deutsch",
     "en": "English",
-    "zh": "简体中文",
-    "ja": "日本語"
+    "es": "Español",
+    "fr": "Français",
+    "ja": "日本語",
+    "ko": "한국어",
+    "pt": "Português",
+    "ru": "Русский",
+    "zh": "简体中文"
   }
 }
