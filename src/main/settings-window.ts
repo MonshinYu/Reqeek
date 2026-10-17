@@ -7,6 +7,21 @@ import {windowBackground} from './theme';
 
 let settingsWindow: BrowserWindow | null = null;
 
+/** 设置窗口与主窗口共享 preload，导航范围必须同样收紧到自己的唯一入口页。 */
+const isSettingsUrl = (url: string): boolean => {
+  const devUrl = process.env['ELECTRON_RENDERER_URL'];
+  try {
+    const target = new URL(url);
+    if (is.dev && devUrl) {
+      const devTarget = new URL(devUrl);
+      return target.origin === devTarget.origin && target.pathname === '/settings.html';
+    }
+    return target.protocol === 'file:' && target.pathname.endsWith('/settings.html');
+  } catch {
+    return false;
+  }
+};
+
 export const createSettingsWindow = (): BrowserWindow => {
   if (settingsWindow && !settingsWindow.isDestroyed()) {
     settingsWindow.focus();
@@ -51,6 +66,10 @@ export const createSettingsWindow = (): BrowserWindow => {
   });
 
   window.setMenuBarVisibility(false);
+  window.webContents.setWindowOpenHandler(() => ({action: 'deny'}));
+  window.webContents.on('will-navigate', (event, url) => {
+    if (!isSettingsUrl(url)) event.preventDefault();
+  });
 
   window.once('ready-to-show', () => {
     window.show();

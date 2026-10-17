@@ -2,7 +2,17 @@ import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import styles from './home.module.css';
 import type {CaStatus, ProxyEvent, ProxyStatus} from '@shared/types';
-import {AppSidebar, CaDialog, CaGate, DetailPane, FilterBar, FlowTable, StatusBar, TitleBar} from '@/components';
+import {
+  AppSidebar,
+  CaDialog,
+  CaGate,
+  DetailPane,
+  FilterBar,
+  FlowTable,
+  Spinner,
+  StatusBar,
+  TitleBar
+} from '@/components';
 import {type FilterState, groupByApp, INITIAL_FILTER, matchesFilter} from '@/lib/filter';
 import {DEFAULT_SORT, sortFlows, type SortKey, type SortState} from '@/lib/sort';
 import {expandAll, groupByDomain, toggleGroup} from '@/lib/group';
@@ -17,6 +27,10 @@ export const Home = (): React.ReactElement => {
   const flows = useFlows();
   const [status, setStatus] = useState<ProxyStatus>(IDLE_STATUS);
   const [ca, setCa] = useState<CaStatus | null>(null);
+  // 首屏依赖两个异步结果。到位前无论先渲染哪一边都会闪错内容：先渲染主界面会闪一下
+  // 「未录制」，先渲染门禁页会闪一下「没有证书」——后者正是启动时看到的那一闪
+  const [caSettled, setCaSettled] = useState(false);
+  const [statusSettled, setStatusSettled] = useState(false);
   const [caOpen, setCaOpen] = useState(false);
   const [filter, setFilter] = useState<FilterState>(INITIAL_FILTER);
   const [sort, setSort] = useState<SortState>(DEFAULT_SORT);
@@ -25,9 +39,14 @@ export const Home = (): React.ReactElement => {
   const searchRef = useRef<HTMLInputElement>(null);
 
   const refreshCa = useCallback((): void => {
-    void window.api.getCaStatus().then((result) => {
-      if (result.ok) setCa(result.value);
-    });
+    void window.api
+      .getCaStatus()
+      .then((result) => {
+        if (result.ok) setCa(result.value);
+      })
+      // 取不到就维持「未知」，交给门禁页的兜底文案；但加载层不能因此一直挂着
+      .catch(() => undefined)
+      .finally(() => setCaSettled(true));
   }, []);
 
   useEffect(() => {
@@ -35,7 +54,12 @@ export const Home = (): React.ReactElement => {
     const off = window.api.onProxyEvent((event: ProxyEvent) => {
       if (event.type === 'status') setStatus(event.status);
     });
-    void window.api.getProxyStatus().then(setStatus);
+    void window.api
+      .getProxyStatus()
+      .then(setStatus)
+      // 同样：拉不到就按「未运行」渲染，不能把加载层卡住
+      .catch(() => undefined)
+      .finally(() => setStatusSettled(true));
     refreshCa();
 
     // 用户可能在系统设置里撤销了信任：窗口重新获得焦点时重新检测一次
@@ -45,6 +69,12 @@ export const Home = (): React.ReactElement => {
       window.removeEventListener('focus', refreshCa);
     };
   }, [refreshCa]);
+
+  // home.html 里那个内联加载态，正常会被 React 挂载时的容器清理带走。这里兜一次底：
+  // 它是个铺满窗口的 fixed 元素，一旦残留就会永远盖在界面上，代价太大不值得赌
+  useEffect(() => {
+    document.getElementById('boot')?.remove();
+  }, []);
 
   // 信任被撤销时，正在运行的抓包要停掉，否则之后抓到的 HTTPS 全是不透明隧道
   const trusted = ca?.trust === 'trusted';
@@ -80,8 +110,10 @@ export const Home = (): React.ReactElement => {
         : { key, dir: 'asc' }
     );
 
-  // 首次拿到 CA 状态之前不渲染主界面，避免门禁页一闪而过
-  const gated = ca === null || !trusted;
+  // 两个首屏依赖都到位前一律算门禁：这一层底下渲染的无论是主界面还是门禁页都会被
+  // 加载层完全盖住，而菜单动作读的是同一个 gated，也就一并挡住了
+  const ready = caSettled && statusSettled;
+  const gated = !ready || !trusted;
 
   const handleClear = useCallback((): void => {
     setSelectedId(null);
@@ -186,6 +218,13 @@ export const Home = (): React.ReactElement => {
       )}
 
       {caOpen && <CaDialog ca={ca} onChange={setCa} onClose={() => setCaOpen(false)} />}
+
+      {/* 启动加载层：盖住上面两块，两个首屏依赖到位后淡出（过渡见 .loading）。
+          文案交给容器播报一次；Spinner 旁边既然有文字，再播一遍就是噪音 */}
+      <div className={styles.loading} data-done={ready} role="status">
+        <Spinner size={28} />
+        <span>{t('ca.reading')}</span>
+      </div>
     </div>
   );
 };

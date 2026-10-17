@@ -6,6 +6,7 @@ import {
   onProxyEvent,
   recoverStaleSystemProxy,
   reportProxyFailure,
+  restartProxy,
   startProxy,
   stopProxy,
   uninstallCa
@@ -113,12 +114,8 @@ export const registerProxy = (): void => {
  * 代价说清楚：重启会先撤系统代理再设新的，这中间有个短暂的空窗，所以只在端口真的变了时才调。
  */
 export const restartProxyOnPort = async (port: number): Promise<void> => {
-  if (!getProxyStatus().running) return;
-
-  await stopProxy();
-
   try {
-    await startProxy(port);
+    await restartProxy(port);
   } catch (error) {
     // 界面靠 proxy-event 维护录制状态：这里失败了必须推一条，否则按钮会一直停在「录制中」
     const message = toMessage(error);

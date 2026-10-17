@@ -53,8 +53,6 @@ const api = {
   uninstallCa: (): Promise<CaResult<CaStatus>> => ipcRenderer.invoke('ca:uninstall'),
   revealCa: (): Promise<CaResult<void>> => ipcRenderer.invoke('ca:reveal'),
 
-  notifyReady: (): void => ipcRenderer.send('renderer-ready'),
-
   /** 订阅应用菜单触发的动作，返回取消订阅函数 */
   onMenuAction: (callback: (action: MenuAction) => void): (() => void) =>
     subscribe('menu:action', callback),

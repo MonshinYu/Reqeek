@@ -1,4 +1,4 @@
-import {app, BrowserWindow, ipcMain} from 'electron';
+import {app, BrowserWindow} from 'electron';
 import {join} from 'path';
 import {electronApp, is, optimizer} from '@electron-toolkit/utils';
 import icon from '../../resources/icon.png?asset';
@@ -39,10 +39,6 @@ const isAppUrl = (url: string): boolean => {
   }
 };
 
-const showWindow = (window: BrowserWindow): void => {
-  if (!window.isDestroyed() && !window.isVisible()) window.show();
-};
-
 const createWindow = (): BrowserWindow => {
   const window = new BrowserWindow({
     width: 1100,
@@ -50,6 +46,7 @@ const createWindow = (): BrowserWindow => {
     // 太窄时 titlebar 里的搜索框会和系统按钮挤在一起
     minWidth: 720,
     minHeight: 420,
+    // 先藏着，等首屏画好再放出来（见下面的 dom-ready）。窗口一旦显示，第一帧就是加载态
     show: false,
     titleBarStyle: 'hidden',
     backgroundColor: windowBackground(),
@@ -88,7 +85,23 @@ const createWindow = (): BrowserWindow => {
   // macOS 的应用菜单是 app 级的，不受影响
   if (process.platform !== 'darwin') window.setMenuBarVisibility(false);
 
-  window.once('ready-to-show', () => showWindow(window));
+  // 首屏就绪再放出窗口，这样窗口弹出的第一帧就是加载态，而不是一层空底色。
+  //
+  // 为什么只等 dom-ready：加载态是静态内联在 home.html 里的，不依赖 JS，所以等到 HTML
+  // 解析完就够了 —— 不必像 ready-to-show 那样等 React 渲染完，窗口会晚得多。
+  // 为什么不再等绘制：底色和加载态的背景本来就是同一个颜色，dom-ready 之后那一两帧
+  // 即使还没来得及画上 spinner，看起来也是连续的。而等绘制要靠 rAF，隐藏窗口里的
+  // rAF 会被 backgroundThrottling 拖慢，得不偿失。
+  const revealWindow = (): void => {
+    if (!window.isDestroyed() && !window.isVisible()) window.show();
+  };
+  // 兜底：加载挂起时也得把窗口放出来，否则用户看到的是「应用根本没启动」
+  const failSafe = setTimeout(revealWindow, 2000);
+  window.webContents.once('dom-ready', () => {
+    clearTimeout(failSafe);
+    revealWindow();
+  });
+
   window.on('close', (event) => {
     if (isQuitting || !hasTray()) return;
     event.preventDefault();
@@ -142,10 +155,6 @@ app.whenReady().then(() => {
 
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window);
-  });
-
-  ipcMain.on('renderer-ready', () => {
-    if (mainWindow) showWindow(mainWindow);
   });
 
   // 这几件事都必须先于 createWindow：窗口底色是创建那一刻定下的，启动参数里的语言也是，

@@ -105,11 +105,21 @@ export const createSystemProxyController = (
   };
 
   const enable = async (port: number): Promise<void> => {
-    if (enabled) return;
+    // enabled 表示上一轮写入仍未被可靠地还原。先重试还原，不能直接假装新的端口
+    // 已接管系统代理；否则服务器会显示运行中，系统却仍指向旧端口。
+    if (enabled) await disable();
 
     // 这里故意让 StateCorruptError 往外抛：状态文件损坏时我们已经无从知道
     // 用户的原始配置，此时还去改系统代理，等于把唯一的还原依据也毁掉。
     await takeOverForeignRecord();
+
+    // apply 失败且回滚也失败时，enabled 还是 false，但盘上仍有属于本进程的
+    // committed 快照。覆盖它会丢掉用户唯一的原始配置；先按它恢复并清掉再重试。
+    const ownedState = await store.load();
+    if (canRestore(ownedState) && isOwnedBy(ownedState, ownership)) {
+      await driver.restore(ownedState.snapshot);
+      await store.clear(ownership);
+    }
 
     const snapshot = await captureTarget();
 

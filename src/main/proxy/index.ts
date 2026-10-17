@@ -42,6 +42,21 @@ let stateDir: string | null = null;
 let systemProxy: SystemProxyController | null = null;
 let recovery: Promise<boolean> | null = null;
 
+/**
+ * 系统代理和监听端口是一组不可分割的外部状态。启动、停止与换端口若交叠，
+ * 就可能在用户已经点了停止后才完成启动，或让两次重启互相覆盖。
+ */
+let lifecycleTail: Promise<void> = Promise.resolve();
+
+const serializeLifecycle = <T>(task: () => Promise<T>): Promise<T> => {
+  const result = lifecycleTail.then(task, task);
+  lifecycleTail = result.then(
+    () => undefined,
+    () => undefined
+  );
+  return result;
+};
+
 const listeners = new Set<(event: ProxyEvent) => void>();
 
 export const onProxyEvent = (listener: (event: ProxyEvent) => void): (() => void) => {
@@ -165,7 +180,7 @@ const systemProxyController = (): SystemProxyController => {
  * 顺序是这个函数存在的唯一理由：**先绑定端口，成功了再改系统代理**。
  * 反过来如果端口没绑上就改了系统代理，用户会在那一瞬间断网。
  */
-export const startProxy = async (port: number): Promise<void> => {
+const startProxyInternal = async (port: number): Promise<void> => {
   if (current) {
     emitStatus({ running: true, port: current.port, error: null });
     return;
@@ -212,10 +227,10 @@ export const startProxy = async (port: number): Promise<void> => {
  * 顺序同样要紧：**先撤系统代理，再关服务器**。反过来会有一个短暂的窗口，
  * 系统代理指向一个已经死掉的端口 —— 那个窗口里用户是断网的。
  */
-export const stopProxy = async (): Promise<void> => {
+const stopProxyInternal = async (): Promise<boolean> => {
   if (!current) {
     emitStatus({ running: false, port: null, error: null });
-    return;
+    return true;
   }
 
   const server = current;
@@ -232,6 +247,7 @@ export const stopProxy = async (): Promise<void> => {
 
   await server.close();
   emitStatus({ running: false, port: null, error });
+  return error === null;
 };
 
 /**
@@ -251,3 +267,21 @@ export const recoverStaleSystemProxy = (): Promise<boolean> => {
     });
   return recovery;
 };
+
+/** 启动、停止和换端口共用同一条队列，避免任意两次外部状态变更交叠。 */
+export const startProxy = (port: number): Promise<void> =>
+  serializeLifecycle(() => startProxyInternal(port));
+
+export const stopProxy = (): Promise<void> =>
+  serializeLifecycle(async () => {
+    await stopProxyInternal();
+  });
+
+/** 在同一条生命周期任务中完成「停止旧代理 → 启动新端口」，中途不允许插队。 */
+export const restartProxy = (port: number): Promise<void> =>
+  serializeLifecycle(async () => {
+    if (!lastStatus.running) return;
+    // 还原失败时，系统代理的真实状态未知；绝不能继续启动一个看似运行、实际接不到流量的服务器。
+    if (!(await stopProxyInternal())) return;
+    await startProxyInternal(port);
+  });

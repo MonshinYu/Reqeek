@@ -2,6 +2,35 @@
   display: flex;
   flex-direction: column;
   height: 100%;
+  /* 启动加载层相对这里定位 */
+  position: relative;
+}
+
+/*
+ * 首屏加载态：代理状态和证书状态都是异步取的，两个都到位前盖住整个窗口。
+ * 背景与 body 一致，淡出时底下已经是画好的界面，不会露出底色。
+ * 到位后不卸载元素，靠 visibility 收尾：省掉一次状态更新，也不会在淡出中途被摘掉。
+ */
+.loading {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  background: var(--md-surface);
+  color: var(--md-on-surface-variant);
+  font-size: var(--font-body);
+  transition:
+    opacity 150ms ease,
+    visibility 0s linear 150ms;
+}
+
+.loading[data-done='true'] {
+  opacity: 0;
+  visibility: hidden;
 }
 
 .body {

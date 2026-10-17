@@ -13,8 +13,6 @@ import '@/styles/global.css';
 // 和 Home 入口保持一致：首帧之前就把平台类挂上，用到平台样式的组件才不会先错后对地跳一下
 document.body.classList.add(`platform--${window.api.platform}`);
 
-void window.api.notifyReady();
-
 const container = document.getElementById('root');
 if (!container) throw new Error('settings.html 缺少 #root 节点');
 
